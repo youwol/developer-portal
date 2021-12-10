@@ -85,7 +85,7 @@ class ConfigurationPickerView implements VirtualDOM {
 
         return {
             class: 'fv-pointer',
-            innerText: environment.configuration.pathsBook.config.slice(-1),
+            innerText: environment.configuration.pathsBook.config.split('/').slice(-1),
             style: { 'font-size': 'large' }
         }
     }
