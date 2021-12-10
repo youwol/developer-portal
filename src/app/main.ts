@@ -18,6 +18,7 @@ await cdn.install({
         '@youwol/platform-essentials',
         '@youwol/flux-youwol-essentials',
         '@youwol/flux-files',
+        'd3',
         'rxjs'
     ],
     scripts: [

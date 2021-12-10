@@ -54,7 +54,8 @@ module.exports = {
         '@youwol/fv-button': "window['@youwol/fv-button']",
         '@youwol/fv-tabs': "window['@youwol/fv-tabs']",
         '@youwol/platform-essentials': "window['@youwol/platform-essentials']",
-        '@youwol/flux-files': "window['@youwol/flux-files']"
+        '@youwol/flux-files': "window['@youwol/flux-files']",
+        'd3': "window['d3']"
     }],
     module: {
         rules: [
