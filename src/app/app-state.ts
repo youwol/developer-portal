@@ -1,8 +1,8 @@
 import { YouwolBannerState } from "@youwol/platform-essentials"
-import { Observable, ReplaySubject } from "rxjs"
+import { BehaviorSubject, Observable, ReplaySubject } from "rxjs"
 import { filter, shareReplay, tap } from "rxjs/operators"
 import { PyYouwolClient } from "./client/py-youwol.client"
-import { Environment } from "./client/models"
+import { Environment, Project } from "./client/models"
 
 
 
@@ -10,9 +10,9 @@ export class AppState {
 
 
     public readonly environment$: Observable<Environment>
-
-    public readonly topBannerState = new YouwolBannerState()
-
+    public readonly topBannerState = new YouwolBannerState({ cmEditorModule$: undefined })
+    public readonly openProjects$ = new BehaviorSubject<Project[]>([])
+    public readonly selectedTabId$ = new BehaviorSubject<string>("dashboard")
     constructor() {
 
         this.environment$ = PyYouwolClient.connectWs().pipe(
@@ -25,6 +25,16 @@ export class AppState {
             shareReplay(1)
         )
         PyYouwolClient.environment.status$().subscribe()
+    }
+
+    openProject(project: Project) {
+
+        let openProjects = this.openProjects$.getValue()
+
+        if (!openProjects.includes(project))
+            this.openProjects$.next([...openProjects, project])
+
+        this.selectedTabId$.next(project.name)
     }
 }
 

@@ -15,6 +15,8 @@ export class ProjectSnippetView {
     public readonly state: AppState
     public readonly project: Project
 
+    public readonly onclick: (ev: MouseEvent) => void
+
     constructor(params: { project: Project, state: AppState }) {
 
         Object.assign(this, params)
@@ -52,5 +54,8 @@ export class ProjectSnippetView {
                 ]
             }
         ]
+        this.onclick = () => {
+            this.state.openProject(this.project)
+        }
     }
 }

@@ -1,14 +1,35 @@
 import { VirtualDOM } from "@youwol/flux-view";
 import { Tabs } from "@youwol/fv-tabs";
 import { BehaviorSubject } from "rxjs";
+import { map } from "rxjs/operators";
 import { AppState } from "../app-state";
+import { Project } from "../client/models";
 import { DashboardView } from "./dashboard/dashboard.view";
+import { ProjectView } from "./project/project.view";
 
 
 export class DashboardTab extends Tabs.TabData {
 
     constructor() {
         super('dashboard', 'Dashboard')
+    }
+
+    view(state: AppState): VirtualDOM {
+
+        return new DashboardView({ state })
+    }
+}
+
+export class ProjectTab extends Tabs.TabData {
+
+
+    constructor(public readonly project: Project) {
+        super(project.name, project.name)
+    }
+
+    view(state: AppState): VirtualDOM {
+
+        return new ProjectView({ state, project: this.project })
     }
 }
 
@@ -19,19 +40,23 @@ export class MainPanelView implements VirtualDOM {
 
     public readonly children: VirtualDOM[]
 
-    public readonly tabsData$ = new BehaviorSubject<Tabs.TabData[]>([new DashboardTab()])
 
     constructor(params: { state: AppState }) {
 
         Object.assign(this, params)
-        let tabState = new Tabs.State(this.tabsData$, 'dashboard')
+        let tabsData$ = this.state.openProjects$.pipe(
+            map(projects => [new DashboardTab(), ...projects.map(p => new ProjectTab(p))])
+        )
+
+        let tabState = new Tabs.State(tabsData$, this.state.selectedTabId$)
+
         this.children = [
             new Tabs.View({
                 state: tabState,
-                contentView: (state, tabData) => {
-                    return new DashboardView({ state: this.state })
+                contentView: (state, tabData: DashboardTab | ProjectTab) => {
+                    return tabData.view(this.state)
                 },
-                headerView: (state, tabData) => {
+                headerView: (state, tabData: DashboardTab | ProjectTab) => {
                     return { innerText: tabData.name, class: 'p-1 rounded border' }
                 },
                 class: 'h-100 d-flex flex-column'

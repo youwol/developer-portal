@@ -53,6 +53,7 @@ export interface Pipeline {
     compiler: string
     output: string
     steps: PipelineStep[]
+    flow: string[]
 }
 
 export interface Project {
