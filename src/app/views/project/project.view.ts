@@ -1,12 +1,10 @@
 import { child$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from "d3-dag"
 import { AppState } from "src/app/app-state"
-import { Project } from "src/app/client/models"
-import * as d3 from 'd3'
-import { DagView, renderDag } from "./dag.view"
+import { PipelineStep, Project } from "../../client/models"
+import { DagView } from "./dag.view"
 import { BehaviorSubject } from "rxjs"
-import { Step } from "@youwol/flux-core/src/lib/simple-parser/branch"
 import { filter } from "rxjs/operators"
+import { StepView } from "./step.view"
 
 
 
@@ -23,7 +21,7 @@ export class ProjectView implements VirtualDOM {
 
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
-    selectedStep$ = new BehaviorSubject<Step>(undefined)
+    selectedStep$ = new BehaviorSubject<PipelineStep>(undefined)
 
     constructor(params: { state: AppState, project: Project }) {
 
@@ -31,13 +29,15 @@ export class ProjectView implements VirtualDOM {
 
         this.children = [
             {
-                class: 'd-flex justify-content-around w-100',
+                class: 'd-flex justify-content-around w-100 h-100',
                 children: [
                     new DagView({ project: this.project, selectedStep$: this.selectedStep$ }),
                     child$(
-                        this.selectedStep$.pipe(filter(d => d != undefined)),
-                        (d) => {
-                            return { tag: 'h1', class: 'w-50', innerText: d.id }
+                        this.selectedStep$.pipe(
+                            filter(d => d != undefined)
+                        ),
+                        (step) => {
+                            return new StepView({ state: this.state, project: this.project, step })
                         }
                     )
                 ]

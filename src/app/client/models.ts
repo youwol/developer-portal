@@ -54,6 +54,12 @@ export interface PipelineStep {
     id: string
     artifacts: Artifact[]
 }
+export interface PipelineStepStatusResponse {
+    __progress__: number
+    projectId: string
+    stepId: string
+}
+
 
 export interface Pipeline {
     id: string
@@ -65,7 +71,7 @@ export interface Pipeline {
 }
 
 export interface Project {
-
+    id: string
     name: string
     version: string
     path: string[]

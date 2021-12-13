@@ -24,4 +24,5 @@ export class PyYouwolClient {
     }
 
     static environment = EnvironmentRouter
+    static projects = ProjectsRouter
 }
