@@ -14,12 +14,17 @@ export class ProjectsRouter {
         return requestToJson$(request)
     }
 
+    static getStatus$(projectId: string) {
+
+        let url = `${ProjectsRouter.urlBase}/${projectId}`
+        let request = new Request(url)
+        return requestToJson$(request)
+    }
+
     static runStep$(projectId: string, stepId: string) {
 
         let url = `${ProjectsRouter.urlBase}/${projectId}/steps/${stepId}/run`
         let request = new Request(url, { method: 'POST' })
         return requestToJson$(request)
     }
-
-
 }

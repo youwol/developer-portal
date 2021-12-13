@@ -5,6 +5,7 @@ import { DagView } from "./dag.view"
 import { BehaviorSubject } from "rxjs"
 import { filter } from "rxjs/operators"
 import { StepView } from "./step.view"
+import { PyYouwolClient } from "../../client/py-youwol.client"
 
 
 
@@ -26,6 +27,7 @@ export class ProjectView implements VirtualDOM {
     constructor(params: { state: AppState, project: Project }) {
 
         Object.assign(this, params)
+        PyYouwolClient.projects.getStatus$(this.project.id).subscribe()
 
         this.children = [
             {
