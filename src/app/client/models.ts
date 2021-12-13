@@ -1,4 +1,12 @@
 
+export interface ContextMessage {
+
+    contextId: string
+    parentContextId: string | undefined
+    data: unknown
+    [key: string]: any
+}
+
 export interface UserInfo {
     email: string
     name: string

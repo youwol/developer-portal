@@ -1,11 +1,13 @@
 import { VirtualDOM } from "@youwol/flux-view";
 import { Tabs } from "@youwol/fv-tabs";
+
 import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { AppState } from "../app-state";
 import { Project } from "../client/models";
 import { DashboardView } from "./dashboard/dashboard.view";
 import { ProjectView } from "./project/project.view";
+import { TerminalView } from "./terminal/terminal.view";
 
 
 export class DashboardTab extends Tabs.TabData {
@@ -59,8 +61,10 @@ export class MainPanelView implements VirtualDOM {
                 headerView: (state, tabData: DashboardTab | ProjectTab) => {
                     return { innerText: tabData.name, class: 'p-1 rounded border' }
                 },
-                class: 'h-100 d-flex flex-column'
-            } as any)
+                class: 'h-50 d-flex flex-column'
+            } as any
+            ),
+            new TerminalView(params)
         ]
     }
 }
