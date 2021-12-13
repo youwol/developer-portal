@@ -1,7 +1,7 @@
 
 import { attr$, child$, childrenAppendOnly$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
 import { AppState } from "src/app/app-state"
-import { BehaviorSubject, of, ReplaySubject } from "rxjs"
+import { BehaviorSubject, Observable, of, ReplaySubject } from "rxjs"
 import { filter, map, take, takeUntil } from "rxjs/operators"
 import { PyYouwolClient } from "../../client/py-youwol.client"
 import { ContextMessage } from "src/app/client/models"
@@ -20,7 +20,7 @@ export class NodeHeaderView implements VirtualDOM {
         message: ContextMessage,
         visible$: BehaviorSubject<boolean>,
         expanded$: BehaviorSubject<boolean>,
-        status$: BehaviorSubject<Status>) {
+        status$: Observable<Status>) {
 
         this.children = [
             {
@@ -73,6 +73,8 @@ export class NodeView implements VirtualDOM {
 
     status$ = new BehaviorSubject<Status>('processing')
 
+    headerMessage: ContextMessage = undefined
+
     constructor(
         public readonly contextId: string,
         public readonly expanded: boolean,
@@ -82,15 +84,15 @@ export class NodeView implements VirtualDOM {
         this.visible$ = new BehaviorSubject<boolean>(expanded)
 
         messages$[contextId].pipe(
+            filter(message => message.contextId == this.contextId),
             takeUntil(this.status$.pipe(filter(s => s != 'processing')))
-        )
-            .subscribe(message => {
-                if (message.level == "ERROR")
-                    this.status$.next('error')
+        ).subscribe(message => {
+            if (message.labels.includes('Label.LOG_ABORT'))
+                this.status$.next('error')
 
-                if (message.labels.includes('Label.DONE'))
-                    this.status$.next('success')
-            })
+            if (message.labels.includes('Label.DONE'))
+                this.status$.next('success')
+        })
 
         this.children = [
             {
@@ -101,7 +103,10 @@ export class NodeView implements VirtualDOM {
                             filter(m => m.contextId == this.contextId && m.labels.includes("Label.STARTED")),
                             take(1)
                         ),
-                        (m) => new NodeHeaderView(m, this.visible$, this.expanded$, this.status$)
+                        (m) => {
+                            this.headerMessage = m
+                            return new NodeHeaderView(m, this.visible$, this.expanded$, this.status$)
+                        }
                     ),
                     child$(
                         this.expanded$,
@@ -113,6 +118,9 @@ export class NodeView implements VirtualDOM {
                                     this.visible$,
                                     (visible) => visible ? 'pl-5' : 'd-none'
                                 ),
+                                style: this.headerMessage && this.headerMessage.labels.includes("Label.BASH")
+                                    ? { fontFamily: 'monospace', fontSize: 'x-small' }
+                                    : {},
                                 children: childrenAppendOnly$(
                                     messages$[contextId].pipe(
                                         filter(m => !m.labels.includes("Label.STARTED")),
@@ -142,8 +150,10 @@ export class NodeView implements VirtualDOM {
 export class TerminalView implements VirtualDOM {
 
 
-    public readonly class = "w-100 h-50"
-
+    public readonly class = "w-100 h-50 overflow-auto"
+    public readonly style = {
+        maxHeight: '50vh'
+    }
     public readonly children: VirtualDOM[]
 
     public readonly state: AppState

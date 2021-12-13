@@ -23,7 +23,7 @@ export class LogView implements VirtualDOM {
             },
             {
                 class: this.classesFactory[message.level] || "",
-                innerText: message.level == "ERROR" ? message.data['error'] : message.text
+                innerText: message.level == "ERROR" ? message.text : message.text
             },
             new LabelsView(message.labels),
             message.data ? new DataView(message.data as any) : undefined
