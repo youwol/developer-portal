@@ -1,10 +1,16 @@
 
+type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
+    | 'PipelineStepStatusResponse'
+
 export interface ContextMessage {
 
     contextId: string
+    level: string
+    text: string
+    labels: Label[]
     parentContextId: string | undefined
     data: unknown
-    [key: string]: any
+    attributes: { [key: string]: any }
 }
 
 export interface UserInfo {
@@ -54,10 +60,14 @@ export interface PipelineStep {
     id: string
     artifacts: Artifact[]
 }
+
+export type Status = "OK" | "KO" | "Outdated" | "none"
+
 export interface PipelineStepStatusResponse {
-    __progress__: number
+
     projectId: string
     stepId: string
+    status: Status
 }
 
 

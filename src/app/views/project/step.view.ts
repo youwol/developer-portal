@@ -1,12 +1,18 @@
-import { child$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
+import { attr$, child$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
 import { AppState } from "../../app-state"
-import { PipelineStep, PipelineStepStatusResponse, Project } from "../../client/models"
-import { DagView } from "./dag.view"
+import { ContextMessage, PipelineStep, PipelineStepStatusResponse, Project } from "../../client/models"
 import { BehaviorSubject, Observable } from "rxjs"
 import { filter, mergeMap } from "rxjs/operators"
 import { PyYouwolClient } from "../../client/py-youwol.client"
+import { button } from "../utils-view"
+import { DataView } from '../terminal/data.view'
 
-
+let statusClassFactory = {
+    'OK': 'fas fa-check fv-text-success',
+    'KO': 'fas fa-times fv-text-error',
+    'outdated': 'fas fa-sync-alt fv-text-secondary',
+    'none': 'fas fa-ban fv-text-disabled'
+}
 
 export class StepView implements VirtualDOM {
 
@@ -26,15 +32,15 @@ export class StepView implements VirtualDOM {
     constructor(params: { state: AppState, project: Project, step: PipelineStep }) {
 
         Object.assign(this, params)
-        PyYouwolClient.projects.stepStatus$(this.project.id, this.step.id).subscribe()
+        PyYouwolClient.projects.getStepStatus$(this.project.id, this.step.id).subscribe()
 
-        let messages$: Observable<{ projectId: string, stepId: string, data?: PipelineStepStatusResponse }> =
+        let statusMessages$: Observable<ContextMessage> =
             PyYouwolClient.connectWs().pipe(
-                filter((message: any) => {
-                    return message.type == "PipelineStepStatusResponse"
+                filter((message: ContextMessage) => {
+                    return message.attributes['event'] == "PipelineStatusPending"
                 }),
-                filter((message: { projectId: string, stepId: string }) => {
-                    return message.projectId == this.project.id && message.stepId == this.step.id
+                filter((message: ContextMessage) => {
+                    return message.attributes.projectId == this.project.id && message.attributes.stepId == this.step.id
                 })
             )
 
@@ -43,26 +49,73 @@ export class StepView implements VirtualDOM {
                 class: 'd-flex align-items-center',
                 children: [
                     {
-                        tag: 'h1', innerText: this.step.id
-                    },
-                    child$(
-                        messages$,
-                        (message: { data?}) => {
-                            return message.data ? {} : { class: 'fas fa-spin' }
-                        }
-                    )
+                        tag: 'h1', innerText: this.step.id,
+                        children: [
+                            {
+                                class: attr$(
+                                    statusMessages$,
+                                    (message: ContextMessage) => {
+                                        return message.labels.includes("PipelineStepStatusResponse")
+                                            ? statusClassFactory[message.data['status']]
+                                            : 'fas fa-spinner fa-spin'
+                                    },
+                                    { wrapper: (d) => `${d} mx-2` }
+                                )
+                            }
+                        ]
+                    }
                 ]
             },
             child$(
-                messages$.pipe(
-                    filter((message: { data?}) => {
-                        return message.data != undefined
-                    }),
+                statusMessages$.pipe(
+                    filter((message) => message.labels.includes("PipelineStepStatusResponse"))
                 ),
-                (message) => {
-                    return { innerText: 'All Good' }
+                ({ data }: { data: PipelineStepStatusResponse }) => {
+                    return {
+                        children: [
+                            new StatusView(data),
+                            new ActionsView(data)
+                        ]
+                    }
                 }
             )
+        ]
+    }
+}
+
+
+class StatusView implements VirtualDOM {
+
+    public readonly class = "d-flex align-items-center my-2"
+
+    public readonly children: VirtualDOM[]
+
+    constructor(data: PipelineStepStatusResponse) {
+
+        this.children = [
+            new DataView(data)
+        ]
+    }
+}
+
+class ActionsView implements VirtualDOM {
+
+    public readonly class = "d-flex align-items-center my-2"
+
+    public readonly children: VirtualDOM[]
+
+    constructor(data: PipelineStepStatusResponse) {
+
+        let btnRun = button("fas fa-play", "run")
+
+        btnRun.state.click$.pipe(
+            mergeMap(() => PyYouwolClient.projects.runStep$(data.projectId, data.stepId)
+            )
+        ).subscribe(() => {
+        })
+
+        this.children = [
+            btnRun
         ]
     }
 }
