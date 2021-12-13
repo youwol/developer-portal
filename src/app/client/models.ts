@@ -68,6 +68,9 @@ export interface PipelineStepStatusResponse {
     projectId: string
     stepId: string
     status: Status
+    manifest?: {
+        cmdOutputs: string[]
+    }
 }
 
 

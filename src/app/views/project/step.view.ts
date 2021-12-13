@@ -1,8 +1,8 @@
-import { attr$, child$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
+import { attr$, child$, childrenAppendOnly$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
 import { AppState } from "../../app-state"
 import { ContextMessage, PipelineStep, PipelineStepStatusResponse, Project } from "../../client/models"
 import { BehaviorSubject, Observable } from "rxjs"
-import { filter, mergeMap } from "rxjs/operators"
+import { filter, map, mergeMap } from "rxjs/operators"
 import { PyYouwolClient } from "../../client/py-youwol.client"
 import { button } from "../utils-view"
 import { DataView } from '../terminal/data.view'
@@ -17,7 +17,7 @@ let statusClassFactory = {
 export class StepView implements VirtualDOM {
 
 
-    public readonly class = "w-50 h-100"
+    public readonly class = "w-50 h-100 d-flex flex-column"
 
     public readonly children: VirtualDOM[]
 
@@ -37,7 +37,7 @@ export class StepView implements VirtualDOM {
         let statusMessages$: Observable<ContextMessage> =
             PyYouwolClient.connectWs().pipe(
                 filter((message: ContextMessage) => {
-                    return message.attributes['event'] == "PipelineStatusPending"
+                    return message.attributes['event'] && message.attributes['event'].includes("PipelineStatusPending")
                 }),
                 filter((message: ContextMessage) => {
                     return message.attributes.projectId == this.project.id && message.attributes.stepId == this.step.id
@@ -72,9 +72,11 @@ export class StepView implements VirtualDOM {
                 ),
                 ({ data }: { data: PipelineStepStatusResponse }) => {
                     return {
+                        class: 'flex-grow-1 d-flex flex-column overflow-auto',
                         children: [
                             new StatusView(data),
-                            new ActionsView(data)
+                            new ActionsView(data),
+                            new CommandOutputsView(data, statusMessages$)
                         ]
                     }
                 }
@@ -117,5 +119,54 @@ class ActionsView implements VirtualDOM {
         this.children = [
             btnRun
         ]
+    }
+}
+
+class CommandOutputsView implements VirtualDOM {
+
+    public readonly children: VirtualDOM[]
+    public readonly style = {
+        fontFamily: "monospace",
+        fontSize: 'x-small'
+    }
+
+    constructor(data: PipelineStepStatusResponse, statusMessages$: Observable<ContextMessage>) {
+
+        let outputsRun$ = statusMessages$.pipe(
+            filter(message => message.attributes['event'].includes("PipelineStatusPending:run"))
+        )
+        this.children = [
+            {
+                innerText: 'Command output'
+            },
+            child$(
+                outputsRun$,
+                () => this.dynamicOutputs(outputsRun$),
+                ({ untilFirst: this.savedOutputs(data) })
+            )
+        ]
+    }
+
+    dynamicOutputs(outputsRun$: Observable<ContextMessage>) {
+
+        return {
+            children: childrenAppendOnly$(
+                outputsRun$.pipe(map(m => [m])),
+                (message) => {
+                    return {
+                        innerText: message.text
+                    }
+                }
+            )
+        }
+    }
+
+    savedOutputs(data) {
+
+        return {
+            children: data.manifest && data.manifest.cmdOutputs.map(output => {
+                return { innerText: output }
+            })
+        }
     }
 }
