@@ -1,13 +1,13 @@
 
 import { VirtualDOM } from "@youwol/flux-view"
-import { ContextMessage } from "../../client/models"
+import { ContextMessage } from "../../../client/models"
 import { DataView } from './data.view'
 
 
 export class LogView implements VirtualDOM {
 
     public readonly class = 'd-flex align-items-center fv-pointer'
-
+    public readonly style = {}
     public readonly children: VirtualDOM[]
 
     public readonly classesFactory = {
@@ -16,6 +16,9 @@ export class LogView implements VirtualDOM {
 
     constructor(message: ContextMessage) {
 
+        this.style = message.labels.includes("Label.BASH")
+            ? { fontFamily: 'monospace', fontSize: 'x-small' }
+            : {}
 
         this.children = [
             {
