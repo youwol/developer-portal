@@ -2,6 +2,7 @@ import { ReplaySubject } from "rxjs";
 import { EnvironmentRouter } from "./environment.router";
 import { ContextMessage } from "./models";
 import { ProjectsRouter } from "./projects.router";
+import { SystemRouter } from "./system.router";
 
 
 export class PyYouwolClient {
@@ -31,4 +32,5 @@ export class PyYouwolClient {
 
     static environment = EnvironmentRouter
     static projects = ProjectsRouter
+    static system = SystemRouter
 }

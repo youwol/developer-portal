@@ -49,10 +49,16 @@ export interface RemoteGatewayInfo {
     connected: boolean | undefined
 }
 
-
 export interface Artifact {
 
+    id: string
+    path: string
+}
 
+export interface ArtifactResponse {
+
+    id: string
+    path: string
 }
 
 export interface PipelineStep {
@@ -63,14 +69,28 @@ export interface PipelineStep {
 
 export type Status = "OK" | "KO" | "Outdated" | "none"
 
+
+export interface ManifestResponse {
+    fingerprint: string
+    files: string[]
+    cmdOutputs: string[]
+}
+
 export interface PipelineStepStatusResponse {
 
     projectId: string
+    flowId: string
     stepId: string
     status: Status
-    manifest?: {
-        cmdOutputs: string[]
-    }
+    artifactFolder: string,
+    artifacts: ArtifactResponse[]
+    manifest: ManifestResponse
+}
+
+export interface Flow {
+
+    name: string
+    dag: string[]
 }
 
 
@@ -80,7 +100,7 @@ export interface Pipeline {
     compiler: string
     output: string
     steps: PipelineStep[]
-    flow: string[]
+    flows: Flow[]
 }
 
 export interface Project {

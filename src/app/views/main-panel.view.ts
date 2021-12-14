@@ -1,19 +1,24 @@
 import { VirtualDOM } from "@youwol/flux-view";
 import { Tabs } from "@youwol/fv-tabs";
 
-import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { AppState } from "../app-state";
 import { Project } from "../client/models";
 import { DashboardView } from "./dashboard/dashboard.view";
 import { ProjectView } from "./project/project.view";
-import { TerminalView } from "./terminal/terminal.view";
 
 
 export class DashboardTab extends Tabs.TabData {
 
     constructor() {
         super('dashboard', 'Dashboard')
+    }
+
+    headerView(state: AppState): VirtualDOM {
+        return {
+            innerText: 'Dashboard',
+            class: 'p-1 rounded border'
+        }
     }
 
     view(state: AppState): VirtualDOM {
@@ -26,7 +31,25 @@ export class ProjectTab extends Tabs.TabData {
 
 
     constructor(public readonly project: Project) {
-        super(project.name, project.name)
+        super(project.id, project.name)
+    }
+
+    headerView(state: AppState): VirtualDOM {
+        return {
+            class: ' d-flex align-items-center p-1 rounded border',
+            children: [
+                {
+                    innerText: this.name,
+                },
+                {
+                    class: 'fas fa-times fv-text-error fv-xx-darker fv-hover-xx-lighter pl-2 mx-2',
+                    onclick: (ev) => {
+                        ev.stopPropagation()
+                        state.closeProject(this.id)
+                    }
+                }
+            ]
+        }
     }
 
     view(state: AppState): VirtualDOM {
@@ -55,16 +78,15 @@ export class MainPanelView implements VirtualDOM {
         this.children = [
             new Tabs.View({
                 state: tabState,
-                contentView: (state, tabData: DashboardTab | ProjectTab) => {
+                contentView: (_, tabData: DashboardTab | ProjectTab) => {
                     return tabData.view(this.state)
                 },
-                headerView: (state, tabData: DashboardTab | ProjectTab) => {
-                    return { innerText: tabData.name, class: 'p-1 rounded border' }
+                headerView: (_, tabData: DashboardTab | ProjectTab) => {
+                    return tabData.headerView(this.state)
                 },
-                class: 'h-50 d-flex flex-column'
+                class: 'h-100 d-flex flex-column'
             } as any
-            ),
-            new TerminalView(params)
+            )
         ]
     }
 }
