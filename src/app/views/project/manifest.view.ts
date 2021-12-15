@@ -24,8 +24,22 @@ export class ManifestView implements VirtualDOM {
                         class: 'my-3',
                         children: [
                             {
+                                style: { width: 'fit-content' },
+                                innerText: 'Fingerprint',
+                                class: 'mr-3 mb-2 border-bottom'
+                            },
+                            {
+                                innerText: manifest.fingerprint,
+                            },
+                        ]
+                    },
+                    {
+                        class: 'my-3',
+                        children: [
+                            {
+                                style: { width: 'fit-content' },
                                 innerText: 'Source files',
-                                class: 'mr-3'
+                                class: 'mr-3 mb-2 border-bottom'
                             },
                             new DataView(manifest.files)
                         ]
@@ -34,17 +48,20 @@ export class ManifestView implements VirtualDOM {
                         class: 'my-3',
                         children: [
                             {
-                                innerText: 'Outputs',
-                                class: 'mr-3'
+                                style: { width: 'fit-content' },
+                                innerText: 'Output logs',
+                                class: 'mr-3 mb-2  border-bottom'
                             },
                             {
                                 style: {
                                     fontFamily: "monospace",
                                     fontSize: 'x-small'
                                 },
-                                children: manifest.cmdOutputs.map(output => {
-                                    return { innerText: output }
-                                })
+                                children: Array.isArray(manifest.cmdOutputs)
+                                    ? manifest.cmdOutputs.map(output => {
+                                        return { innerText: output }
+                                    })
+                                    : [new DataView(manifest.cmdOutputs)]
                             }
                         ]
                     }
