@@ -51,7 +51,6 @@ export class ProjectEvents {
                 return Object.entries(attributes).reduce(
                     (acc, [k, v]) => acc && message.attributes[k] && v(message.attributes[k]),
                     true)
-                // message.attributes['event'] && message.attributes['event'].includes("PipelineStatusPending")
             })
         )
     }
