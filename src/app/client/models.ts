@@ -49,22 +49,18 @@ export interface RemoteGatewayInfo {
     connected: boolean | undefined
 }
 
-export interface Artifact {
-
-    id: string
-    path: string
-}
 
 export interface ArtifactResponse {
 
     id: string
     path: string
+    openingUrl?: string
 }
 
 export interface PipelineStep {
 
     id: string
-    artifacts: Artifact[]
+    artifacts: ArtifactResponse[]
 }
 
 export type Status = "OK" | "KO" | "Outdated" | "none"

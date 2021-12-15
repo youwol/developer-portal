@@ -1,12 +1,12 @@
 import { child$, VirtualDOM } from "@youwol/flux-view";
 import { Select } from "@youwol/fv-input";
-import { Artifact } from "src/app/client/models";
+import { ArtifactResponse } from "src/app/client/models";
 import { FilesBrowserView } from "../files-browser.view";
 
 
 export class ArtifactItem extends Select.ItemData {
 
-    constructor(public readonly artifact: Artifact) {
+    constructor(public readonly artifact: ArtifactResponse) {
         super(artifact.id, artifact.id)
     }
 }
@@ -16,7 +16,7 @@ export class ArtifactsView implements VirtualDOM {
     public readonly class = "border-top py-4 "
     public readonly children: VirtualDOM[]
 
-    constructor(artifacts: Artifact[]) {
+    constructor(artifacts: ArtifactResponse[]) {
 
         let select = new Select.State(
             artifacts.map(a => new ArtifactItem(a)),
@@ -42,15 +42,27 @@ export class ArtifactsView implements VirtualDOM {
                     },
                     child$(
                         select.selection$,
-                        (item: ArtifactItem) => {
-                            return new FilesBrowserView({
-                                startingFolder: item.artifact.path,
-                                originFolderIndex: item.artifact.path.split('/').length - 1
-                            })
-                        }
+                        (item: ArtifactItem) => new ArtifactView(item.artifact)
                     )
                 ]
             }
         ]
     }
+}
+
+
+class ArtifactView implements VirtualDOM {
+
+    public readonly class = ""
+    public readonly children: VirtualDOM[]
+
+    constructor(artifact: ArtifactResponse) {
+        this.children = [
+            new FilesBrowserView({
+                startingFolder: artifact.path,
+                originFolderIndex: artifact.path.split('/').length - 1
+            })
+        ]
+    }
+
 }
