@@ -22,9 +22,6 @@ export class ProjectView implements VirtualDOM {
 
     public readonly project: Project
 
-    connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
-
-
     constructor(params: { state: AppState, project: Project }) {
 
         Object.assign(this, params)
@@ -37,8 +34,15 @@ export class ProjectView implements VirtualDOM {
                     {
                         class: "d-flex flex-column h-100 w-100",
                         children: [
-                            new DagView(params),
-                            new TerminalView(events.messages$)
+                            new HeaderDagView(params),
+                            {
+                                class: 'd-flex flex-column flex-grow-1',
+                                style: { minHeight: '0px' },
+                                children: [
+                                    new DagView(params),
+                                    new TerminalView(events.messages$)
+                                ]
+                            }
                         ]
                     },
                     child$(
@@ -57,6 +61,49 @@ export class ProjectView implements VirtualDOM {
     }
 }
 
+class HeaderDagView implements VirtualDOM {
+
+    public readonly class = 'mx-auto py-3 d-flex justify-content-center w-100'
+
+    public readonly children: VirtualDOM[]
+
+    public readonly state: AppState
+
+    public readonly project: Project
+
+    constructor(params: { state: AppState, project: Project }) {
+
+        Object.assign(this, params)
+
+        let selectedStep$ = this.state.projectEvents[this.project.id].selectedStep$
+        let select = new Select.State(
+            this.project.pipeline.flows.map(flow => new Select.ItemData(flow.name, flow.name)),
+            selectedStep$.getValue().flowId
+        )
+        select.selectionId$.subscribe((flowId) => {
+            if (flowId != selectedStep$.getValue().flowId)
+                this.state.selectStep(this.project.id, flowId, undefined)
+        })
+
+        this.children = [
+            {
+                class: 'd-flex mx-3',
+                children: [
+                    {
+                        tag: 'h3',
+                        innerText: 'Selected flow:',
+                        class: 'mr-2'
+                    },
+                    new Select.View({ state: select })
+                ]
+            },
+            {
+                class: 'fas fa-sync fa-2x fv-text-focus fv-hover-x-lighter fv-pointer mx-3',
+                onclick: () => this.state.openProject(this.project)
+            }
+        ]
+    }
+}
 
 class ProjectSummaryView implements VirtualDOM {
 
@@ -71,14 +118,6 @@ class ProjectSummaryView implements VirtualDOM {
         Object.assign(this, params)
         let selectedStep$ = this.state.projectEvents[this.project.id].selectedStep$
 
-        let select = new Select.State(
-            this.project.pipeline.flows.map(flow => new Select.ItemData(flow.name, flow.name)),
-            selectedStep$.getValue().flowId
-        )
-        select.selectionId$.subscribe((flowId) => {
-            if (flowId != selectedStep$.getValue().flowId)
-                this.state.selectStep(this.project.id, flowId, undefined)
-        })
 
         this.children = [
             {
@@ -87,17 +126,6 @@ class ProjectSummaryView implements VirtualDOM {
                     {
                         class: 'border p-2 rounded fv-pointer fv-hover-bg-secondary mx-2',
                         innerText: this.project.name
-                    }
-                ]
-            },
-            {
-                class: 'mx-3',
-                children: [
-                    {
-                        class: 'd-flex align-items-center mb-3',
-                        children: [
-                            { innerText: 'Selected flow:', class: 'mr-2' },
-                            new Select.View({ state: select })]
                     }
                 ]
             },
