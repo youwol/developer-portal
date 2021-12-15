@@ -85,7 +85,8 @@ export class AppState {
 
     openProject(project: Project) {
 
-        this.projectEvents[project.id] = new ProjectEvents(project)
+        if (!this.projectEvents[project.id])
+            this.projectEvents[project.id] = new ProjectEvents(project)
 
         this.projectEvents[project.id].selectedStep$.pipe(
             distinctUntilChanged((x, y) => x.flowId == y.flowId),
