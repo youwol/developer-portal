@@ -58,6 +58,7 @@ class ArtifactView implements VirtualDOM {
 
     constructor(artifact: ArtifactResponse) {
         this.children = [
+            this.openingUrlView(artifact),
             new FilesBrowserView({
                 startingFolder: artifact.path,
                 originFolderIndex: artifact.path.split('/').length - 1
@@ -65,4 +66,21 @@ class ArtifactView implements VirtualDOM {
         ]
     }
 
+    openingUrlView(artifact: ArtifactResponse) {
+        if (!artifact.openingUrl)
+            return undefined
+
+        return {
+            class: 'my-3 p-2 border rounded',
+            style: {
+                width: 'fit-content'
+            },
+            children: [{
+                target: "_blank",
+                tag: 'a',
+                href: `/admin/system/file/${artifact.openingUrl}`,
+                innerText: 'View report'
+            }]
+        }
+    }
 }
