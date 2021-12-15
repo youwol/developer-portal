@@ -123,7 +123,11 @@ export class DagView implements VirtualDOM {
             .attr("stroke-width", 3)
             .attr("stroke", ({ source, target }) => {
                 // encodeURIComponents for spaces, hope id doesn't have a `--` in it
-                const gradId = encodeURIComponent(`${source.data.id}--${target.data.id}`);
+                let prefix = this.project.name.includes('/')
+                    ? this.project.name.split('/').slice(-1)[0]
+                    : this.project.name
+
+                const gradId = encodeURIComponent(`${prefix}_${source.data.id}--${prefix}_${target.data.id}`);
                 const grad = defs
                     .append("linearGradient")
                     .attr("id", gradId)
