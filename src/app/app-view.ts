@@ -18,6 +18,9 @@ export class AppView implements VirtualDOM {
             new TopBannerView({ state: this.state }),
             {
                 class: 'flex-grow-1',
+                style: {
+                    minHeight: '0px'
+                },
                 children: [
                     new MainPanelView({ state: this.state })
                 ]

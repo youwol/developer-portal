@@ -6,7 +6,7 @@ import { Project } from "src/app/client/models"
 export class ProjectSnippetView {
 
 
-    public readonly class = "rounded p-2 fv-pointer fv-border-primary fv-hover-border-focus text-center"
+    public readonly class = "rounded p-2 fv-pointer fv-border-primary fv-hover-border-focus text-center m-3"
     public readonly style = {
         height: "fit-content"
     }

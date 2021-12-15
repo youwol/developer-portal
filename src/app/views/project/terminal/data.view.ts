@@ -2,6 +2,7 @@ import { VirtualDOM } from "@youwol/flux-view"
 import { ImmutableTree } from "@youwol/fv-tree"
 import { of } from "rxjs"
 
+
 export class LogDataNode extends ImmutableTree.Node {
 
     name: string
@@ -26,6 +27,7 @@ export class LogDataNode extends ImmutableTree.Node {
 
 export class DataView implements VirtualDOM {
 
+    public readonly class = 'fv-pointer'
     public readonly children: VirtualDOM[]
     public readonly style = {
         fontSize: 'small'

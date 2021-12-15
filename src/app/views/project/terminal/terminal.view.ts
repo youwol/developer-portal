@@ -1,9 +1,7 @@
 
 import { attr$, child$, childrenAppendOnly$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { AppState } from "src/app/app-state"
-import { BehaviorSubject, Observable, of, ReplaySubject, Subject } from "rxjs"
+import { BehaviorSubject, Observable, of, ReplaySubject } from "rxjs"
 import { delay, filter, map, take, takeUntil } from "rxjs/operators"
-import { PyYouwolClient } from "../../../client/py-youwol.client"
 import { ContextMessage } from "src/app/client/models"
 import { AttributesView, LabelsView, LogView } from "./log.view"
 
@@ -176,7 +174,7 @@ export class TerminalView implements VirtualDOM {
         this.expanded$,
         (expanded) => expanded ? "w-100 h-50" : "w-100",
         {
-            wrapper: (d) => `${d} w-100 d-flex flex-column`
+            wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `
         }
     )
     children: VirtualDOM[]
