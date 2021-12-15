@@ -81,6 +81,11 @@ export class AppState {
             shareReplay(1)
         )
         PyYouwolClient.environment.status$().subscribe()
+
+    }
+
+    selectTab(tabId: string) {
+        this.selectedTabId$.next(tabId)
     }
 
     openProject(project: Project) {
