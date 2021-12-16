@@ -49,12 +49,16 @@ export interface RemoteGatewayInfo {
     connected: boolean | undefined
 }
 
+export interface Link {
+    name: string
+    url: string
+}
 
 export interface ArtifactResponse {
 
     id: string
     path: string
-    openingUrl?: string
+    links: Link[]
 }
 
 export interface PipelineStep {

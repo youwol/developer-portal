@@ -1,6 +1,6 @@
 import { child$, VirtualDOM } from "@youwol/flux-view";
 import { Select } from "@youwol/fv-input";
-import { ArtifactResponse } from "src/app/client/models";
+import { ArtifactResponse, Link } from "src/app/client/models";
 import { FilesBrowserView } from "../files-browser.view";
 
 
@@ -58,7 +58,7 @@ class ArtifactView implements VirtualDOM {
 
     constructor(artifact: ArtifactResponse) {
         this.children = [
-            this.openingUrlView(artifact),
+            this.linksView(artifact.links),
             new FilesBrowserView({
                 startingFolder: artifact.path,
                 originFolderIndex: artifact.path.split('/').length - 1
@@ -66,21 +66,26 @@ class ArtifactView implements VirtualDOM {
         ]
     }
 
-    openingUrlView(artifact: ArtifactResponse) {
-        if (!artifact.openingUrl)
-            return undefined
+    linksView(links: Link[]) {
+
 
         return {
-            class: 'my-3 p-2 border rounded',
-            style: {
-                width: 'fit-content'
-            },
-            children: [{
-                target: "_blank",
-                tag: 'a',
-                href: `/admin/system/file/${artifact.openingUrl}`,
-                innerText: 'View report'
-            }]
+            class: 'd-flex align-items-center',
+            children: links.map((link) => {
+
+                return {
+                    class: 'my-3 p-2 border rounded',
+                    style: {
+                        width: 'fit-content'
+                    },
+                    children: [{
+                        target: "_blank",
+                        tag: 'a',
+                        href: `/admin/system/file/${link.url}`,
+                        innerText: link.name
+                    }]
+                }
+            })
         }
     }
 }
