@@ -1,6 +1,6 @@
 
 type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
-    | 'PipelineStepStatusResponse'
+    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse'
 
 export interface ContextMessage {
 
@@ -81,6 +81,11 @@ export interface PipelineStepStatusResponse {
     artifactFolder: string,
     artifacts: ArtifactResponse[]
     manifest: ManifestResponse
+}
+
+export interface ProjectStatusResponse {
+    projectId: string
+    orderedDependencies: string[]
 }
 
 export interface Flow {

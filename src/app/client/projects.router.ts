@@ -7,16 +7,23 @@ export class ProjectsRouter {
     private static urlBase = '/admin/projects'
     static headers = {}
 
-    static getStepStatus$(projectId: string, flowId: string, stepId: string) {
+    static getProjectStatus$(projectId: string) {
 
-        let url = `${ProjectsRouter.urlBase}/${projectId}/flows/${flowId}/steps/${stepId}`
+        let url = `${ProjectsRouter.urlBase}/${projectId}`
         let request = new Request(url)
         return requestToJson$(request)
     }
 
-    static getStatus$(projectId: string, flowId: string) {
+    static getFlowStatus$(projectId: string, flowId: string) {
 
         let url = `${ProjectsRouter.urlBase}/${projectId}/flows/${flowId}`
+        let request = new Request(url)
+        return requestToJson$(request)
+    }
+
+    static getStepStatus$(projectId: string, flowId: string, stepId: string) {
+
+        let url = `${ProjectsRouter.urlBase}/${projectId}/flows/${flowId}/steps/${stepId}`
         let request = new Request(url)
         return requestToJson$(request)
     }

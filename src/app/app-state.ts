@@ -1,8 +1,8 @@
 import { YouwolBannerState } from "@youwol/platform-essentials"
-import { BehaviorSubject, Observable } from "rxjs"
+import { BehaviorSubject, Observable, ReplaySubject } from "rxjs"
 import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay, tap } from "rxjs/operators"
 import { PyYouwolClient } from "./client/py-youwol.client"
-import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project } from "./client/models"
+import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project, ProjectStatusResponse } from "./client/models"
 
 
 
@@ -16,9 +16,11 @@ export class ProjectEvents {
      */
     messages$: Observable<ContextMessage>
 
-    selectedStep$: BehaviorSubject<{ flowId: string, step: PipelineStep | undefined }>
+    selectedStep$: BehaviorSubject<{ flowId: string | undefined, step: PipelineStep | undefined }>
 
     stepsStatus$: Observable<Record<StepId, PipelineStepStatusResponse>>
+
+    projectStatusResponse$ = new ReplaySubject<ProjectStatusResponse>(1)
 
     constructor(public readonly project: Project) {
 
@@ -41,8 +43,34 @@ export class ProjectEvents {
                     let stepId = message.attributes["stepId"]
 
                     return { ...acc, [ProjectEvents.fullId(flowId, stepId)]: message.data }
-                }, {})
+                }, {}),
+                //tap((status) => console.log("Accumulated status", status)),
+                shareReplay(1)
             )
+
+        this.selectedStep$.pipe(
+            distinctUntilChanged((x, y) => x.flowId == y.flowId),
+            filter(({ flowId }) => flowId != undefined),
+            mergeMap(({ flowId }) => {
+                return PyYouwolClient.projects.getFlowStatus$(project.id, flowId)
+            })
+        ).subscribe()
+
+        this.selectedStep$.pipe(
+            filter(({ step }) => step != undefined),
+            mergeMap(({ flowId, step }) => {
+                return PyYouwolClient.projects.getStepStatus$(project.id, flowId, step.id)
+            })
+        ).subscribe()
+
+        this.messages$.pipe(
+            filter((message) => message.labels.includes("ProjectStatusResponse")),
+            map(message => message.data as ProjectStatusResponse)
+        ).subscribe(data => {
+            this.projectStatusResponse$.next(data)
+        })
+
+        PyYouwolClient.projects.getProjectStatus$(project.id).subscribe()
     }
 
     filterAttributes(attributes: { [key: string]: (string) => boolean }): Observable<ContextMessage> {
@@ -92,20 +120,6 @@ export class AppState {
         if (!this.projectEvents[project.id])
             this.projectEvents[project.id] = new ProjectEvents(project)
 
-        this.projectEvents[project.id].selectedStep$.pipe(
-            distinctUntilChanged((x, y) => x.flowId == y.flowId),
-            mergeMap(({ flowId }) => {
-                return PyYouwolClient.projects.getStatus$(project.id, flowId)
-            })
-        ).subscribe()
-
-        this.projectEvents[project.id].selectedStep$.pipe(
-            filter(({ step }) => step != undefined),
-            mergeMap(({ flowId, step }) => {
-                return PyYouwolClient.projects.getStepStatus$(project.id, flowId, step.id)
-            })
-        ).subscribe()
-
         let openProjects = this.openProjects$.getValue()
 
         if (!openProjects.includes(project))
@@ -124,7 +138,7 @@ export class AppState {
 
     }
 
-    selectStep(projectId: string, flowId: string, stepId: string | undefined) {
+    selectStep(projectId: string, flowId: string | undefined = undefined, stepId: string | undefined = undefined) {
 
         let events = this.projectEvents[projectId]
         let step = events.project.pipeline.steps.find(s => s.id == stepId)

@@ -27,13 +27,14 @@ export class DagView implements VirtualDOM {
             svg.classList.add('h-100', 'w-100')
             elem.appendChild(svg)
 
-            combineLatest([
-                this.state.projectEvents[this.project.id].selectedStep$,
-                this.state.projectEvents[this.project.id].stepsStatus$
-            ]).subscribe(([selection, stepsStatus]) => {
-
-                this.renderDag({ svg, selection, status: stepsStatus })
-            })
+            elem.ownSubscriptions(
+                combineLatest([
+                    this.state.projectEvents[this.project.id].selectedStep$,
+                    this.state.projectEvents[this.project.id].stepsStatus$
+                ]).subscribe(([selection, stepsStatus]) => {
+                    this.renderDag({ svg, selection, status: stepsStatus })
+                })
+            )
         }
     }
 
