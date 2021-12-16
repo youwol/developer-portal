@@ -284,6 +284,9 @@ export class TerminalView implements VirtualDOM {
 class TerminalHeaderView implements VirtualDOM {
 
     public readonly class = 'd-flex align-items-center fv-bg-background-alt border fv-pointer'
+    public readonly style = {
+        fontSize: 'small'
+    }
     public readonly children: VirtualDOM[]
     public readonly onclick: (ev: MouseEvent) => void
 
@@ -293,7 +296,7 @@ class TerminalHeaderView implements VirtualDOM {
                 class: attr$(
                     expanded$,
                     (expanded) => expanded ? "fa-caret-down" : "fa-caret-right",
-                    { wrapper: (d) => `fas ${d} p-2 fv-pointer` }
+                    { wrapper: (d) => `fas ${d} py-1 px-2 fv-pointer` }
                 )
             },
             {
