@@ -87,9 +87,21 @@ export interface PipelineStepStatusResponse {
     manifest: ManifestResponse
 }
 
+export interface ChildToParentConnections {
+    id: string
+    parentIds: string[]
+}
+
+
+export interface DependenciesResponse {
+    dag: ChildToParentConnections[]
+    simpleDag: ChildToParentConnections[]
+}
+
+
 export interface ProjectStatusResponse {
     projectId: string
-    orderedDependencies: string[]
+    workspaceDependencies: DependenciesResponse
 }
 
 export interface Flow {

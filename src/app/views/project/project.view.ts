@@ -9,6 +9,7 @@ import { PyYouwolClient } from "../../client/py-youwol.client"
 import { ArtifactsView } from "./artifacts.view"
 import { HeaderBannerView } from "./header-banner.view"
 import { DataView } from "./terminal/data.view"
+import { DagDependenciesView } from "./dag-dependencies.view"
 
 
 export class ProjectView implements VirtualDOM {
@@ -41,7 +42,9 @@ export class ProjectView implements VirtualDOM {
                             child$(
                                 events.selectedStep$,
                                 ({ flowId, step }) => {
-                                    return (flowId != undefined) ? new DagView(params) : {}
+                                    return (flowId != undefined) ?
+                                        new DagFlowView(params) :
+                                        new DagDependenciesView(params)
                                 }
                             ),
                             new TerminalView(events.messages$)
