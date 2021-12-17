@@ -1,7 +1,7 @@
 import { child$, VirtualDOM } from "@youwol/flux-view"
 import { AppState } from "src/app/app-state"
 import { Project } from "../../client/models"
-import { DagView } from "./dag.view"
+import { DagFlowView } from "./dag-flow.view"
 import { StepView } from "./step.view"
 import { TerminalView } from "./terminal/terminal.view"
 import { filter, mergeMap } from "rxjs/operators"

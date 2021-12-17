@@ -7,7 +7,7 @@ import { AppState, ProjectEvents } from "../../app-state"
 
 
 
-export class DagView implements VirtualDOM {
+export class DagFlowView implements VirtualDOM {
 
     public readonly class = "w-100 h-50 mx-auto"
     public readonly project: Project
