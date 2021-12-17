@@ -4,7 +4,7 @@ import { Project } from "../../client/models"
 import { DagFlowView } from "./dag-flow.view"
 import { StepView } from "./step.view"
 import { TerminalView } from "./terminal/terminal.view"
-import { filter, mergeMap } from "rxjs/operators"
+import { mergeMap } from "rxjs/operators"
 import { PyYouwolClient } from "../../client/py-youwol.client"
 import { ArtifactsView } from "./artifacts.view"
 import { HeaderBannerView } from "./header-banner.view"
@@ -31,7 +31,6 @@ export class ProjectView implements VirtualDOM {
         let projectSummary = new ProjectSummaryView(params)
 
         this.children = [
-            new HeaderBannerView(params),
             {
                 class: "d-flex flex-grow-1 justify-content-around w-100  py-2",
                 style: { minHeight: '0px' },
@@ -51,21 +50,31 @@ export class ProjectView implements VirtualDOM {
                         ]
                     },
                     {
-                        class: 'w-100',
+                        class: 'w-100 h-100 d-flex flex-column px-2',
                         children: [
-                            child$(
-                                events.selectedStep$,
-                                ({ flowId, step }) => {
 
-                                    if (step != undefined)
-                                        return new StepView({ state: this.state, project: this.project, flowId, step })
+                            new HeaderBannerView(params),
+                            {
+                                class: 'flex-grow-1 overflow-y-auto h-100',
+                                style: {
+                                    minHeight: '0px'
+                                },
+                                children: [
+                                    child$(
+                                        events.selectedStep$,
+                                        ({ flowId, step }) => {
 
-                                    if (flowId != undefined)
-                                        return new FlowSummaryView(params)
+                                            if (step != undefined)
+                                                return new StepView({ state: this.state, project: this.project, flowId, step })
 
-                                    return new ProjectSummaryView(params)
-                                }
-                            )
+                                            if (flowId != undefined)
+                                                return new FlowSummaryView(params)
+
+                                            return new ProjectSummaryView(params)
+                                        }
+                                    )
+                                ]
+                            }
                         ]
                     }
                 ]
