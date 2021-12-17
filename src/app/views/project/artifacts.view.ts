@@ -18,6 +18,15 @@ export class ArtifactsView implements VirtualDOM {
 
     constructor(artifacts: ArtifactResponse[]) {
 
+        if (artifacts.length == 0) {
+            this.children = [
+                {
+                    tag: 'h3',
+                    innerText: 'No artifacts available'
+                }
+            ]
+            return
+        }
         let select = new Select.State(
             artifacts.map(a => new ArtifactItem(a)),
             artifacts[0].id
@@ -67,7 +76,6 @@ class ArtifactView implements VirtualDOM {
     }
 
     linksView(links: Link[]) {
-
 
         return {
             class: 'd-flex align-items-center',
