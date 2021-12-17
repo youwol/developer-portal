@@ -37,16 +37,12 @@ export class HeaderBannerView implements VirtualDOM {
 
         this.children = [
             {
-                class: 'd-flex align-items-center border p-2 rounded fv-pointer fv-hover-bg-secondary',
+                class: 'd-flex align-items-center border p-2 rounded fv-pointer fv-bg-secondary fv-hover-xx-lighter',
+                onclick: () => this.state.selectStep(this.project.id),
                 children: [
                     {
                         class: '',
-                        innerText: this.project.name,
-                        onclick: () => this.state.selectStep(this.project.id)
-                    },
-                    {
-                        class: 'fas fa-sync fv-text-focus fv-hover-x-lighter fv-pointer mx-3',
-                        onclick: () => this.state.openProject(this.project)
+                        innerText: this.project.name
                     }
                 ]
             },
@@ -66,17 +62,26 @@ export class HeaderBannerView implements VirtualDOM {
 
     labelView(flowId: string): VirtualDOM {
 
-        return {
-            class: attr$(
-                this.selectedStep$.pipe(map(({ flowId }) => flowId)),
-                (selectedFlowId) => selectedFlowId == flowId ? "fv-bg-secondary fv-hover-lighter" : "fv-hover-bg-background-alt",
-                {
-                    wrapper: (d) => `${d} p-2 border rounded fv-pointer`
+
+        return child$(
+            this.selectedStep$.pipe(map(({ flowId }) => flowId)),
+            (selectedFlowId) => {
+                let defaultClasses = 'p-2 border rounded fv-pointer'
+                return {
+                    class: selectedFlowId == flowId
+                        ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
+                        : `${defaultClasses} fv-hover-bg-background-alt`,
+                    innerText: flowId,
+                    onclick: () => {
+                        this.state.selectStep(this.project.id, flowId, undefined)
+
+                        // Re-click triggers refresh
+                        if (flowId == selectedFlowId)
+                            PyYouwolClient.projects.getFlowStatus$(this.project.id, flowId).subscribe()
+                    }
                 }
-            ),
-            innerText: flowId,
-            onclick: () => this.state.selectStep(this.project.id, flowId, undefined)
-        }
+            }
+        )
     }
 
     stepView(flowId: string, step: PipelineStep): VirtualDOM {
