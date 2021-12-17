@@ -59,7 +59,8 @@ export class AttributesView {
     public readonly class = ""
     public readonly children: VirtualDOM[]
     public readonly style = {
-        'fontSize': "small"
+        'fontSize': "small",
+        'maxWidth': '50%'
     }
     constructor(attributes: { [key: string]: any }) {
 

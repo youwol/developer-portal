@@ -10,7 +10,9 @@ import { AttributesView, LabelsView, LogView } from "./log.view"
 export class NodeHeaderView implements VirtualDOM {
 
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
-
+    public readonly style = {
+        maxWidth: '50%'
+    }
     public readonly children: VirtualDOM[]
     public readonly onclick: (ev: MouseEvent) => void
 

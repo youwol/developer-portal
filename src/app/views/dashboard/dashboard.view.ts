@@ -7,7 +7,12 @@ import { ProjectSnippetView } from "./project-snippet.view"
 
 export class DashboardView {
 
-    public readonly class = "w-100 h-100"
+    public readonly class = "w-100"
+
+    public readonly style = {
+        maxHeight: '100%',
+        height: 'fit-content'
+    }
 
     public readonly children: VirtualDOM[]
 
