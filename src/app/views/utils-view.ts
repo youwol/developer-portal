@@ -1,6 +1,4 @@
-import { attr$, child$, VirtualDOM } from "@youwol/flux-view"
 import { Button } from "@youwol/fv-button"
-import { BehaviorSubject } from "rxjs"
 
 
 export let innerTabClasses = 'p-2 fv-text-primary h-100 d-flex flex-column '

@@ -4,8 +4,6 @@ import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay } from "
 import { PyYouwolClient } from "./client/py-youwol.client"
 import { CdnResponse, Label } from "./client/models"
 import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project, ProjectStatusResponse } from "./client/models"
-import { CdnPackageResponse } from "./client/local-cdn.router"
-
 
 
 type StepId = string
@@ -78,7 +76,6 @@ export class ProjectEvents {
 
                     return { ...acc, [ProjectEvents.fullId(flowId, stepId)]: message.data }
                 }, {}),
-                //tap((status) => console.log("Accumulated status", status)),
                 shareReplay(1)
             )
 
