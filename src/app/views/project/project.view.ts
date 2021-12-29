@@ -8,8 +8,8 @@ import { mergeMap } from "rxjs/operators"
 import { PyYouwolClient } from "../../client/py-youwol.client"
 import { ArtifactsView } from "./artifacts.view"
 import { HeaderBannerView } from "./header-banner.view"
-import { DataView } from "./terminal/data.view"
 import { DagDependenciesView } from "./dag-dependencies.view"
+import { CdnView } from "./local-cdn.view"
 
 
 export class ProjectView implements VirtualDOM {
@@ -27,8 +27,6 @@ export class ProjectView implements VirtualDOM {
 
         Object.assign(this, params)
         let events = this.state.projectEvents[this.project.id]
-
-        let projectSummary = new ProjectSummaryView(params)
 
         this.children = [
             {
@@ -50,7 +48,7 @@ export class ProjectView implements VirtualDOM {
                         ]
                     },
                     {
-                        class: 'w-100 h-100 d-flex flex-column px-2',
+                        class: 'w-100 h-100 d-flex flex-column px-2 overflow-auto',
                         children: [
 
                             new HeaderBannerView(params),
@@ -100,14 +98,9 @@ class ProjectSummaryView implements VirtualDOM {
         this.children = [
             {
                 tag: 'h3',
-                innerText: 'Project overview'
+                innerText: 'CDN status'
             },
-            child$(
-                this.state.projectEvents[this.project.id].projectStatusResponse$,
-                (data) => {
-                    return new DataView(data)
-                }
-            )
+            new CdnView(params)
         ]
     }
 }

@@ -1,6 +1,6 @@
 
-type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
-    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse'
+export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
+    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse'
 
 export interface ContextMessage {
 
@@ -173,3 +173,20 @@ export interface TreeItem {
     borrowed: boolean
     rawId: string
 }
+
+
+export interface CdnVersionResponse {
+    name: string
+    version: string
+    versionNumber: number
+    filesCount: number
+    bundleSize: number
+    path: string
+    namespace: string
+}
+
+export interface CdnResponse {
+    name: string
+    versions: Array<CdnVersionResponse>
+}
+
