@@ -42,7 +42,7 @@ export class StepView implements VirtualDOM {
                 ),
                 ({ data }: { data: PipelineStepStatusResponse }) => {
                     return {
-                        class: 'flex-grow-1 d-flex flex-column overflow-auto',
+                        class: 'flex-grow-1 d-flex flex-column',
                         children: [
                             new RunOutputsView(data, pendingMessages$),
                             data.manifest ? new ManifestView(data.manifest) : undefined,
