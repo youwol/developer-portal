@@ -139,13 +139,7 @@ export class TopBannerView extends YouwolBannerView {
                 ]
             },
             userMenuView: new YwUserMenuView(params),
-            youwolMenuView: new YwMenuView(params),/* child$(
-                Backend.environment.environments$,
-                (environment) => new YwMenuView(environment)
-            ),*/
-            signedIn$: from(fetch(new Request("/api/assets-gateway/healthz"))).pipe(
-                map(resp => resp.status == 200)
-            )
+            youwolMenuView: new YwMenuView(params)
         })
     }
 }
