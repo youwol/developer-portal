@@ -1,12 +1,44 @@
 import { YouwolBannerState } from "@youwol/platform-essentials"
 import { BehaviorSubject, Observable, ReplaySubject } from "rxjs"
-import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay, tap } from "rxjs/operators"
+import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay } from "rxjs/operators"
 import { PyYouwolClient } from "./client/py-youwol.client"
+import { CdnResponse, Label } from "./client/models"
 import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project, ProjectStatusResponse } from "./client/models"
+import { CdnPackageResponse } from "./client/local-cdn.router"
 
 
 
 type StepId = string
+
+
+export function filterCtxMessage({ withAttributes, withLabels }: {
+    withAttributes?: {
+        [key: string]: string | ((string) => boolean)
+    },
+    withLabels?: Label[]
+}) {
+    withAttributes = withAttributes || {}
+    withLabels = withLabels || []
+    return (source$: Observable<ContextMessage>) =>
+        source$.pipe(
+            filter((message: ContextMessage) => {
+                let attrsOk = Object.entries(withAttributes).reduce(
+                    (acc, [k, v]) => {
+                        if (!acc || !message.attributes[k])
+                            return false
+                        if (typeof (v) == 'string')
+                            return message.attributes[k] == v
+
+                        return v(message.attributes[k])
+                    },
+                    true)
+
+                let labelsOk = withLabels.reduce((acc, label) => acc && message.labels.includes(label), true)
+                return attrsOk && labelsOk
+            })
+        ) as Observable<ContextMessage>
+}
+
 
 export class ProjectEvents {
 
@@ -21,6 +53,8 @@ export class ProjectEvents {
     stepsStatus$: Observable<Record<StepId, PipelineStepStatusResponse>>
 
     projectStatusResponse$ = new ReplaySubject<ProjectStatusResponse>(1)
+
+    cdnResponse$ = new ReplaySubject<CdnResponse>(1)
 
     constructor(public readonly project: Project) {
 
@@ -70,17 +104,14 @@ export class ProjectEvents {
             this.projectStatusResponse$.next(data)
         })
 
-        PyYouwolClient.projects.getProjectStatus$(project.id).subscribe()
-    }
+        this.messages$.pipe(
+            filter((message) => message.labels.includes("CdnResponse")),
+            map(message => message.data as CdnResponse)
+        ).subscribe(data => {
+            this.cdnResponse$.next(data)
+        })
 
-    filterAttributes(attributes: { [key: string]: (string) => boolean }): Observable<ContextMessage> {
-        return this.messages$.pipe(
-            filter((message: ContextMessage) => {
-                return Object.entries(attributes).reduce(
-                    (acc, [k, v]) => acc && message.attributes[k] && v(message.attributes[k]),
-                    true)
-            })
-        )
+        PyYouwolClient.projects.getProjectStatus$(project.id).subscribe()
     }
 
     static fullId(flowId: string, stepId: string) {
@@ -107,9 +138,11 @@ export class AppState {
             map(({ data }) => data as Environment),
             shareReplay(1)
         )
+
         PyYouwolClient.environment.status$().subscribe()
 
     }
+
 
     selectTab(tabId: string) {
         this.selectedTabId$.next(tabId)

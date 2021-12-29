@@ -1,6 +1,6 @@
 import { attr$, child$, VirtualDOM } from "@youwol/flux-view"
-import { AppState } from "src/app/app-state"
-import { ContextMessage, Flow, PipelineStep, Project } from "../../client/models"
+import { AppState, filterCtxMessage } from "../../app-state"
+import { ContextMessage, PipelineStep, Project } from "../../client/models"
 import { map } from "rxjs/operators"
 import { Observable } from "rxjs"
 import { PyYouwolClient } from "../../client/py-youwol.client"
@@ -86,18 +86,21 @@ export class HeaderBannerView implements VirtualDOM {
 
     stepView(flowId: string, step: PipelineStep): VirtualDOM {
 
-        let status$ = this.state.projectEvents[this.project.id]
-            .filterAttributes({
-                event: (event) => event.includes("PipelineStatusPending"),
-                stepId: (stepId) => stepId == step.id
+        let status$ = this.state.projectEvents[this.project.id].messages$.pipe(
+            filterCtxMessage({
+                withAttributes: {
+                    event: (event) => event.includes("PipelineStatusPending"),
+                    stepId: step.id
+                },
+                withLabels: []
+            }),
+            map((message: ContextMessage) => {
+                return message.labels.includes("PipelineStepStatusResponse")
+                    ? message.data['status']
+                    : 'pending'
             })
-            .pipe(
-                map((message: ContextMessage) => {
-                    return message.labels.includes("PipelineStepStatusResponse")
-                        ? message.data['status']
-                        : 'pending'
-                })
-            )
+        )
+
         return {
             class: 'd-flex border p-2 rounded fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center',
             innerText: step.id,

@@ -1,5 +1,5 @@
 import { child$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { AppState } from "../../app-state"
+import { AppState, filterCtxMessage } from "../../app-state"
 import { PipelineStep, PipelineStepStatusResponse, Project } from "../../client/models"
 import { filter } from "rxjs/operators"
 import { ArtifactsView } from "./artifacts.view"
@@ -26,11 +26,14 @@ export class StepView implements VirtualDOM {
 
         Object.assign(this, params)
 
-        let pendingMessages$ = this.state.projectEvents[this.project.id]
-            .filterAttributes({
-                event: (event) => event.includes("PipelineStatusPending"),
-                stepId: (stepId) => stepId == this.step.id
+        let pendingMessages$ = this.state.projectEvents[this.project.id].messages$.pipe(
+            filterCtxMessage({
+                withAttributes: {
+                    event: (event) => event.includes("PipelineStatusPending"),
+                    stepId: this.step.id
+                }
             })
+        )
 
         this.children = [
             child$(
