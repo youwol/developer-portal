@@ -13,7 +13,11 @@ export class SystemRouter {
 
         let url = `${SystemRouter.urlBase}/folder-content`
         let body = { path }
-        let request = new Request(url, { method: 'POST', body: JSON.stringify(body), headers: SystemRouter.headers })
+        let request = new Request(url, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: { ...SystemRouter.headers, 'content-type': 'application/json' }
+        })
         return requestToJson$(request) as Observable<{ configurations: string[], folders: string[], files: string[] }>
     }
 }
