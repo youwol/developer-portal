@@ -1,6 +1,7 @@
 import { VirtualDOM } from "@youwol/flux-view";
 import { AppState } from "./app-state";
-import { MainPanelView } from "./views/main-panel.view";
+import { MainPanelView } from "./views/projects/projects.view";
+import { SideBarView } from "./views/side-bar.view";
 import { TopBannerView } from "./views/top-banner.view";
 
 
@@ -17,12 +18,13 @@ export class AppView implements VirtualDOM {
         this.children = [
             new TopBannerView({ state: this.state }),
             {
-                class: 'flex-grow-1',
+                class: 'flex-grow-1 d-flex',
                 style: {
                     minHeight: '0px'
                 },
                 children: [
-                    new MainPanelView({ state: this.state })
+                    new SideBarView({ state: this.state }),
+                    new MainPanelView({ state: this.state }),
                 ]
             }
         ]

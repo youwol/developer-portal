@@ -116,6 +116,8 @@ export class ProjectEvents {
     }
 }
 
+export type Topic = 'Projects' | 'Updates' | 'CDN'
+
 export class AppState {
 
 
@@ -126,6 +128,7 @@ export class AppState {
 
     public readonly projectEvents: Record<string, ProjectEvents> = {}
 
+    public readonly selectedTopic$ = new BehaviorSubject<Topic>('Projects')
     constructor() {
 
         this.environment$ = PyYouwolClient.connectWs().pipe(
@@ -140,6 +143,9 @@ export class AppState {
 
     }
 
+    selectTopic(topic: Topic) {
+        this.selectedTopic$.next(topic)
+    }
 
     selectTab(tabId: string) {
         this.selectedTabId$.next(tabId)
