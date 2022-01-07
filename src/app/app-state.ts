@@ -40,9 +40,35 @@ export function filterCtxMessage({ withAttributes, withLabels }: {
         ) as Observable<ContextMessage>
 }
 
+export class UpdateEvents {
+
+    /**
+     * All messages related to updates
+     */
+    messages$: Observable<ContextMessage>
+
+    /**
+ * All messages related to updates
+ */
+    updateChecksResponse$: Observable<ContextMessage>
+
+    constructor() {
+
+        this.messages$ = PyYouwolClient.connectWs().pipe(
+            filterCtxMessage({ withAttributes: { 'topic': 'collectUpdatesCdn' } })
+        )
+        this.updateChecksResponse$ = PyYouwolClient.connectWs().pipe(
+            filterCtxMessage({
+                withAttributes: {
+                    'topic': 'collectUpdatesCdn'
+                },
+                withLabels: ['CheckUpdateResponse']
+            })
+        )
+    }
+}
 
 export class ProjectEvents {
-
 
     /**
      * All messages related to the project
@@ -132,6 +158,8 @@ export class AppState {
     public readonly projectEvents: Record<string, ProjectEvents> = {}
 
     public readonly selectedTopic$ = new BehaviorSubject<Topic>('Projects')
+    public readonly updatesEvents = new UpdateEvents()
+
     constructor() {
 
         this.environment$ = PyYouwolClient.connectWs().pipe(
@@ -184,6 +212,9 @@ export class AppState {
         events.selectedStep$.next({ flowId, step })
     }
 
+    collectUpdates() {
+        PyYouwolClient.environment.triggerCollectUpdates()
+    }
 }
 
 

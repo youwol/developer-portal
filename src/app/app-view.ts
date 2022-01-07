@@ -3,6 +3,7 @@ import { AppState } from "./app-state";
 import { MainPanelView } from "./views/projects/projects.view";
 import { SideBarView } from "./views/side-bar.view";
 import { TopBannerView } from "./views/top-banner.view";
+import { UpdatesView } from "./views/updates/updates.view";
 
 
 export class AppView implements VirtualDOM {
@@ -25,6 +26,7 @@ export class AppView implements VirtualDOM {
                 children: [
                     new SideBarView({ state: this.state }),
                     new MainPanelView({ state: this.state }),
+                    new UpdatesView({ state: this.state })
                 ]
             }
         ]

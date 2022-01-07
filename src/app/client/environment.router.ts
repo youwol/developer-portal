@@ -111,10 +111,13 @@ export class EnvironmentRouter {
         return requestToJson$(request)
     }
 
-    static triggerAvailableUpdates() {
+    static triggerCollectUpdates() {
 
-        let url = `${EnvironmentRouter.urlBase}/available-updates`
-        let request = new Request(url, { method: 'GET', headers: EnvironmentRouter.headers })
+        let url = `${EnvironmentRouter.urlBase}/collect-updates`
+        let request = new Request(url, {
+            method: 'GET',
+            headers: EnvironmentRouter.headers
+        })
         fetch(request).then()
     }
 

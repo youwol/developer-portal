@@ -1,6 +1,6 @@
 
 export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
-    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse'
+    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse' | 'CheckUpdateResponse'
 
 export interface ContextMessage {
 
@@ -190,3 +190,17 @@ export interface CdnResponse {
     versions: Array<CdnVersionResponse>
 }
 
+
+export type UpdateStatus = 'upToDate' | 'mismatch' | "remoteAhead" | "localAhead"
+
+export interface PackageVersionInfo {
+    version: string
+    fingerprint: string
+}
+
+export interface CheckUpdateResponse {
+    status: UpdateStatus
+    packageName: string
+    localVersionInfo: PackageVersionInfo
+    remoteVersionInfo: PackageVersionInfo
+}
