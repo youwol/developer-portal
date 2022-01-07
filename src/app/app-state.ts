@@ -20,18 +20,21 @@ export function filterCtxMessage({ withAttributes, withLabels }: {
     return (source$: Observable<ContextMessage>) =>
         source$.pipe(
             filter((message: ContextMessage) => {
-                let attrsOk = Object.entries(withAttributes).reduce(
-                    (acc, [k, v]) => {
-                        if (!acc || !message.attributes[k])
-                            return false
-                        if (typeof (v) == 'string')
-                            return message.attributes[k] == v
+                let attrsOk = message.attributes
+                    && Object.entries(withAttributes).reduce(
+                        (acc, [k, v]) => {
+                            if (!acc || !message.attributes[k])
+                                return false
+                            if (typeof (v) == 'string')
+                                return message.attributes[k] == v
 
-                        return v(message.attributes[k])
-                    },
-                    true)
+                            return v(message.attributes[k])
+                        },
+                        true)
 
-                let labelsOk = withLabels.reduce((acc, label) => acc && message.labels.includes(label), true)
+                let labelsOk = message.labels
+                    && withLabels.reduce((acc, label) => acc && message.labels.includes(label), true)
+
                 return attrsOk && labelsOk
             })
         ) as Observable<ContextMessage>
