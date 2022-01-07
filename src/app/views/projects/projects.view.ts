@@ -1,8 +1,8 @@
-import { attr$, children$, childrenWithReplace$, VirtualDOM } from "@youwol/flux-view";
+import { attr$, children$, childrenWithReplace$, Stream$, VirtualDOM } from "@youwol/flux-view";
 
 import { map } from "rxjs/operators";
-import { AppState } from "../app-state";
-import { Project } from "../client/models";
+import { AppState, Topic } from "../../app-state";
+import { Project } from "../../client/models";
 import { DashboardView } from "./dashboard/dashboard.view";
 import { ProjectView } from "./project/project.view";
 
@@ -60,7 +60,7 @@ export class ProjectTab {
 
 export class MainPanelView implements VirtualDOM {
 
-    public readonly class = "w-100 h-100 p-3 d-flex flex-column"
+    public readonly class: Stream$<Topic, string>
     public readonly state: AppState
 
     public readonly children: VirtualDOM[]
@@ -71,6 +71,13 @@ export class MainPanelView implements VirtualDOM {
         Object.assign(this, params)
         let tabsData$ = this.state.openProjects$.pipe(
             map(projects => [new DashboardTab(), ...projects.map(p => new ProjectTab(p))])
+        )
+        this.class = attr$(
+            this.state.selectedTopic$,
+            (topic: Topic) => topic == 'Projects' ? ' d-flex' : 'd-none',
+            {
+                wrapper: (d) => `${d} w-100 h-100 p-3 flex-column flex-grow-1`
+            }
         )
         let wrapChild$ = (targetId, view) => (
             {

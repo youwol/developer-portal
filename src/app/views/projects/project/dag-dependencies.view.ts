@@ -1,8 +1,8 @@
 import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from "d3-dag"
 import * as d3 from 'd3'
 import { attr$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { ChildToParentConnections, Project, ProjectStatusResponse } from "../../client/models"
-import { AppState } from "../../app-state"
+import { ChildToParentConnections, Project, ProjectStatusResponse } from "../../../client/models"
+import { AppState } from "../../../app-state"
 import { BehaviorSubject, combineLatest } from "rxjs"
 
 

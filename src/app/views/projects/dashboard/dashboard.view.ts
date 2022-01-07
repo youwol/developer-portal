@@ -1,7 +1,7 @@
 import { children$, VirtualDOM } from "@youwol/flux-view"
 import { map } from "rxjs/operators"
 import { AppState } from "src/app/app-state"
-import { Environment, Project } from "../../client/models"
+import { Environment, Project } from "../../../client/models"
 import { ProjectSnippetView } from "./project-snippet.view"
 
 

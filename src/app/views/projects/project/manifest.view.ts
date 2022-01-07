@@ -1,5 +1,5 @@
 import { VirtualDOM } from "@youwol/flux-view";
-import { ManifestResponse } from "../../client/models";
+import { ManifestResponse } from "../../../client/models";
 
 import { DataView } from './terminal/data.view'
 

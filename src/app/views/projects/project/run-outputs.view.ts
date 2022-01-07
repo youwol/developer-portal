@@ -1,7 +1,7 @@
 import { childrenAppendOnly$, VirtualDOM } from "@youwol/flux-view";
 import { Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { ContextMessage, PipelineStepStatusResponse } from "../../client/models";
+import { ContextMessage, PipelineStepStatusResponse } from "../../../client/models";
 
 
 

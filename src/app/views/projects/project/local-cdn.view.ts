@@ -1,10 +1,10 @@
 import { VirtualDOM, child$ } from '@youwol/flux-view'
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CdnVersionResponse, CdnResponse } from '../../client/models';
+import { CdnVersionResponse, CdnResponse } from '../../../client/models';
 import * as _ from 'lodash'
-import { AppState } from '../../app-state';
-import { FilesBrowserView } from '../files-browser.view';
-import { Project } from '../../client/models';
+import { AppState } from '../../../app-state';
+import { FilesBrowserView } from '../../files-browser.view';
+import { Project } from '../../../client/models';
 
 
 

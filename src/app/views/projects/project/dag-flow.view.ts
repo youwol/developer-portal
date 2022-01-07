@@ -1,9 +1,9 @@
 import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from "d3-dag"
 import * as d3 from 'd3'
 import { HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { PipelineStep, PipelineStepStatusResponse, Project } from "../../client/models"
+import { PipelineStep, PipelineStepStatusResponse, Project } from "../../../client/models"
 import { combineLatest } from "rxjs"
-import { AppState, ProjectEvents } from "../../app-state"
+import { AppState, ProjectEvents } from "../../../app-state"
 
 
 

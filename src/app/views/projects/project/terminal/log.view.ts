@@ -1,6 +1,6 @@
 
 import { VirtualDOM } from "@youwol/flux-view"
-import { ContextMessage } from "../../../client/models"
+import { ContextMessage } from "../../../../client/models"
 import { DataView } from './data.view'
 
 
