@@ -60,7 +60,7 @@ export class ProjectEvents {
     constructor(public readonly project: Project) {
 
         this.messages$ = PyYouwolClient.connectWs().pipe(
-            filter((message) => message.attributes['projectId'] && message.attributes['projectId'] == this.project.id)
+            filterCtxMessage({ withAttributes: { 'projectId': this.project.id } })
         )
 
         this.selectedStep$ = new BehaviorSubject<{ flowId: string, step: PipelineStep | undefined }>({
