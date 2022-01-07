@@ -1,9 +1,11 @@
-from youwol.configuration import Pipeline
-from youwol.configuration import UserConfiguration
+import youwol.pipelines.pipeline_typescript_weback_npm
+from youwol.configuration.models_config import IPipelineFactory
 
 
-def pipeline(configuration: UserConfiguration) -> Pipeline:
+class PipelineFactory(IPipelineFactory):
 
-    return configuration.get_custom_pipeline("typescript-webpack-npm")
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-
+    async def get(self):
+        return youwol.pipelines.pipeline_typescript_weback_npm.pipeline()
