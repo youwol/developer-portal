@@ -32,8 +32,6 @@ export function instanceOfComponentUpdates(object: any): object is ComponentsUpd
 export class EnvironmentRouter {
 
     private static urlBase = '/admin/environment'
-    public static environments$ = new ReplaySubject<Environment>(1)
-    public static componentsUpdates$ = new ReplaySubject<ComponentsUpdate>(1)
     static headers = {}
 
     static status$() {
@@ -42,38 +40,6 @@ export class EnvironmentRouter {
         let request = new Request(url, {
             method: 'GET',
             headers: EnvironmentRouter.headers
-        })
-        return requestToJson$(request)
-    }
-
-    static fileContent$() {
-
-        let url = `${EnvironmentRouter.urlBase}/file-content`
-        let request = new Request(url, {
-            method: 'GET',
-            headers: EnvironmentRouter.headers
-        })
-        return requestToJson$(request)
-    }
-
-    static switchConfiguration$(body) {
-
-        let url = `${EnvironmentRouter.urlBase}/switch-configuration`
-        let request = new Request(url, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { ...EnvironmentRouter.headers, 'content-type': 'application/json' }
-        })
-        return requestToJson$(request)
-    }
-
-    static syncUser$(body) {
-
-        let url = `${EnvironmentRouter.urlBase}/sync-user`
-        let request = new Request(url, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { ...EnvironmentRouter.headers, 'content-type': 'application/json' }
         })
         return requestToJson$(request)
     }
@@ -89,35 +55,4 @@ export class EnvironmentRouter {
         return requestToJson$(request)
     }
 
-    static selectRemoteGateway$(body: { name: string }) {
-
-        let url = `${EnvironmentRouter.urlBase}/select-remote-gateway`
-        let request = new Request(url, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { ...EnvironmentRouter.headers, 'content-type': 'application/json' }
-        })
-        return requestToJson$(request)
-    }
-
-    static postConfigParameters$(body) {
-
-        let url = `${EnvironmentRouter.urlBase}/configuration/parameters`
-        let request = new Request(url, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { ...EnvironmentRouter.headers, 'content-type': 'application/json' }
-        })
-        return requestToJson$(request)
-    }
-
-    static triggerSyncComponent(body) {
-        let url = `${EnvironmentRouter.urlBase}/sync-component`
-        let request = new Request(url, {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: { ...EnvironmentRouter.headers, 'content-type': 'application/json' }
-        })
-        fetch(request).then()
-    }
 }
