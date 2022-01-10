@@ -1,8 +1,11 @@
-import { attr$, VirtualDOM, Stream$ } from "@youwol/flux-view";
+import { attr$, VirtualDOM, Stream$, child$, HTMLElement$ } from "@youwol/flux-view";
 import { childrenAppendOnly$ } from "@youwol/flux-view";
-import { map } from "rxjs/operators";
-import { AppState, Topic } from "src/app/app-state";
-import { CheckUpdateResponse, UpdateStatus } from "src/app/client/models";
+import { Switch } from "@youwol/fv-button";
+import { ywSpinnerView } from "@youwol/platform-essentials";
+import { BehaviorSubject, merge, Observable } from "rxjs";
+import { filter, map, skip, take, tap } from "rxjs/operators";
+import { AppState, filterCtxMessage, Topic } from "../../../app/app-state";
+import { CheckUpdateResponse, ContextMessage, UpdateStatus } from "../../../app/client/models";
 import { TerminalView } from "../projects/project/terminal/terminal.view";
 
 
@@ -12,126 +15,346 @@ export class UpdatesView implements VirtualDOM {
     public readonly children: VirtualDOM[]
     public readonly state: AppState
 
-
     constructor(params: { state: AppState }) {
-        Object.assign(this, params)
 
+        Object.assign(this, params)
 
         this.class = attr$(
             this.state.selectedTopic$,
             (topic: Topic) => topic == 'Updates' ? ' d-flex' : 'd-none',
             {
-                wrapper: (d) => `${d} w-100 h-100 flex-column`
+                wrapper: (d) => `${d} w-100 h-100 flex-column p-2`
             }
         )
         this.children = [
-            new UpdatesReportView(params),
+            {
+                class: "w-100 d-flex justify-content-center flex-column h-50",
+                children: [
+                    new SpinnerView({ state: this.state }),
+                    new DownloadBtnView({ state: this.state }),
+                    {
+                        class: 'flex-grow-1 mx-auto overflow-auto',
+                        children: [
+                            new TableView({ state: this.state })
+                        ]
+                    }
+                ]
+            },
             new TerminalView(this.state.updatesEvents.messages$)
         ]
     }
 }
 
 
-export class UpdatesReportView implements VirtualDOM {
+class TableView implements VirtualDOM {
 
-    public readonly class = "w-100 h-50 d-flex flex-column overflow-auto"
+    public readonly orders: Record<UpdateStatus, number> = {
+        'remoteAhead': 0,
+        'localAhead': 1,
+        'mismatch': 2,
+        'upToDate': 3
+    }
+
+    public readonly tag = 'table'
 
     public readonly children: VirtualDOM[]
 
     public readonly state: AppState
 
-    constructor(params: { state: AppState }) {
+    public readonly connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
+
+    constructor(params: {
+        state: AppState
+    }) {
         Object.assign(this, params)
+
+        let sub = this.state.updatesEvents.updateChecksResponse$.pipe(
+            filter((d) => {
+                return d.data.status == 'remoteAhead'
+            })
+        ).subscribe((d) => {
+            this.state.insertInDownloadQueue(d.data.packageName, d.data.remoteVersionInfo.version)
+        })
 
         this.children = [
             {
-                class: 'p-2 fv-pointer fv-bg-secondary border rounded',
-                style: {
-                    height: 'fit-content',
-                    width: 'fit-content',
-                },
-                innerText: "Check updates",
-                onclick: () => this.state.collectUpdates()
+                tag: 'thead',
+                children: [
+                    this.headerRowView()
+                ]
             },
             {
-                class: 'flex-grow-1',
-                children: [
-                    {
-                        tag: 'table',
-                        class: '',
-                        children: [
-                            {
-                                tag: 'tbody',
-                                children: childrenAppendOnly$(
-                                    this.state.updatesEvents.updateChecksResponse$.pipe(map(d => [d.data])),
-                                    (d: CheckUpdateResponse) => {
-                                        console.log(d)
-                                        return this.rowView({
-                                            name: d.packageName,
-                                            localVersion: d.localVersionInfo.version,
-                                            remoteVersion: d.remoteVersionInfo.version,
-                                            status: d.status
-                                        })
-                                    },
-                                    {
-                                        orderingIndex: (data: CheckUpdateResponse) => {
-                                            let orders: Record<UpdateStatus, number> = {
-                                                'upToDate': 3,
-                                                'mismatch': 2,
-                                                'localAhead': 1,
-                                                'remoteAhead': 0
-                                            }
-                                            return orders[data.status]
-                                        }
-                                    }
-                                )
-                                /*this.rowView({
-                                    name: 'name', localVersion: 'local version',
-                                    remoteVersion: 'remote version', status: status
-                                })*/
-
-                            }
-                        ]
-                    }
-                ]
-                /*
+                tag: 'tbody',
                 children: childrenAppendOnly$(
-                    this.state.updatesEvents.updateChecksResponse$.pipe(map(d => [d])),
-                    (d: CheckUpdateResponse) => {
-                        console.log(d)
-                        return {
-                            innerText: d
-                        }
+                    this.state.updatesEvents.updateChecksResponse$.pipe(map(d => [d.data])),
+                    (d: CheckUpdateResponse) => new RowView({ state: this.state, firstResponse: d }),
+                    {
+                        orderingIndex: (data: CheckUpdateResponse) => this.orders[data.status]
                     }
-                )*/
+                )
             }
         ]
+        this.connectedCallback = (elem: HTMLElement$) => elem.ownSubscriptions(sub)
     }
 
-    rowView({ name, localVersion, remoteVersion, status }:
-        {
-            name: string, localVersion: string, remoteVersion: string, status: string
-        }) {
+    headerRowView() {
 
         return {
             tag: 'tr',
+            style: {
+                fontWeight: 'bolder',
+            },
             children: [
-                this.cellView(name),
-                this.cellView(localVersion),
-                this.cellView(remoteVersion),
-                this.cellView(status),
-                this.cellView('action')
+                new SimpleCellView("Name"),
+                new SimpleCellView("Local version"),
+                new SimpleCellView("Remote version"),
+                new SimpleCellView("Status"),
+                new SimpleCellView('')
             ]
-        }
-    }
-
-    cellView(name: string) {
-        return {
-            tag: 'td',
-            class: 'p-2',
-            innerText: name
         }
     }
 }
 
 
+class RowView implements VirtualDOM {
+
+    public readonly tag = 'tr'
+
+    public readonly children: VirtualDOM[]
+
+    public readonly connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
+
+    public readonly firstResponse: CheckUpdateResponse
+    public readonly state: AppState
+    public readonly name: string
+    public readonly remoteVersion: string
+    public readonly rowInfo$: BehaviorSubject<{
+        status: UpdateStatus | 'pending' | 'error',
+        localVersion: string,
+        toggleVisible: boolean
+    }>
+
+    constructor(params: { state: AppState, firstResponse: CheckUpdateResponse }) {
+
+        Object.assign(this, params)
+
+        this.rowInfo$ = new BehaviorSubject({
+            status: this.firstResponse.status,
+            localVersion: this.firstResponse.localVersionInfo.version,
+            toggleVisible: this.firstResponse.status == 'remoteAhead' || this.firstResponse.status == 'mismatch'
+        })
+        this.name = this.firstResponse.packageName
+        this.remoteVersion = this.firstResponse.remoteVersionInfo.version
+
+        let subs = [
+            this.withPackageDownloading(),
+            this.withPackageDownloaded(),
+            this.withError()
+        ]
+        this.connectedCallback = (elem: HTMLElement$) => {
+            elem.ownSubscriptions(...subs)
+        }
+        this.children = [
+            new SimpleCellView(this.name),
+            new SimpleCellView(this.rowInfo$.pipe(map(info => info.localVersion))),
+            new SimpleCellView(this.remoteVersion),
+            new StatusCellView(this.rowInfo$.pipe(map(info => info.status))),
+            child$(
+                this.rowInfo$.pipe(map(info => info.toggleVisible)),
+                (visible) => {
+                    return visible ? this.toggleView({ name: this.name, version: this.remoteVersion }) : {}
+                }
+            )
+        ]
+    }
+
+    withPackageDownloading() {
+
+        return this.state.updatesEvents.messages$.pipe(
+            filterCtxMessage({
+                withLabels: ["Label.PACKAGE_DOWNLOADING", "Label.STARTED"],
+                withAttributes: { 'packageName': this.name, 'packageVersion': this.remoteVersion }
+            }),
+            tap(() => {
+                this.state.removeFromDownloadQueue(this.name, this.remoteVersion)
+            })
+        ).subscribe(() => {
+            this.rowInfo$.next({
+                status: 'pending',
+                localVersion: '',
+                toggleVisible: false
+            })
+        })
+    }
+
+    withPackageDownloaded() {
+
+        return this.state.updatesEvents.messages$.pipe(
+            filterCtxMessage({
+                withLabels: ["DownloadedPackageResponse"],
+                withAttributes: { 'packageName': this.name, 'packageVersion': this.remoteVersion }
+            })
+        ).subscribe(({ data }) => {
+            this.rowInfo$.next({
+                status: 'upToDate',
+                localVersion: data['version'],
+                toggleVisible: false
+            })
+        })
+    }
+
+    withError() {
+
+        return this.state.updatesEvents.messages$.pipe(
+            filterCtxMessage({
+                withLabels: ["Label.PACKAGE_DOWNLOADING", "Label.EXCEPTION"],
+                withAttributes: { 'packageName': this.name, 'packageVersion': this.remoteVersion }
+            })
+        ).subscribe(() => {
+            this.rowInfo$.next({
+                status: 'error',
+                localVersion: this.firstResponse.localVersionInfo.version,
+                toggleVisible: true
+            })
+        })
+    }
+
+    toggleView({ name, version }: { name: string, version: string }) {
+
+        let included = this.state.downloadQueue$.getValue().find(d => d.packageName == name && d.version == version)
+
+        let view = new Switch.View({
+            state: new Switch.State(included != undefined)
+        })
+
+        return {
+            tag: 'td',
+            class: 'p-2',
+            children: [
+                view
+            ],
+            connectedCallback: (elem: HTMLElement$) => {
+                elem.ownSubscriptions(
+                    // skip(1) to only get the 'onclick' event, brittle
+                    view.state.value$.pipe(
+                        skip(1)).subscribe(() => {
+                            this.state.toggleInDownloadQueue(name, version)
+                        })
+                )
+            }
+        }
+    }
+}
+
+
+class SimpleCellView implements VirtualDOM {
+
+    public readonly tag = 'td'
+    public readonly class = 'px-2'
+    public readonly innerText: string | Stream$<string, string>
+
+    constructor(text: string | Observable<string>) {
+        this.innerText = typeof (text) == "string"
+            ? text
+            : attr$(text, (content) => content)
+    }
+}
+
+class StatusCellView implements VirtualDOM {
+
+
+    public readonly statusName: Record<UpdateStatus | 'pending' | 'error', string> = {
+        'remoteAhead': 'local version outdated',
+        'localAhead': 'local version ahead',
+        'mismatch': 'mismatch',
+        'upToDate': '',
+        'pending': 'pending',
+        'error': 'an error occurred'
+    }
+    public readonly statusIcon: Record<UpdateStatus | 'pending' | 'error', string> = {
+        'remoteAhead': 'fas fa-exclamation-triangle fv-text-focus',
+        'localAhead': 'fas fa-exclamation-triangle fv-text-focus',
+        'mismatch': 'fas fa-exclamation-triangle fv-text-focus',
+        'upToDate': 'fas fa-check fv-text-success',
+        'pending': 'fas fa-spinner fa-spin',
+        'error': 'fas fa-times fv-text-error',
+    }
+
+    public readonly tag = 'td'
+    public readonly class = 'px-2'
+    public readonly children: VirtualDOM[]
+
+    constructor(status$: Observable<UpdateStatus | 'pending' | 'error'>) {
+
+        this.children = [
+            {
+                class: attr$(
+                    status$,
+                    (status) => this.statusIcon[status]
+                )
+            },
+            {
+                innerText: attr$(
+                    status$,
+                    (status) => this.statusName[status]
+                )
+            }
+        ]
+    }
+}
+
+
+class SpinnerView implements VirtualDOM {
+
+    public readonly class = "w-100 d-flex justify-content-center"
+    public readonly children: VirtualDOM[]
+    public state: AppState
+
+    constructor(params: { state: AppState }) {
+
+        Object.assign(this, params)
+
+        this.children = [
+            child$(
+                merge(
+                    this.state.updatesEvents.messages$.pipe(take(1)),
+                    this.state.updatesEvents.updatesChecksResponse$
+                ),
+                (d: ContextMessage) => {
+                    return d.labels.includes("CheckUpdatesResponse")
+                        ? {}
+                        : ywSpinnerView({ classes: "", size: '25px', duration: 1.5 })
+                },
+            )
+        ]
+    }
+}
+
+
+class DownloadBtnView implements VirtualDOM {
+
+    public readonly class = "w-100 d-flex justify-content-center"
+    public readonly children: VirtualDOM[]
+    public state: AppState
+
+    constructor(params: { state: AppState }) {
+
+        Object.assign(this, params)
+
+        this.children = [
+            child$(
+                this.state.updatesEvents.updatesChecksResponse$,
+                () => {
+                    return {
+                        class: 'fv-bg-secondary border rounded fv-hover-xx-lighter fv-pointer p-2',
+                        innerText: attr$(
+                            this.state.downloadQueue$,
+                            (values) => `Download (${values.length})`
+                        ),
+                        onclick: () => this.state.proceedDownloads()
+                    }
+                },
+            )
+        ]
+    }
+}

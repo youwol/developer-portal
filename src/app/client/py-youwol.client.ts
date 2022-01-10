@@ -1,4 +1,5 @@
-import { ReplaySubject } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
+import { LocalCdnRouter } from "./cdn-local.router";
 import { EnvironmentRouter } from "./environment.router";
 import { ContextMessage } from "./models";
 import { ProjectsRouter } from "./projects.router";
@@ -9,7 +10,7 @@ export class PyYouwolClient {
 
     static urlBase = '/admin'
 
-    private static webSocket$: ReplaySubject<ContextMessage>
+    private static webSocket$: Subject<ContextMessage>
 
     static headers: { [key: string]: string } = {}
 
@@ -18,7 +19,7 @@ export class PyYouwolClient {
         if (PyYouwolClient.webSocket$)
             return PyYouwolClient.webSocket$
 
-        PyYouwolClient.webSocket$ = new ReplaySubject(1)
+        PyYouwolClient.webSocket$ = new Subject()
         var ws = new WebSocket(`ws://${window.location.host}/ws`);
         ws.onmessage = (event) => {
 
@@ -32,5 +33,6 @@ export class PyYouwolClient {
 
     static environment = EnvironmentRouter
     static projects = ProjectsRouter
+    static localCdn = LocalCdnRouter
     static system = SystemRouter
 }

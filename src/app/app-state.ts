@@ -2,7 +2,7 @@ import { YouwolBannerState } from "@youwol/platform-essentials"
 import { BehaviorSubject, Observable, ReplaySubject } from "rxjs"
 import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay } from "rxjs/operators"
 import { PyYouwolClient } from "./client/py-youwol.client"
-import { CdnResponse, Label } from "./client/models"
+import { CdnResponse, CheckUpdateResponse, CheckUpdatesResponse, DownloadPackageBody, Label } from "./client/models"
 import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project, ProjectStatusResponse } from "./client/models"
 
 
@@ -48,23 +48,37 @@ export class UpdateEvents {
     messages$: Observable<ContextMessage>
 
     /**
- * All messages related to updates
- */
-    updateChecksResponse$: Observable<ContextMessage>
+    * update response on particular package
+    */
+    updateChecksResponse$: Observable<ContextMessage<CheckUpdateResponse>>
+
+    /**
+    * update response on all packages
+    */
+    updatesChecksResponse$: Observable<ContextMessage<CheckUpdatesResponse>>
 
     constructor() {
 
         this.messages$ = PyYouwolClient.connectWs().pipe(
-            filterCtxMessage({ withAttributes: { 'topic': 'collectUpdatesCdn' } })
+            filterCtxMessage({ withAttributes: { 'topic': 'updatesCdn' } })
         )
         this.updateChecksResponse$ = PyYouwolClient.connectWs().pipe(
             filterCtxMessage({
                 withAttributes: {
-                    'topic': 'collectUpdatesCdn'
+                    'topic': 'updatesCdn'
                 },
                 withLabels: ['CheckUpdateResponse']
             })
-        )
+        ) as Observable<ContextMessage<CheckUpdateResponse>>
+
+        this.updatesChecksResponse$ = PyYouwolClient.connectWs().pipe(
+            filterCtxMessage({
+                withAttributes: {
+                    'topic': 'updatesCdn'
+                },
+                withLabels: ['CheckUpdatesResponse']
+            })
+        ) as Observable<ContextMessage<CheckUpdatesResponse>>
     }
 }
 
@@ -159,6 +173,7 @@ export class AppState {
 
     public readonly selectedTopic$ = new BehaviorSubject<Topic>('Projects')
     public readonly updatesEvents = new UpdateEvents()
+    public readonly downloadQueue$ = new BehaviorSubject<DownloadPackageBody[]>([])
 
     constructor() {
 
@@ -171,11 +186,13 @@ export class AppState {
         )
 
         PyYouwolClient.environment.status$().subscribe()
-
     }
 
     selectTopic(topic: Topic) {
         this.selectedTopic$.next(topic)
+        if (topic == 'Updates') {
+            this.collectUpdates()
+        }
     }
 
     selectTab(tabId: string) {
@@ -213,7 +230,38 @@ export class AppState {
     }
 
     collectUpdates() {
-        PyYouwolClient.environment.triggerCollectUpdates()
+        PyYouwolClient.localCdn.triggerCollectUpdates()
+    }
+
+    insertInDownloadQueue(packageName: string, version: string) {
+        let queued = this.downloadQueue$.getValue()
+        this.downloadQueue$.next([
+            ...queued.filter(v => v.packageName != packageName && v.version != version),
+            { packageName, version }
+        ])
+    }
+
+    removeFromDownloadQueue(packageName: string, version: string) {
+        let queued = this.downloadQueue$.getValue()
+        this.downloadQueue$.next([
+            ...queued.filter(v => v.packageName != packageName && v.version != version)
+        ])
+    }
+
+    toggleInDownloadQueue(packageName: string, version: string) {
+        let queued = this.downloadQueue$.getValue()
+        let base = queued.filter(v => v.packageName != packageName && v.version != version)
+
+        queued.find(v => v.packageName == packageName && v.version == version)
+            ? this.downloadQueue$.next(base)
+            : this.downloadQueue$.next([
+                ...base,
+                { packageName, version }
+            ])
+    }
+
+    proceedDownloads() {
+        PyYouwolClient.localCdn.download({ packages: this.downloadQueue$.getValue() })
     }
 }
 

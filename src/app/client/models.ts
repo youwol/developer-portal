@@ -1,15 +1,16 @@
 
-export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'EnvironmentStatusResponse'
-    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse' | 'CheckUpdateResponse'
+export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'Label.EXCEPTION' | 'EnvironmentStatusResponse'
+    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse' | 'CheckUpdateResponse' | 'CheckUpdatesResponse' |
+    "Label.PACKAGE_DOWNLOADING" | 'DownloadedPackageResponse'
 
-export interface ContextMessage {
+export interface ContextMessage<T = unknown> {
 
     contextId: string
     level: string
     text: string
     labels: Label[]
     parentContextId: string | undefined
-    data: unknown
+    data: T
     attributes: { [key: string]: any }
 }
 
@@ -204,3 +205,20 @@ export interface CheckUpdateResponse {
     localVersionInfo: PackageVersionInfo
     remoteVersionInfo: PackageVersionInfo
 }
+
+
+export interface CheckUpdatesResponse {
+    updates: CheckUpdateResponse[]
+}
+
+
+export interface DownloadPackageBody {
+    packageName: string
+    version: string
+}
+
+
+export interface DownloadPackagesBody {
+    packages: DownloadPackageBody[]
+}
+

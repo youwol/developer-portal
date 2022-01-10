@@ -111,16 +111,6 @@ export class EnvironmentRouter {
         return requestToJson$(request)
     }
 
-    static triggerCollectUpdates() {
-
-        let url = `${EnvironmentRouter.urlBase}/collect-updates`
-        let request = new Request(url, {
-            method: 'GET',
-            headers: EnvironmentRouter.headers
-        })
-        fetch(request).then()
-    }
-
     static triggerSyncComponent(body) {
         let url = `${EnvironmentRouter.urlBase}/sync-component`
         let request = new Request(url, {
