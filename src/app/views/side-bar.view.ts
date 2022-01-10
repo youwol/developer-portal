@@ -1,22 +1,28 @@
 import { attr$, child$, VirtualDOM } from "@youwol/flux-view"
-import { BehaviorSubject } from "rxjs"
+import { BehaviorSubject, Observable } from "rxjs"
 import { AppState, Topic } from "../app-state"
 
 
 
 export class SideBarSectionView implements VirtualDOM {
 
-    public readonly class = 'fv-pointer border w-100 my-2'
+    public readonly class = 'fv-pointer w-100 my-2'
     public readonly children: VirtualDOM[]
 
     public readonly state: AppState
+    public readonly extended$: Observable<boolean>
 
     public readonly name: Topic
     public readonly icon: string
 
     public readonly onclick: (ev: MouseEvent) => void
 
-    constructor(params: { state: AppState, name: Topic, icon: string }) {
+    constructor(params: {
+        state: AppState,
+        extended$: Observable<boolean>,
+        name: Topic,
+        icon: string
+    }) {
 
         Object.assign(this, params)
         this.onclick = () => {
@@ -32,13 +38,24 @@ export class SideBarSectionView implements VirtualDOM {
             ),
             children: [
                 {
-                    class: this.icon
+                    class: attr$(
+                        this.extended$,
+                        (extended) => extended ? '' : 'mx-auto',
+                        {
+                            wrapper: (d) => `${d} ${this.icon}`
+                        }
+                    )
                 },
-                {
-                    tag: 'span',
-                    class: 'px-2',
-                    innerText: this.name
-                }
+                child$(
+                    this.extended$,
+                    (extended) => extended
+                        ? {
+                            tag: 'span',
+                            class: 'px-2',
+                            innerText: this.name
+                        }
+                        : {}
+                )
             ]
         }
         ]
@@ -68,7 +85,9 @@ export class SideBarContentView implements VirtualDOM {
     ]
     public readonly state: AppState
 
-    constructor(params: { state: AppState }) {
+    public readonly extended$: Observable<boolean>
+
+    constructor(params: { state: AppState, extended$: Observable<boolean> }) {
 
         Object.assign(this, params)
 
@@ -88,7 +107,9 @@ export class SideBarView implements VirtualDOM {
 
     public readonly state: AppState
 
-    constructor(params: { state: AppState }) {
+    constructor(params: {
+        state: AppState
+    }) {
 
         Object.assign(this, params)
 
@@ -110,10 +131,7 @@ export class SideBarView implements VirtualDOM {
                     }
                 ]
             },
-            child$(
-                this.extended$,
-                (extended) => extended ? new SideBarContentView(params) : {}
-            )
+            new SideBarContentView({ state: this.state, extended$: this.extended$ })
         ]
     }
 }
