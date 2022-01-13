@@ -9,7 +9,7 @@ import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, 
 type StepId = string
 
 
-export function filterCtxMessage({ withAttributes, withLabels }: {
+export function filterCtxMessage<T = unknown>({ withAttributes, withLabels }: {
     withAttributes?: {
         [key: string]: string | ((string) => boolean)
     },
@@ -37,7 +37,7 @@ export function filterCtxMessage({ withAttributes, withLabels }: {
 
                 return attrsOk && labelsOk
             })
-        ) as Observable<ContextMessage>
+        ) as Observable<ContextMessage<T>>
 }
 
 export class UpdateEvents {
