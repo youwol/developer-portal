@@ -12,11 +12,7 @@ export class RunOutputsView implements VirtualDOM {
 
     public readonly children: VirtualDOM[]
 
-    constructor(data: PipelineStepStatusResponse, statusMessages$: Observable<ContextMessage>) {
-
-        let outputsRun$ = statusMessages$.pipe(
-            filter(message => message.attributes['event'].includes("PipelineStatusPending:run"))
-        )
+    constructor(messages$: Observable<ContextMessage>) {
 
         this.children = [
             {
@@ -25,7 +21,7 @@ export class RunOutputsView implements VirtualDOM {
                     fontSize: 'x-small'
                 },
                 children: childrenAppendOnly$(
-                    outputsRun$.pipe(map(m => [m])),
+                    messages$.pipe(map(m => [m])),
                     (message) => {
                         return {
                             innerText: message.text

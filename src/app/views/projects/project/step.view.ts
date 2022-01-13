@@ -28,8 +28,9 @@ export class StepView implements VirtualDOM {
 
         let pendingMessages$ = this.state.projectEvents[this.project.id].messages$.pipe(
             filterCtxMessage({
+                withLabels: ["Label.PIPELINE_STEP_RUNNING"],
                 withAttributes: {
-                    event: (event) => event.includes("PipelineStatusPending"),
+                    flowId: this.flowId,
                     stepId: this.step.id
                 }
             })
@@ -44,7 +45,7 @@ export class StepView implements VirtualDOM {
                     return {
                         class: 'flex-grow-1 d-flex flex-column',
                         children: [
-                            new RunOutputsView(data, pendingMessages$),
+                            new RunOutputsView(pendingMessages$),
                             data.manifest ? new ManifestView(data.manifest) : undefined,
                             data.artifacts.length > 0 ? new ArtifactsView(data.artifacts) : undefined
                         ]
