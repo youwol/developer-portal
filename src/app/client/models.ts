@@ -1,7 +1,8 @@
 
 export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'Label.EXCEPTION' | 'EnvironmentStatusResponse'
     | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse' | 'CheckUpdateResponse' | 'CheckUpdatesResponse' |
-    "Label.PACKAGE_DOWNLOADING" | 'DownloadedPackageResponse'
+    "Label.PACKAGE_DOWNLOADING" | 'DownloadedPackageResponse' | 'Label.PIPELINE_STEP_STATUS_PENDING' |
+    "Label.PIPELINE_STEP_RUNNING" | "Label.RUN_PIPELINE_STEP"
 
 export interface ContextMessage<T = unknown> {
 
