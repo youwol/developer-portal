@@ -6,7 +6,7 @@ import { BehaviorSubject, merge, Observable } from "rxjs";
 import { filter, map, skip, take, tap } from "rxjs/operators";
 import { AppState, filterCtxMessage, Topic } from "../../../app/app-state";
 import { CheckUpdateResponse, ContextMessage, UpdateStatus } from "../../../app/client/models";
-import { TerminalView } from "../projects/project/terminal/terminal.view";
+import { TerminalView } from "../terminal/terminal.view";
 
 
 export class UpdatesView implements VirtualDOM {

@@ -88,7 +88,8 @@ export class NodeView implements VirtualDOM {
             filter(message => message.contextId == this.contextId),
             takeUntil(this.status$.pipe(filter(s => s != 'processing')))
         ).subscribe(message => {
-            if (message.labels.includes('Label.LOG_ABORT'))
+
+            if (message.labels.includes('Label.EXCEPTION'))
                 this.status$.next('error')
 
             if (message.labels.includes('Label.DONE'))
@@ -169,7 +170,7 @@ let invite = `
 export class TerminalView implements VirtualDOM {
 
     expanded$ = new BehaviorSubject(true)
-    commands$ = new BehaviorSubject([invite, "Read more about the available commands <a href=''>here</a>"])
+    commands$ = new BehaviorSubject([invite, ""])
     command$ = new BehaviorSubject(">")
     contentElement: HTMLDivElement
     class = attr$(
@@ -233,11 +234,7 @@ export class TerminalView implements VirtualDOM {
                             }
                         })
                 },
-                new NodeView('root', 0, true, this.messages$),
-                child$(
-                    this.command$,
-                    (command) => this.inputView(command)
-                )
+                new NodeView('root', 0, true, this.messages$)
             ],
             connectedCallback: (elem) => {
                 this.contentElement = elem
@@ -246,37 +243,6 @@ export class TerminalView implements VirtualDOM {
                     this.contentElement.scrollTop = this.contentElement.scrollHeight
                 })
             }
-        }
-    }
-
-    inputView(command) {
-
-        return {
-            class: 'd-flex align-items-center w-100',
-            children: [
-                {
-                    innerText: command
-                },
-                {
-                    class: 'flex-grow-1 px-2 ',
-                    spellcheck: false,
-                    contentEditable: true,
-                    onkeypress: (ev) => {
-                        if (ev.key == 'Enter') {
-                            let command = ev.target.innerText
-                            let r = this.interpretCommand(command)
-                            this.commands$.next([">" + command, r].filter(d => d));
-                            this.command$.next(">")
-                        }
-                    }
-                }
-            ]
-        }
-    }
-
-    interpretCommand(command) {
-        if (command == 'youwol') {
-            return 'Hello YouWol'
         }
     }
 }
