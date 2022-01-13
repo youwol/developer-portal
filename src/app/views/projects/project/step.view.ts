@@ -37,10 +37,10 @@ export class StepView implements VirtualDOM {
 
         this.children = [
             child$(
-                pendingMessages$.pipe(
-                    filter((message) => message.labels.includes("PipelineStepStatusResponse"))
+                this.state.projectEvents[this.project.id].stepStatusResponse$.pipe(
+                    filter(status => status.stepId == this.step.id && status.flowId == this.flowId)
                 ),
-                ({ data }: { data: PipelineStepStatusResponse }) => {
+                (data: PipelineStepStatusResponse) => {
                     return {
                         class: 'flex-grow-1 d-flex flex-column',
                         children: [

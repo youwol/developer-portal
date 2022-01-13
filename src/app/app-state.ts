@@ -1,6 +1,6 @@
 import { YouwolBannerState } from "@youwol/platform-essentials"
 import { BehaviorSubject, Observable, ReplaySubject } from "rxjs"
-import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay } from "rxjs/operators"
+import { distinctUntilChanged, filter, map, mergeMap, scan, shareReplay, tap } from "rxjs/operators"
 import { PyYouwolClient } from "./client/py-youwol.client"
 import { CdnResponse, CheckUpdateResponse, CheckUpdatesResponse, DownloadPackageBody, Label } from "./client/models"
 import { ContextMessage, Environment, PipelineStep, PipelineStepStatusResponse, Project, ProjectStatusResponse } from "./client/models"
@@ -92,9 +92,9 @@ export class ProjectEvents {
     selectedStep$: BehaviorSubject<{ flowId: string | undefined, step: PipelineStep | undefined }>
 
     stepsStatus$: Observable<Record<StepId, PipelineStepStatusResponse>>
+    stepStatusResponse$: Observable<PipelineStepStatusResponse>
 
     projectStatusResponse$ = new ReplaySubject<ProjectStatusResponse>(1)
-
     cdnResponse$ = new ReplaySubject<CdnResponse>(1)
 
     constructor(public readonly project: Project) {
@@ -107,6 +107,12 @@ export class ProjectEvents {
             flowId: this.project.pipeline.flows[0].name,
             step: undefined
         })
+
+        this.stepStatusResponse$ = this.messages$.pipe(
+            filterCtxMessage<PipelineStepStatusResponse>({ withLabels: ['PipelineStepStatusResponse'] }),
+            map(message => message.data),
+            shareReplay(1)
+        )
 
         this.stepsStatus$ =
             this.messages$.pipe(
