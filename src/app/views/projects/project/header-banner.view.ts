@@ -1,8 +1,8 @@
 import { attr$, child$, VirtualDOM } from "@youwol/flux-view"
 import { AppState, filterCtxMessage } from "../../../app-state"
 import { ContextMessage, PipelineStep, Project } from "../../../client/models"
-import { map } from "rxjs/operators"
-import { Observable } from "rxjs"
+import { filter, map, mapTo, tap, takeWhile } from "rxjs/operators"
+import { merge, Observable } from "rxjs"
 import { PyYouwolClient } from "../../../client/py-youwol.client"
 
 type StepStatus = 'OK' | 'KO' | 'outdated' | 'none' | 'pending'
@@ -86,21 +86,27 @@ export class HeaderBannerView implements VirtualDOM {
 
     stepView(flowId: string, step: PipelineStep): VirtualDOM {
 
-        let status$ = this.state.projectEvents[this.project.id].messages$.pipe(
+        let pending$ = this.state.projectEvents[this.project.id].messages$.pipe(
             filterCtxMessage({
                 withAttributes: {
-                    event: (event) => event.includes("PipelineStatusPending"),
-                    stepId: step.id
+                    stepId: step.id,
+                    flowId: flowId
                 },
-                withLabels: []
+                withLabels: ["Label.STARTED", "Label.RUN_PIPELINE_STEP"]
             }),
-            map((message: ContextMessage) => {
-                return message.labels.includes("PipelineStepStatusResponse")
-                    ? message.data['status']
-                    : 'pending'
-            })
+            mapTo('pending')
         )
-
+        let done$ = this.state.projectEvents[this.project.id].messages$.pipe(
+            filterCtxMessage({
+                withAttributes: {
+                    stepId: step.id,
+                    flowId: flowId
+                },
+                withLabels: ["PipelineStepStatusResponse"]
+            }),
+            tap(m => console.log(m)),
+            map((message: ContextMessage) => message.data['status'])
+        )
         return {
             class: 'd-flex border p-2 rounded fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center',
             innerText: step.id,
@@ -108,14 +114,14 @@ export class HeaderBannerView implements VirtualDOM {
             children: [
                 {
                     class: attr$(
-                        status$,
+                        merge(pending$, done$),
                         (status: string) => statusClassFactory[status],
                         { wrapper: (d) => `${d} mx-2` }
                     )
                 },
                 {
                     class: attr$(
-                        status$,
+                        merge(pending$, done$),
                         (status) => status == 'pending'
                             ? ''
                             : 'fas fa-play fv-hover-text-secondary fv-pointer mx-3'
