@@ -27,7 +27,6 @@ module.exports = {
             template: './index.html',
             filename: './index.html'
         }),
-        new webpack.HotModuleReplacementPlugin(),
         //new BundleAnalyzerPlugin()
     ],
     output: {
