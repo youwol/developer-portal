@@ -1,7 +1,8 @@
 import { children$, VirtualDOM } from '@youwol/flux-view'
 import { map } from 'rxjs/operators'
 import { AppState } from '../../../app-state'
-import { Environment, Project } from '../../../client/models'
+import { Project } from '../../../client/models'
+import { PyYouwolClient } from '../../../client/py-youwol.client'
 import { ProjectSnippetView } from './project-snippet.view'
 
 export class DashboardView {
@@ -34,9 +35,11 @@ export class ProjectsView {
         Object.assign(this, params)
 
         this.children = children$(
-            this.state.environment$.pipe(
-                map((env: Environment) => env.configuration.projects),
-            ),
+            PyYouwolClient.projects
+                .listProjects$()
+                .pipe(
+                    map((result: { projects: Project[] }) => result.projects),
+                ),
             (projects: Project[]) => {
                 return projects.map(
                     (project) =>

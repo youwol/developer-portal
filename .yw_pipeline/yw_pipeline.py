@@ -7,5 +7,5 @@ class PipelineFactory(IPipelineFactory):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-    async def get(self):
+    async def get(self, a, b):
         return youwol.pipelines.pipeline_typescript_weback_npm.pipeline()
