@@ -1,15 +1,15 @@
-.CodeMirror{
-  height: 100% !important
+.CodeMirror {
+    height: 100% !important;
 }
 @keyframes spin {
-  from {
-      transform:rotate(0deg);
-  }
-  to {
-      transform:rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.fv-hover-fill-focus:hover{
-  fill:#ffbb00
+.fv-hover-fill-focus:hover {
+    fill: #ffbb00;
 }

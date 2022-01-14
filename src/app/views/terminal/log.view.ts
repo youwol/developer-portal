@@ -1,18 +1,25 @@
-
-import { VirtualDOM } from "@youwol/flux-view"
-import { ContextMessage } from "../../client/models"
+import { VirtualDOM } from '@youwol/flux-view'
+import { ContextMessage } from '../../client/models'
 import { DataView } from './data.view'
+import { ChartExplorerView } from './factories/helm.view'
+import { TerminalState } from './terminal.view'
 
+type KnownViews = 'HelmPackage'
+
+const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
+    HelmPackage: (data) => new ChartExplorerView(data),
+}
 
 export class LogView implements VirtualDOM {
-
     public readonly class = 'd-flex align-items-center fv-pointer'
     public readonly style = {}
     public readonly children: VirtualDOM[]
 
     public readonly classesFactory = {
-        "ERROR": "fv-text-error "
+        ERROR: 'fv-text-error ',
     }
+    public readonly state: TerminalState
+    public readonly message: ContextMessage
 
     constructor(params: { state: TerminalState; message: ContextMessage }) {
         Object.assign(this, params)
@@ -25,7 +32,6 @@ export class LogView implements VirtualDOM {
                     factory: viewsFactory[key],
                 }))
 
-        this.style = message.labels.includes("Label.BASH")
             if (views.length > 0) {
                 customView = {
                     innerText: views[0].name,
@@ -37,54 +43,52 @@ export class LogView implements VirtualDOM {
                 }
             }
         }
+
+        this.style = this.message.labels.includes('Label.BASH')
             ? { fontFamily: 'monospace', fontSize: 'x-small' }
             : {}
 
         this.children = [
             {
-                class: this.classesFactory[message.level] || ""
+                class: this.classesFactory[this.message.level] || '',
             },
             {
-                class: this.classesFactory[message.level] || "",
-                innerText: message.level == "ERROR" ? message.text : message.text
+                class: this.classesFactory[this.message.level] || '',
+                innerText: this.message.text,
             },
-            new LabelsView(message.labels),
-            message.data ? new DataView(message.data as any) : undefined
+            customView,
+            new LabelsView(this.message.labels),
+            this.message.data
+                ? new DataView(this.message.data as any)
+                : undefined,
         ]
     }
 }
 
-
 export class LabelsView {
-
-    public readonly class = "d-flex align-items-center mr-3"
+    public readonly class = 'd-flex align-items-center mr-3'
     public readonly children: VirtualDOM[]
 
     constructor(labels: string[]) {
-
-        let factory = {
-            "Label.INFO": 'fas fa-info',
-            "Label.DONE": 'fas fa-flag-checkered'
+        const factory = {
+            'Label.INFO': 'fas fa-info',
+            'Label.DONE': 'fas fa-flag-checkered',
         }
         this.children = labels
             .filter((label) => factory[label] != undefined)
-            .map(label => ({ class: factory[label] }))
-
+            .map((label) => ({ class: factory[label] }))
     }
 }
 
 export class AttributesView {
-
     public readonly tag = 'table'
-    public readonly class = ""
+    public readonly class = ''
     public readonly children: VirtualDOM[]
     public readonly style = {
-        'fontSize': "small",
-        'maxWidth': '50%'
+        fontSize: 'small',
+        maxWidth: '50%',
     }
     constructor(attributes: { [key: string]: any }) {
-
-
         this.children = [
             {
                 tag: 'tr',
@@ -92,9 +96,9 @@ export class AttributesView {
                     return {
                         tag: 'th',
                         class: 'px-2',
-                        innerText: attName
+                        innerText: attName,
                     }
-                })
+                }),
             },
             {
                 tag: 'tr',
@@ -102,10 +106,10 @@ export class AttributesView {
                     return {
                         tag: 'td',
                         class: 'px-2',
-                        innerText: value
+                        innerText: value,
                     }
-                })
-            }
+                }),
+            },
         ]
     }
 }

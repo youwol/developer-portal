@@ -1,18 +1,16 @@
-import { Button } from "@youwol/fv-button"
+import { Button } from '@youwol/fv-button'
 
-
-export let innerTabClasses = 'p-2 fv-text-primary h-100 d-flex flex-column '
+export const innerTabClasses = 'p-2 fv-text-primary h-100 d-flex flex-column '
 
 export function button(icon: string, text: string) {
-
-    let button = new Button.View({
+    const button = new Button.View({
         contentView: () => ({
             children: [
                 { tag: 'i', class: icon },
                 { tag: 'span', class: 'px-2', innerText: text },
-            ]
+            ],
         }),
-        class: 'fv-btn fv-btn-secondary mx-2'
+        class: 'fv-btn fv-btn-secondary mx-2',
     } as any)
 
     return button
