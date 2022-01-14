@@ -14,9 +14,29 @@ export class LogView implements VirtualDOM {
         "ERROR": "fv-text-error "
     }
 
-    constructor(message: ContextMessage) {
+    constructor(params: { state: TerminalState; message: ContextMessage }) {
+        Object.assign(this, params)
+        let customView: VirtualDOM
+        if (this.message.level == 'DATA') {
+            const views = Object.keys(viewsFactory)
+                .filter((key) => this.message.labels.includes(key as any))
+                .map((key: KnownViews) => ({
+                    name: key,
+                    factory: viewsFactory[key],
+                }))
 
         this.style = message.labels.includes("Label.BASH")
+            if (views.length > 0) {
+                customView = {
+                    innerText: views[0].name,
+                    class: 'fv-bg-secondary border rounded fv-hover-xx-lighter p-1',
+                    onclick: (ev) => {
+                        const view = views[0].factory(this.message.data)
+                        this.state.openCustomView(views[0].name, view)
+                    },
+                }
+            }
+        }
             ? { fontFamily: 'monospace', fontSize: 'x-small' }
             : {}
 

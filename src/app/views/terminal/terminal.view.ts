@@ -1,17 +1,21 @@
-
-import { attr$, child$, childrenAppendOnly$, HTMLElement$, VirtualDOM } from "@youwol/flux-view"
-import { BehaviorSubject, Observable, of, ReplaySubject } from "rxjs"
-import { delay, filter, map, take, takeUntil } from "rxjs/operators"
-import { ContextMessage } from "src/app/client/models"
-import { AttributesView, LabelsView, LogView } from "./log.view"
-
-
+import {
+    attr$,
+    child$,
+    children$,
+    childrenAppendOnly$,
+    childrenWithReplace$,
+    HTMLElement$,
+    VirtualDOM,
+} from '@youwol/flux-view'
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
+import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
+import { ContextMessage } from 'src/app/client/models'
+import { AttributesView, LabelsView, LogView } from './log.view'
 
 export class NodeHeaderView implements VirtualDOM {
-
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
     public readonly style = {
-        maxWidth: '50%'
+        maxWidth: '50%',
     }
     public readonly children: VirtualDOM[]
     public readonly onclick: (ev: MouseEvent) => void
@@ -20,51 +24,49 @@ export class NodeHeaderView implements VirtualDOM {
         message: ContextMessage,
         visible$: BehaviorSubject<boolean>,
         expanded$: BehaviorSubject<boolean>,
-        status$: Observable<Status>) {
-
+        status$: Observable<Status>,
+    ) {
         this.children = [
             {
                 class: attr$(
                     visible$,
-                    (visible) => visible ? 'fa-caret-down' : 'fa-caret-right',
+                    (visible) => (visible ? 'fa-caret-down' : 'fa-caret-right'),
                     {
-                        wrapper: (d) => `fas mr-2 ${d}`
-                    }
+                        wrapper: (d) => `fas mr-2 ${d}`,
+                    },
                 ),
             },
             {
-                class: attr$(
-                    status$,
-                    (status) => {
-                        return {
-                            'processing': 'fas fa-spinner fa-spin',
-                            'error': 'fas fa-times fv-text-error',
-                            'success': 'fas fa-check fv-text-success',
+                class: attr$(status$, (status) => {
+                    return (
+                        {
+                            processing: 'fas fa-spinner fa-spin',
+                            error: 'fas fa-times fv-text-error',
+                            success: 'fas fa-check fv-text-success',
                         }[status] + ' mr-2'
-                    }
-                ),
+                    )
+                }),
             },
             {
                 class: 'mr-3',
-                innerText: message.text
+                innerText: message.text,
             },
             new LabelsView(message.labels),
-            new AttributesView(message.attributes)
+            new AttributesView(message.attributes),
         ]
         this.onclick = (ev) => {
             ev.stopPropagation()
-            if (!expanded$.getValue())
+            if (!expanded$.getValue()) {
                 expanded$.next(true)
+            }
             visible$.next(!visible$.getValue())
         }
     }
 }
 
-
 type Status = 'processing' | 'error' | 'success'
 
 export class NodeView implements VirtualDOM {
-
     public readonly children: VirtualDOM[]
 
     createdChildren = []
@@ -76,25 +78,29 @@ export class NodeView implements VirtualDOM {
     headerMessage: ContextMessage = undefined
 
     constructor(
+        public readonly state: TerminalState,
         public readonly contextId: string,
         public readonly nestedIndex: number,
         public readonly expanded: boolean,
-        messages$: { [key: string]: ReplaySubject<ContextMessage> }
+        messages$: { [key: string]: ReplaySubject<ContextMessage> },
     ) {
         this.expanded$ = new BehaviorSubject<boolean>(expanded)
         this.visible$ = new BehaviorSubject<boolean>(expanded)
 
-        messages$[contextId].pipe(
-            filter(message => message.contextId == this.contextId),
-            takeUntil(this.status$.pipe(filter(s => s != 'processing')))
-        ).subscribe(message => {
+        messages$[contextId]
+            .pipe(
+                filter((message) => message.contextId == this.contextId),
+                takeUntil(this.status$.pipe(filter((s) => s != 'processing'))),
+            )
+            .subscribe((message) => {
+                if (message.labels.includes('Label.EXCEPTION')) {
+                    this.status$.next('error')
+                }
 
-            if (message.labels.includes('Label.EXCEPTION'))
-                this.status$.next('error')
-
-            if (message.labels.includes('Label.DONE'))
-                this.status$.next('success')
-        })
+                if (message.labels.includes('Label.DONE')) {
+                    this.status$.next('success')
+                }
+            })
 
         this.children = [
             {
@@ -102,53 +108,80 @@ export class NodeView implements VirtualDOM {
                 children: [
                     child$(
                         messages$[contextId].pipe(
-                            filter(m => m.contextId == this.contextId && m.labels.includes("Label.STARTED")),
-                            take(1)
+                            filter(
+                                (m) =>
+                                    m.contextId == this.contextId &&
+                                    m.labels.includes('Label.STARTED'),
+                            ),
+                            take(1),
                         ),
                         (m) => {
                             this.headerMessage = m
-                            return new NodeHeaderView(m, this.visible$, this.expanded$, this.status$)
-                        }
+                            return new NodeHeaderView(
+                                m,
+                                this.visible$,
+                                this.expanded$,
+                                this.status$,
+                            )
+                        },
                     ),
-                    child$(
-                        this.expanded$,
-                        (expanded) => {
-                            if (!expanded)
-                                return {}
-                            return {
-                                class: attr$(
-                                    this.visible$,
-                                    (visible) => visible ? 'py-2' : 'd-none'
-                                ),
-                                style: { paddingLeft: `${this.nestedIndex > 0 ? 40 : 0}px` },
-                                children: childrenAppendOnly$(
-                                    messages$[contextId].pipe(
-                                        filter(m => !m.labels.includes("Label.STARTED")),
-                                        map(message => [message])
+                    child$(this.expanded$, (expanded) => {
+                        if (!expanded) {
+                            return {}
+                        }
+                        return {
+                            class: attr$(this.visible$, (visible) =>
+                                visible ? 'py-2' : 'd-none',
+                            ),
+                            style: {
+                                paddingLeft: `${this.nestedIndex > 0 ? 40 : 0
+                                    }px`,
+                            },
+                            children: childrenAppendOnly$(
+                                messages$[contextId].pipe(
+                                    filter(
+                                        (m) =>
+                                            !m.labels.includes('Label.STARTED'),
                                     ),
-                                    (message: ContextMessage) => {
+                                    map((message) => [message]),
+                                ),
+                                (message: ContextMessage) => {
+                                    if (message.contextId == contextId) {
+                                        return new LogView({
+                                            state: this.state,
+                                            message,
+                                        })
+                                    }
 
-                                        if (message.contextId == contextId)
-                                            return new LogView(message)
-
-                                        if (message.parentContextId == contextId &&
-                                            !this.createdChildren.includes(message.contextId)
-                                        ) {
-                                            this.createdChildren.push(message.contextId)
-                                            return new NodeView(message.contextId, nestedIndex + 1, false, messages$)
-                                        }
-                                        return { class: 'd-none' }
-                                    })
-                            }
-                        })
-                ]
-            }
+                                    if (
+                                        message.parentContextId == contextId &&
+                                        !this.createdChildren.includes(
+                                            message.contextId,
+                                        )
+                                    ) {
+                                        this.createdChildren.push(
+                                            message.contextId,
+                                        )
+                                        return new NodeView(
+                                            this.state,
+                                            message.contextId,
+                                            nestedIndex + 1,
+                                            false,
+                                            messages$,
+                                        )
+                                    }
+                                    return { class: 'd-none' }
+                                },
+                            ),
+                        }
+                    }),
+                ],
+            },
         ]
     }
 }
 
-
-let invite = `
+const invite = `
                     *@@@@@@,         
                     *@@@@@@,                
           /@@@@@@%  *@@@@@@,  %@@@@@@(      
@@ -167,32 +200,64 @@ let invite = `
               ,@@@@@#      #@@@@@,          
                   .##      ##.
 `
-export class TerminalView implements VirtualDOM {
 
-    expanded$ = new BehaviorSubject(true)
-    commands$ = new BehaviorSubject([invite, ""])
-    command$ = new BehaviorSubject(">")
-    contentElement: HTMLDivElement
-    class = attr$(
-        this.expanded$,
-        (expanded) => expanded ? "w-100 h-50" : "w-100",
-        {
-            wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `
+export class TerminalState {
+    customViews$ = new BehaviorSubject<{ name: string; view: VirtualDOM }[]>([
+        { name: 'TERMINAL', view: undefined },
+    ])
+
+    selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
+    public readonly expanded$ = new BehaviorSubject(true)
+
+    constructor() { }
+
+    openCustomView(name: string, view: VirtualDOM) {
+        const actual = this.customViews$.getValue()
+        this.customViews$.next([...actual, { name, view }])
+    }
+
+    closeCustomView(name: string) {
+        const actual = this.customViews$.getValue()
+        this.customViews$.next(actual.filter(d => d.name != name))
+        if (this.selectedView$.getValue() == name) {
+            console.log("aaa")
+            this.selectedView$.next('TERMINAL')
         }
+    }
+
+    selectView(name: string) {
+        this.selectedView$.next(name)
+    }
+}
+
+export class TerminalView implements VirtualDOM {
+    public readonly state = new TerminalState()
+
+    public readonly commands$ = new BehaviorSubject([invite, ''])
+    public readonly command$ = new BehaviorSubject('>')
+
+    contentElement: HTMLDivElement
+
+    public readonly class = attr$(
+        this.state.expanded$,
+        (expanded) => (expanded ? 'w-100 h-50' : 'w-100'),
+        {
+            wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
+        },
     )
     children: VirtualDOM[]
 
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
     messages$: { [key: string]: ReplaySubject<ContextMessage> } = {
-        'root': new ReplaySubject()
+        root: new ReplaySubject(),
     }
 
     constructor(messages$: Observable<ContextMessage>) {
-
-        messages$.subscribe(message => {
-            if (!message.parentContextId)
+        messages$.subscribe((message) => {
+            if (!message.parentContextId) {
                 return
+            }
             if (this.messages$[message.contextId]) {
                 this.messages$[message.contextId].next(message)
                 this.messages$[message.parentContextId].next(message)
@@ -204,73 +269,134 @@ export class TerminalView implements VirtualDOM {
         })
 
         this.children = [
-            new TerminalHeaderView(this.expanded$),
-            child$(
-                this.expanded$,
-                (expanded) => expanded ? this.contentView() : {}
-            )
+            new TerminalHeaderView({ state: this.state }),
+            child$(this.state.expanded$, (expanded) =>
+                expanded ? this.contentView() : {},
+            ),
         ]
 
         this.commands$.pipe(delay(0)).subscribe(() => {
-            if (!this.contentElement)
+            if (!this.contentElement) {
                 return
+            }
             this.contentElement.scrollTop = this.contentElement.scrollHeight
         })
     }
 
-
-    contentView() {
+    logsView() {
         return {
-            class: 'd-flex flex-column flex-grow-1 w-100 overflow-auto p-2',
+            class: `d-flex flex-column h-100 w-100 overflow-auto p-2`,
             children: [
                 {
-                    children: childrenAppendOnly$(
-                        this.commands$,
-                        (command) => {
-                            return {
-                                tag: 'pre',
-                                class: 'fv-text-success mx-auto w-100',
-                                innerHTML: command
-                            }
-                        })
+                    children: childrenAppendOnly$(this.commands$, (command) => {
+                        return {
+                            tag: 'pre',
+                            class: 'fv-text-success mx-auto w-100',
+                            innerHTML: command,
+                        }
+                    }),
                 },
-                new NodeView('root', 0, true, this.messages$)
+                new NodeView(this.state, 'root', 0, true, this.messages$),
             ],
             connectedCallback: (elem) => {
                 this.contentElement = elem
                 this.contentElement.scrollTop = this.contentElement.scrollHeight
                 this.messages$['root'].subscribe(() => {
-                    this.contentElement.scrollTop = this.contentElement.scrollHeight
+                    this.contentElement.scrollTop =
+                        this.contentElement.scrollHeight
                 })
-            }
+            },
+        }
+    }
+
+    contentView() {
+        return {
+            class: 'flex-grow-1',
+            style: {
+                minHeight: '0px',
+            },
+            children: childrenWithReplace$(
+                this.state.customViews$,
+                ({ name, view }) => {
+                    return {
+                        class: attr$(
+                            this.state.selectedView$,
+                            (view: string | 'TERMINAL') =>
+                                view == name ? 'd-block' : 'd-none',
+                            {
+                                wrapper: (d) => `${d} w-100 h-100`,
+                            },
+                        ),
+                        children: [name == 'TERMINAL' ? this.logsView() : view],
+                    }
+                },
+                {},
+            ),
         }
     }
 }
 
-
-
 class TerminalHeaderView implements VirtualDOM {
-
-    public readonly class = 'd-flex align-items-center fv-bg-background-alt border fv-pointer'
+    public readonly state: TerminalState
+    public readonly class =
+        'd-flex align-items-center fv-bg-background-alt border fv-pointer'
     public readonly style = {
-        fontSize: 'small'
+        fontSize: 'small',
     }
     public readonly children: VirtualDOM[]
     public readonly onclick: (ev: MouseEvent) => void
 
-    constructor(expanded$: BehaviorSubject<boolean>) {
+    constructor(params: { state: TerminalState }) {
+        Object.assign(this, params)
         this.children = [
             {
                 class: attr$(
-                    expanded$,
-                    (expanded) => expanded ? "fa-caret-down" : "fa-caret-right",
-                    { wrapper: (d) => `fas ${d} py-1 px-2 fv-pointer` }
-                )
+                    this.state.expanded$,
+                    (expanded) =>
+                        expanded ? 'fa-caret-down' : 'fa-caret-right',
+                    { wrapper: (d) => `fas ${d} py-1 px-2 fv-pointer` },
+                ),
+                onclick: () => {
+                    this.state.expanded$.next(!this.state.expanded$.getValue())
+                },
             },
             {
-                innerText: 'TERMINAL'
-            }
+                class: 'd-flex align-items-center',
+                children: children$(
+                    this.state.customViews$,
+                    (views: { name: string; view: VirtualDOM }[]) => {
+                        return views.map(({ name }) => {
+                            return {
+                                class: attr$(
+                                    this.state.selectedView$,
+                                    (selection) => selection == name ? 'fv-bg-secondary' : '',
+                                    {
+                                        wrapper: (d) => `${d} d-flex align-items-center border fv-hover-bg-secondary fv-hover-xx-lighter px-2 mx-2`
+                                    }
+                                ),
+                                onclick: (ev) => {
+                                    this.state.selectView(name)
+                                    ev.stopPropagation()
+                                },
+                                children: [
+                                    {
+                                        innerText: name,
+                                    },
+                                    name != "TERMINAL"
+                                        ? {
+                                            class: 'fas fa-times mx-2 fv-text-error fv-hover-xx-lighter fv-pointer',
+                                            onclick: (ev) => {
+                                                ev.stopPropagation()
+                                                this.state.closeCustomView(name)
+                                            }
+                                        }
+                                        : {}
+                                ]
+                            }
+                        })
+                    },
+                ),
+            },
         ]
-        this.onclick = () => expanded$.next(!expanded$.getValue())
     }
 }
