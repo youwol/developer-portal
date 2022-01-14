@@ -27,7 +27,7 @@
         "@youwol/fv-tree": "^0.0.4",
         "@youwol/fv-widgets": "^0.0.5",
         "@youwol/logging": "^0.0.2",
-        "@youwol/platform-essentials": "^0.0.2",
+        "@youwol/platform-essentials": "^0.0.2-next",
         "d3": "5.15.0",
         "d3-dag": "^0.8.2",
         "lodash": "4.17.21",

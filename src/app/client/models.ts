@@ -1,11 +1,23 @@
-
-export type Label = 'Label.DONE' | 'Label.INFO' | 'Label.STARTED' | 'Label.BASH' | 'Label.LOG_ABORT' | 'Label.EXCEPTION' | 'EnvironmentStatusResponse'
-    | 'PipelineStepStatusResponse' | 'ProjectStatusResponse' | 'CdnResponse' | 'CheckUpdateResponse' | 'CheckUpdatesResponse' |
-    "Label.PACKAGE_DOWNLOADING" | 'DownloadedPackageResponse' | 'Label.PIPELINE_STEP_STATUS_PENDING' |
-    "Label.PIPELINE_STEP_RUNNING" | "Label.RUN_PIPELINE_STEP"
+export type Label =
+    | 'Label.DONE'
+    | 'Label.INFO'
+    | 'Label.STARTED'
+    | 'Label.BASH'
+    | 'Label.LOG_ABORT'
+    | 'Label.EXCEPTION'
+    | 'EnvironmentStatusResponse'
+    | 'PipelineStepStatusResponse'
+    | 'ProjectStatusResponse'
+    | 'CdnResponse'
+    | 'CheckUpdateResponse'
+    | 'CheckUpdatesResponse'
+    | 'Label.PACKAGE_DOWNLOADING'
+    | 'DownloadedPackageResponse'
+    | 'Label.PIPELINE_STEP_STATUS_PENDING'
+    | 'Label.PIPELINE_STEP_RUNNING'
+    | 'Label.RUN_PIPELINE_STEP'
 
 export interface ContextMessage<T = unknown> {
-
     contextId: string
     level: string
     text: string
@@ -38,9 +50,8 @@ export interface RemoteGateway {
 }
 
 export interface UserConfiguration {
-
     general: {
-        resources: { [key: string]: string },
+        resources: { [key: string]: string }
         remoteGateways: Array<RemoteGateway>
     }
 }
@@ -57,20 +68,17 @@ export interface Link {
 }
 
 export interface ArtifactResponse {
-
     id: string
     path: string
     links: Link[]
 }
 
 export interface PipelineStep {
-
     id: string
     artifacts: ArtifactResponse[]
 }
 
-export type Status = "OK" | "KO" | "Outdated" | "none"
-
+export type Status = 'OK' | 'KO' | 'Outdated' | 'none'
 
 export interface ManifestResponse {
     fingerprint: string
@@ -79,12 +87,11 @@ export interface ManifestResponse {
 }
 
 export interface PipelineStepStatusResponse {
-
     projectId: string
     flowId: string
     stepId: string
     status: Status
-    artifactFolder: string,
+    artifactFolder: string
     artifacts: ArtifactResponse[]
     manifest: ManifestResponse
 }
@@ -94,12 +101,10 @@ export interface ChildToParentConnections {
     parentIds: string[]
 }
 
-
 export interface DependenciesResponse {
     dag: ChildToParentConnections[]
     simpleDag: ChildToParentConnections[]
 }
-
 
 export interface ProjectStatusResponse {
     projectId: string
@@ -107,11 +112,9 @@ export interface ProjectStatusResponse {
 }
 
 export interface Flow {
-
     name: string
     dag: string[]
 }
-
 
 export interface Pipeline {
     id: string
@@ -134,22 +137,25 @@ export interface Environment {
     userInfo: UserInfo
     users: Array<string>
     configuration: {
-        userConfig: UserConfiguration,
-        projects: Project[],
+        userConfig: UserConfiguration
+        projects: Project[]
         pathsBook: {
             config: string
         }
-    },
+    }
     remoteGatewayInfo: RemoteGatewayInfo
     remotesInfo: Array<RemoteGatewayInfo>
 }
 
-
 export function instanceOfEnvironment(object: any): object is Environment {
-
-    return object.configurationPath && object.userInfo && object.users &&
-        object.configuration && object.remoteGatewayInfo && object.remotesInfo
-
+    return (
+        object.configurationPath &&
+        object.userInfo &&
+        object.users &&
+        object.configuration &&
+        object.remoteGatewayInfo &&
+        object.remotesInfo
+    )
 }
 
 export interface ConfigurationError {
@@ -176,7 +182,6 @@ export interface TreeItem {
     rawId: string
 }
 
-
 export interface CdnVersionResponse {
     name: string
     version: string
@@ -192,8 +197,11 @@ export interface CdnResponse {
     versions: Array<CdnVersionResponse>
 }
 
-
-export type UpdateStatus = 'upToDate' | 'mismatch' | "remoteAhead" | "localAhead"
+export type UpdateStatus =
+    | 'upToDate'
+    | 'mismatch'
+    | 'remoteAhead'
+    | 'localAhead'
 
 export interface PackageVersionInfo {
     version: string
@@ -207,19 +215,15 @@ export interface CheckUpdateResponse {
     remoteVersionInfo: PackageVersionInfo
 }
 
-
 export interface CheckUpdatesResponse {
     updates: CheckUpdateResponse[]
 }
-
 
 export interface DownloadPackageBody {
     packageName: string
     version: string
 }
 
-
 export interface DownloadPackagesBody {
     packages: DownloadPackageBody[]
 }
-
