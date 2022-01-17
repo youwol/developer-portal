@@ -1,5 +1,5 @@
 .CodeMirror {
-    height: 100% !important
+    height: 100% !important;
 }
 
 @keyframes spin {
@@ -12,5 +12,5 @@
 }
 
 .fv-hover-fill-focus:hover {
-    fill: #ffbb00
+    fill: #ffbb00;
 }
