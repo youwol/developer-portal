@@ -10,7 +10,7 @@ import {
 import { Switch } from '@youwol/fv-button'
 import { ywSpinnerView } from '@youwol/platform-essentials'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { filter, map, skip, take, tap } from 'rxjs/operators'
+import { filter, map, mergeMap, skip, take, tap } from 'rxjs/operators'
 import { AppState, filterCtxMessage, Topic } from '../../app-state'
 import {
     CheckUpdateResponse,
@@ -38,11 +38,11 @@ export class UpdatesView implements VirtualDOM {
             {
                 class: 'w-100 d-flex justify-content-center flex-column h-50',
                 children: children$(
-                    merge(
-                        params.state.environment$,
-                        params.state.selectedTopic$.pipe(
-                            filter((topic) => topic === 'Updates'),
-                        ),
+                    params.state.selectedTopic$.pipe(
+                        filter((topic) => topic === 'Updates'),
+                        mergeMap(() => {
+                            return params.state.environment$
+                        })
                     ),
                     () => {
                         this.state.collectUpdates()
@@ -196,9 +196,9 @@ class RowView implements VirtualDOM {
                 (visible) => {
                     return visible
                         ? this.toggleView({
-                              name: this.name,
-                              version: this.remoteVersion,
-                          })
+                            name: this.name,
+                            version: this.remoteVersion,
+                        })
                         : {}
                 },
             ),
@@ -315,24 +315,24 @@ class StatusCellView implements VirtualDOM {
         StatusType,
         string
     > = {
-        remoteAhead: 'local version outdated',
-        localAhead: 'local version ahead',
-        mismatch: 'mismatch',
-        upToDate: '',
-        pending: 'pending',
-        error: 'an error occurred',
-    }
+            remoteAhead: 'local version outdated',
+            localAhead: 'local version ahead',
+            mismatch: 'mismatch',
+            upToDate: '',
+            pending: 'pending',
+            error: 'an error occurred',
+        }
     public readonly statusIcon: Record<
         StatusType,
         string
     > = {
-        remoteAhead: 'fas fa-exclamation-triangle fv-text-focus',
-        localAhead: 'fas fa-exclamation-triangle fv-text-focus',
-        mismatch: 'fas fa-exclamation-triangle fv-text-focus',
-        upToDate: 'fas fa-check fv-text-success',
-        pending: 'fas fa-spinner fa-spin',
-        error: 'fas fa-times fv-text-error',
-    }
+            remoteAhead: 'fas fa-exclamation-triangle fv-text-focus',
+            localAhead: 'fas fa-exclamation-triangle fv-text-focus',
+            mismatch: 'fas fa-exclamation-triangle fv-text-focus',
+            upToDate: 'fas fa-check fv-text-success',
+            pending: 'fas fa-spinner fa-spin',
+            error: 'fas fa-times fv-text-error',
+        }
 
     public readonly tag = 'td'
     public readonly class = 'px-2'
@@ -368,10 +368,10 @@ class SpinnerView implements VirtualDOM {
                     return d.labels.includes('CheckUpdatesResponse')
                         ? {}
                         : ywSpinnerView({
-                              classes: '',
-                              size: '25px',
-                              duration: 1.5,
-                          })
+                            classes: '',
+                            size: '25px',
+                            duration: 1.5,
+                        })
                 },
             ),
         ]
