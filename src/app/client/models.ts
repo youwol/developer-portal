@@ -13,6 +13,7 @@ export type Label =
     | 'CheckUpdatesResponse'
     | 'Label.PACKAGE_DOWNLOADING'
     | 'DownloadedPackageResponse'
+    | 'ProjectsLoadingResults'
     | 'Label.PIPELINE_STEP_STATUS_PENDING'
     | 'Label.PIPELINE_STEP_RUNNING'
     | 'Label.RUN_PIPELINE_STEP'
@@ -33,27 +34,9 @@ export interface UserInfo {
     memberOf: Array<string>
 }
 
-export interface FormalParameter {
-    name: string
-    description: string
-    value: any
-    meta: any
-}
-
-export interface ConfigurationParameters {
-    parameters: { [key: string]: FormalParameter }
-}
-
 export interface RemoteGateway {
     name: string
     host: string
-}
-
-export interface UserConfiguration {
-    general: {
-        resources: { [key: string]: string }
-        remoteGateways: Array<RemoteGateway>
-    }
 }
 
 export interface RemoteGatewayInfo {
@@ -137,7 +120,8 @@ export interface Environment {
     userInfo: UserInfo
     users: Array<string>
     configuration: {
-        userConfig: UserConfiguration
+        available_profiles: string[]
+        active_profile: string
         projects: Project[]
         pathsBook: {
             config: string
@@ -147,15 +131,22 @@ export interface Environment {
     remotesInfo: Array<RemoteGatewayInfo>
 }
 
-export function instanceOfEnvironment(object: any): object is Environment {
-    return (
-        object.configurationPath &&
-        object.userInfo &&
-        object.users &&
-        object.configuration &&
-        object.remoteGatewayInfo &&
-        object.remotesInfo
-    )
+export interface ProjectLoadingFailure {
+    path: string
+    failure: string
+    message: string
+}
+
+export function projectLoadingIsSuccess(
+    result: ProjectLoadingResult,
+): result is Project {
+    return result['failure'] === undefined
+}
+
+export type ProjectLoadingResult = Project | ProjectLoadingFailure
+
+export interface ProjectsLoadingResults {
+    results: ProjectLoadingResult[]
 }
 
 export interface ConfigurationError {

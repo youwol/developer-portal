@@ -37,7 +37,7 @@ export class EnvironmentRouter {
         return requestToJson$(request)
     }
 
-    static login$(body) {
+    static login$(body: { email: string }) {
         const url = `${EnvironmentRouter.urlBase}/login`
         const request = new Request(url, {
             method: 'POST',
@@ -46,6 +46,27 @@ export class EnvironmentRouter {
                 ...EnvironmentRouter.headers,
                 'content-type': 'application/json',
             },
+        })
+        return requestToJson$(request)
+    }
+
+    static changeProfile$(body: { active: string }) {
+        const url = `${EnvironmentRouter.urlBase}/configuration/profiles/active`
+        const request = new Request(url, {
+            method: 'PUT',
+            body: JSON.stringify(body),
+            headers: {
+                ...EnvironmentRouter.headers,
+                'content-type': 'application/json',
+            },
+        })
+        return requestToJson$(request)
+    }
+
+    static reloadConfig() {
+        const url = `${EnvironmentRouter.urlBase}/configuration`
+        const request = new Request(url, {
+            method: 'POST',
         })
         return requestToJson$(request)
     }

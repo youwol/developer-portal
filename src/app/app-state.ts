@@ -19,6 +19,8 @@ import {
     PipelineStep,
     PipelineStepStatusResponse,
     Project,
+    ProjectLoadingResult,
+    ProjectsLoadingResults,
     ProjectStatusResponse,
 } from './client/models'
 import { PyYouwolClient } from './client/py-youwol.client'
@@ -218,6 +220,7 @@ export type Topic = 'Projects' | 'Updates' | 'CDN'
 
 export class AppState {
     public readonly environment$: Observable<Environment>
+    public readonly projectsLoading$: Observable<ProjectLoadingResult[]>
     public readonly topBannerState = new YouwolBannerState({
         cmEditorModule$: undefined,
     })
@@ -245,14 +248,21 @@ export class AppState {
             shareReplay(1),
         )
 
+        this.projectsLoading$ = PyYouwolClient.connectWs().pipe(
+            filter(({ labels, data }) => {
+                return (
+                    labels && data && labels.includes('ProjectsLoadingResults')
+                )
+            }),
+            map(({ data }) => (data as ProjectsLoadingResults).results),
+            shareReplay(1),
+        )
+
         PyYouwolClient.environment.status$().subscribe()
     }
 
     selectTopic(topic: Topic) {
         this.selectedTopic$.next(topic)
-        if (topic == 'Updates') {
-            this.collectUpdates()
-        }
     }
 
     selectTab(tabId: string) {

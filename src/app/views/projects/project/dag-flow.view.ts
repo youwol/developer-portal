@@ -113,7 +113,7 @@ export class DagFlowView implements VirtualDOM {
 
         const colorMap = new Map()
 
-        for (const [i, node] of dag.idescendants().entries()) {
+        for (const [_i, node] of dag.idescendants().entries()) {
             const fullId = ProjectEvents.fullId(flowId, node.data.id)
             const color = status[fullId]
                 ? {

@@ -1,6 +1,7 @@
 import {
     attr$,
     child$,
+    children$,
     childrenAppendOnly$,
     HTMLElement$,
     Stream$,
@@ -36,14 +37,27 @@ export class UpdatesView implements VirtualDOM {
         this.children = [
             {
                 class: 'w-100 d-flex justify-content-center flex-column h-50',
-                children: [
-                    new SpinnerView({ state: this.state }),
-                    new DownloadBtnView({ state: this.state }),
-                    {
-                        class: 'flex-grow-1 mx-auto overflow-auto',
-                        children: [new TableView({ state: this.state })],
+                children: children$(
+                    merge(
+                        params.state.environment$,
+                        params.state.selectedTopic$.pipe(
+                            filter((topic) => topic === 'Updates'),
+                        ),
+                    ),
+                    () => {
+                        this.state.collectUpdates()
+                        return [
+                            new SpinnerView({ state: this.state }),
+                            new DownloadBtnView({ state: this.state }),
+                            {
+                                class: 'flex-grow-1 mx-auto overflow-auto',
+                                children: [
+                                    new TableView({ state: this.state }),
+                                ],
+                            },
+                        ]
                     },
-                ],
+                ),
             },
             new TerminalView(this.state.updatesEvents.messages$),
         ]
