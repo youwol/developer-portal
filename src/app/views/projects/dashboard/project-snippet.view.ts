@@ -1,6 +1,6 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import { AppState } from 'src/app/app-state'
-import { Project } from 'src/app/client/models'
+import { AppState } from '../../../app-state'
+import { Project } from '../../../client/models'
 
 export class ProjectSnippetView {
     public readonly class =

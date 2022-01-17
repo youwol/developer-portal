@@ -1,7 +1,7 @@
 import { children$, VirtualDOM } from '@youwol/flux-view'
-import { map } from 'rxjs/operators'
-import { AppState } from 'src/app/app-state'
-import { Environment, Project } from '../../../client/models'
+import { map, tap } from 'rxjs/operators'
+import { AppState } from '../../../app-state'
+import { Project, projectLoadingIsSuccess } from '../../../client/models'
 import { ProjectSnippetView } from './project-snippet.view'
 
 export class DashboardView {
@@ -34,8 +34,11 @@ export class ProjectsView {
         Object.assign(this, params)
 
         this.children = children$(
-            this.state.environment$.pipe(
-                map((env: Environment) => env.configuration.projects),
+            this.state.projectsLoading$.pipe(
+                tap((r) => console.warn(r)),
+                map((results) =>
+                    results.filter((result) => projectLoadingIsSuccess(result)),
+                ),
             ),
             (projects: Project[]) => {
                 return projects.map(

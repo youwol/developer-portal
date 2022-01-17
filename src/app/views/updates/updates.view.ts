@@ -1,21 +1,22 @@
 import {
     attr$,
-    VirtualDOM,
-    Stream$,
     child$,
-    HTMLElement$,
+    children$,
     childrenAppendOnly$,
+    HTMLElement$,
+    Stream$,
+    VirtualDOM,
 } from '@youwol/flux-view'
 import { Switch } from '@youwol/fv-button'
 import { ywSpinnerView } from '@youwol/platform-essentials'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
-import { AppState, filterCtxMessage, Topic } from '../../../app/app-state'
+import { AppState, filterCtxMessage, Topic } from '../../app-state'
 import {
     CheckUpdateResponse,
     ContextMessage,
     UpdateStatus,
-} from '../../../app/client/models'
+} from '../../client/models'
 import { TerminalView } from '../terminal/terminal.view'
 
 export class UpdatesView implements VirtualDOM {
@@ -36,14 +37,27 @@ export class UpdatesView implements VirtualDOM {
         this.children = [
             {
                 class: 'w-100 d-flex justify-content-center flex-column h-50',
-                children: [
-                    new SpinnerView({ state: this.state }),
-                    new DownloadBtnView({ state: this.state }),
-                    {
-                        class: 'flex-grow-1 mx-auto overflow-auto',
-                        children: [new TableView({ state: this.state })],
+                children: children$(
+                    merge(
+                        params.state.environment$,
+                        params.state.selectedTopic$.pipe(
+                            filter((topic) => topic === 'Updates'),
+                        ),
+                    ),
+                    () => {
+                        this.state.collectUpdates()
+                        return [
+                            new SpinnerView({ state: this.state }),
+                            new DownloadBtnView({ state: this.state }),
+                            {
+                                class: 'flex-grow-1 mx-auto overflow-auto',
+                                children: [
+                                    new TableView({ state: this.state }),
+                                ],
+                            },
+                        ]
                     },
-                ],
+                ),
             },
             new TerminalView(this.state.updatesEvents.messages$),
         ]
@@ -125,6 +139,8 @@ class TableView implements VirtualDOM {
     }
 }
 
+type StatusType = UpdateStatus | 'pending' | 'error'
+
 class RowView implements VirtualDOM {
     public readonly tag = 'tr'
 
@@ -139,7 +155,7 @@ class RowView implements VirtualDOM {
     public readonly name: string
     public readonly remoteVersion: string
     public readonly rowInfo$: BehaviorSubject<{
-        status: UpdateStatus | 'pending' | 'error'
+        status: StatusType
         localVersion: string
         toggleVisible: boolean
     }>
@@ -296,7 +312,7 @@ class SimpleCellView implements VirtualDOM {
 
 class StatusCellView implements VirtualDOM {
     public readonly statusName: Record<
-        UpdateStatus | 'pending' | 'error',
+        StatusType,
         string
     > = {
         remoteAhead: 'local version outdated',
@@ -307,7 +323,7 @@ class StatusCellView implements VirtualDOM {
         error: 'an error occurred',
     }
     public readonly statusIcon: Record<
-        UpdateStatus | 'pending' | 'error',
+        StatusType,
         string
     > = {
         remoteAhead: 'fas fa-exclamation-triangle fv-text-focus',
@@ -322,7 +338,7 @@ class StatusCellView implements VirtualDOM {
     public readonly class = 'px-2'
     public readonly children: VirtualDOM[]
 
-    constructor(status$: Observable<UpdateStatus | 'pending' | 'error'>) {
+    constructor(status$: Observable<StatusType>) {
         this.children = [
             {
                 class: attr$(status$, (status) => this.statusIcon[status]),

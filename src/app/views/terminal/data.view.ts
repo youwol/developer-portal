@@ -4,8 +4,9 @@ import { of } from 'rxjs'
 
 export class LogDataNode extends ImmutableTree.Node {
     name: string
-    data: Object
-    constructor({ name, data }: { name: string; data: Object }) {
+    data: unknown
+
+    constructor({ name, data }: { name: string; data: unknown }) {
         super({
             id: `${Math.floor(Math.random() * 1e6)}`,
             children: LogDataNode.getChildren(data),
@@ -17,7 +18,7 @@ export class LogDataNode extends ImmutableTree.Node {
     static getChildren(data) {
         const isObject =
             data != null &&
-            data != undefined &&
+
             typeof data != 'string' &&
             typeof data != 'number' &&
             typeof data != 'boolean'
@@ -37,6 +38,7 @@ export class DataView implements VirtualDOM {
     public readonly style = {
         fontSize: 'small',
     }
+
     constructor(data) {
         const rootNode = new LogDataNode({ name: 'data', data })
         const treeState = new ImmutableTree.State({ rootNode })

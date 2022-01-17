@@ -15,13 +15,11 @@ import { ProjectView } from './project/project.view'
 export class DashboardTab {
     public readonly id = 'dashboard'
 
-    constructor() {}
-
     contentView(state: AppState) {
         return new DashboardView({ state })
     }
 
-    headerView(state: AppState): VirtualDOM {
+    headerView(_state: AppState): VirtualDOM {
         return {
             innerText: 'Dashboard',
             class: 'p-1 rounded border',

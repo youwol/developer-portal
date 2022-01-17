@@ -1,11 +1,11 @@
 import { child$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import { filter } from 'rxjs/operators'
 import { AppState, filterCtxMessage } from '../../../app-state'
 import {
     PipelineStep,
     PipelineStepStatusResponse,
     Project,
 } from '../../../client/models'
-import { filter } from 'rxjs/operators'
 import { ArtifactsView } from './artifacts.view'
 import { ManifestView } from './manifest.view'
 import { RunOutputsView } from './run-outputs.view'

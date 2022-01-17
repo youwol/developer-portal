@@ -1,13 +1,13 @@
-import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
-import * as d3 from 'd3'
 import { HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import * as d3 from 'd3'
+import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
+import { combineLatest } from 'rxjs'
+import { AppState, ProjectEvents } from '../../../app-state'
 import {
     PipelineStep,
     PipelineStepStatusResponse,
     Project,
 } from '../../../client/models'
-import { combineLatest } from 'rxjs'
-import { AppState, ProjectEvents } from '../../../app-state'
 
 export class DagFlowView implements VirtualDOM {
     public readonly class = 'w-100 h-50 mx-auto'
@@ -86,7 +86,7 @@ export class DagFlowView implements VirtualDOM {
     }: {
         svg: SVGElement
         selection: { flowId: string; step: PipelineStep | undefined }
-        status: { [key: string]: PipelineStepStatusResponse }
+        status: { [_key: string]: PipelineStepStatusResponse }
     }) {
         const dag = this.createDag(selection)
 
@@ -113,7 +113,7 @@ export class DagFlowView implements VirtualDOM {
 
         const colorMap = new Map()
 
-        for (const [i, node] of dag.idescendants().entries()) {
+        for (const [_i, node] of dag.idescendants().entries()) {
             const fullId = ProjectEvents.fullId(flowId, node.data.id)
             const color = status[fullId]
                 ? {

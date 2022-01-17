@@ -78,6 +78,7 @@ function folderNavigationView(
         ),
     }
 }
+
 function pathElementView(
     folderSelected$: BehaviorSubject<string>,
     element: string,

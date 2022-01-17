@@ -1,11 +1,8 @@
 const path = require('path')
-const webpack = require('webpack')
 const ROOT = path.resolve(__dirname, 'src/app')
 const DESTINATION = path.resolve(__dirname, 'dist')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const BundleAnalyzerPlugin =
-    require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
     context: ROOT,
