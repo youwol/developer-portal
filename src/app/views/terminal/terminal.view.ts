@@ -220,7 +220,6 @@ export class TerminalState {
         const actual = this.customViews$.getValue()
         this.customViews$.next(actual.filter(d => d.name != name))
         if (this.selectedView$.getValue() == name) {
-            console.log("aaa")
             this.selectedView$.next('TERMINAL')
         }
     }
