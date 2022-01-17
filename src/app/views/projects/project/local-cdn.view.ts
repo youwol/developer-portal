@@ -1,30 +1,30 @@
-import { VirtualDOM, child$ } from '@youwol/flux-view'
-import { BehaviorSubject, Observable } from 'rxjs';
-import { CdnVersionResponse, CdnResponse } from '../../../client/models';
-import * as _ from 'lodash'
-import { AppState } from '../../../app-state';
-import { FilesBrowserView } from '../../files-browser.view';
-import { Project } from '../../../client/models';
-
-
+import { child$, VirtualDOM } from '@youwol/flux-view'
+import { BehaviorSubject, Observable } from 'rxjs'
+import { AppState } from '../../../app-state'
+import {
+    CdnResponse,
+    CdnVersionResponse,
+    Project,
+} from '../../../client/models'
+import { FilesBrowserView } from '../../files-browser.view'
 
 export class CdnView implements VirtualDOM {
-
     public readonly tag = 'div'
     public readonly children: Array<VirtualDOM>
-    public readonly class = ""
+    public readonly class = ''
     public readonly state: AppState
     public readonly project: Project
 
     public readonly cdnPackage$: Observable<CdnResponse>
-    public readonly selectedVersion$ = new BehaviorSubject<CdnVersionResponse>(undefined)
+    public readonly selectedVersion$ = new BehaviorSubject<CdnVersionResponse>(
+        undefined,
+    )
 
-
-    constructor(params: { state: AppState, project: Project }) {
-
+    constructor(params: { state: AppState; project: Project }) {
         Object.assign(this, params)
 
-        this.cdnPackage$ = this.state.projectEvents[this.project.id].cdnResponse$
+        this.cdnPackage$ =
+            this.state.projectEvents[this.project.id].cdnResponse$
         this.children = [
             {
                 class: 'd-flex h-100 justify-content-around w-100',
@@ -32,107 +32,133 @@ export class CdnView implements VirtualDOM {
                     {
                         class: 'd-flex flex-column h-100 px-2 w-100',
                         children: [
-                            child$(
-                                this.cdnPackage$,
-                                (details) => details ? this.packageDetails(details) : {}
+                            child$(this.cdnPackage$, (details) =>
+                                details ? this.packageDetails(details) : {},
                             ),
                             {
-                                tag: 'br'
+                                tag: 'br',
                             },
-                            child$(
-                                this.selectedVersion$,
-                                (versionDetail) => {
-                                    return versionDetail
-                                        ? new CdnPackageBrowserView(versionDetail)
-                                        : {}
-                                }
-                            )
-                        ]
-                    }
-                ]
-            }
+                            child$(this.selectedVersion$, (versionDetail) => {
+                                return versionDetail
+                                    ? new CdnPackageBrowserView(versionDetail)
+                                    : {}
+                            }),
+                        ],
+                    },
+                ],
+            },
         ]
-
     }
 
     packageDetails(pack: CdnResponse): VirtualDOM {
-
         return {
             class: 'overflow-auto',
             style: {
                 maxHeight: '50%',
-                width: 'fit-content'
+                width: 'fit-content',
             },
             children: [
                 {
-                    tag: 'table', class: 'fv-color-primary  w-100 text-center',
+                    tag: 'table',
+                    class: 'fv-color-primary  w-100 text-center',
                     style: { 'max-height': '100%' },
                     children: [
                         {
                             tag: 'thead',
                             children: [
                                 {
-                                    tag: 'tr', class: 'fv-bg-background-alt',
+                                    tag: 'tr',
+                                    class: 'fv-bg-background-alt',
                                     children: [
-                                        { tag: 'td', innerText: 'Version', class: 'px-2' },
-                                        { tag: 'td', innerText: 'files count', class: 'px-2' },
-                                        { tag: 'td', innerText: 'bundle size (Ko)', class: 'px-2' }
-                                    ]
-                                }
-                            ]
+                                        {
+                                            tag: 'td',
+                                            innerText: 'Version',
+                                            class: 'px-2',
+                                        },
+                                        {
+                                            tag: 'td',
+                                            innerText: 'files count',
+                                            class: 'px-2',
+                                        },
+                                        {
+                                            tag: 'td',
+                                            innerText: 'bundle size (Ko)',
+                                            class: 'px-2',
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         {
                             tag: 'tbody',
-                            children: pack.versions
-                                .map((packVersion: CdnVersionResponse) => {
+                            children: pack.versions.map(
+                                (packVersion: CdnVersionResponse) => {
                                     return {
                                         tag: 'tr',
                                         class: 'fv-hover-bg-background-alt fv-pointer',
                                         onclick: () => {
-                                            this.selectedVersion$.next(packVersion)
+                                            this.selectedVersion$.next(
+                                                packVersion,
+                                            )
                                         },
                                         children: [
-                                            { tag: 'td', innerText: packVersion.version, class: 'px-2' },
-                                            { tag: 'td', innerText: packVersion.filesCount, class: 'px-2' },
-                                            { tag: 'td', innerText: Math.floor(packVersion.bundleSize / 100) / 10, class: 'px-2' }
-                                        ]
+                                            {
+                                                tag: 'td',
+                                                innerText: packVersion.version,
+                                                class: 'px-2',
+                                            },
+                                            {
+                                                tag: 'td',
+                                                innerText:
+                                                    packVersion.filesCount,
+                                                class: 'px-2',
+                                            },
+                                            {
+                                                tag: 'td',
+                                                innerText:
+                                                    Math.floor(
+                                                        packVersion.bundleSize /
+                                                            100,
+                                                    ) / 10,
+                                                class: 'px-2',
+                                            },
+                                        ],
                                     }
-                                })
-                        }
-                    ]
-                }
-            ]
+                                },
+                            ),
+                        },
+                    ],
+                },
+            ],
         }
     }
 }
 
-
 class CdnPackageBrowserView implements VirtualDOM {
-
     public readonly info: CdnVersionResponse
 
     public readonly children: VirtualDOM[]
 
     constructor(info: CdnVersionResponse) {
-
         this.info = info
 
-        let pattern = this.info.namespace == ""
-            ? `/libraries/${this.info.name}`
-            : `/libraries/${this.info.namespace}/${this.info.name}`
+        const pattern =
+            this.info.namespace == ''
+                ? `/libraries/${this.info.name}`
+                : `/libraries/${this.info.namespace}/${this.info.name}`
 
-        let index = this.info.path.split(pattern)[0].split('/').length - 2
+        const index = this.info.path.split(pattern)[0].split('/').length - 2
 
         this.children = [
             {
                 tag: 'h4',
                 class: 'fv-text-focus',
-                innerText: info.version
+                innerText: info.version,
             },
             new FilesBrowserView({
                 startingFolder: this.info.path,
-                originFolderIndex: index
-            })
+                originFolderIndex: index,
+            }),
         ]
     }
 }

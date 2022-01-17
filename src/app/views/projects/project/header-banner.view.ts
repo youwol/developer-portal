@@ -1,24 +1,23 @@
-import { attr$, child$, VirtualDOM } from "@youwol/flux-view"
-import { AppState, filterCtxMessage } from "../../../app-state"
-import { ContextMessage, PipelineStep, Project } from "../../../client/models"
-import { filter, map, mapTo, tap, takeWhile } from "rxjs/operators"
-import { merge, Observable } from "rxjs"
-import { PyYouwolClient } from "../../../client/py-youwol.client"
+import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
+import { merge, Observable } from 'rxjs'
+import { map, mapTo, tap } from 'rxjs/operators'
+import { AppState, filterCtxMessage } from '../../../app-state'
+import { ContextMessage, PipelineStep, Project } from '../../../client/models'
+import { PyYouwolClient } from '../../../client/py-youwol.client'
 
 type StepStatus = 'OK' | 'KO' | 'outdated' | 'none' | 'pending'
 
-let statusClassFactory: Record<StepStatus, string> = {
-    'OK': 'fas fa-check fv-text-success',
-    'KO': 'fas fa-times fv-text-error',
-    'outdated': 'fas fa-sync-alt fv-text-secondary',
-    'none': 'fas fa-ban fv-text-disabled',
-    'pending': 'fas fa-spinner fa-spin'
+const statusClassFactory: Record<StepStatus, string> = {
+    OK: 'fas fa-check fv-text-success',
+    KO: 'fas fa-times fv-text-error',
+    outdated: 'fas fa-sync-alt fv-text-secondary',
+    none: 'fas fa-ban fv-text-disabled',
+    pending: 'fas fa-spinner fa-spin',
 }
 
-
 export class HeaderBannerView implements VirtualDOM {
-
-    public readonly class = 'mx-auto py-1 d-flex justify-content-center w-100 align-items-center'
+    public readonly class =
+        'mx-auto py-1 d-flex justify-content-center w-100 align-items-center'
 
     public readonly children: VirtualDOM[]
 
@@ -26,14 +25,17 @@ export class HeaderBannerView implements VirtualDOM {
 
     public readonly project: Project
 
-    public readonly selectedStep$: Observable<{ flowId: string, step: PipelineStep }>
+    public readonly selectedStep$: Observable<{
+        flowId: string
+        step: PipelineStep
+    }>
     public readonly selectedFlowId$: Observable<string>
 
-    constructor(params: { state: AppState, project: Project }) {
-
+    constructor(params: { state: AppState; project: Project }) {
         Object.assign(this, params)
 
-        this.selectedStep$ = this.state.projectEvents[this.project.id].selectedStep$
+        this.selectedStep$ =
+            this.state.projectEvents[this.project.id].selectedStep$
 
         this.children = [
             {
@@ -42,92 +44,99 @@ export class HeaderBannerView implements VirtualDOM {
                 children: [
                     {
                         class: '',
-                        innerText: this.project.name
-                    }
-                ]
+                        innerText: this.project.name,
+                    },
+                ],
             },
             {
                 class: 'mx-3',
                 children: this.project.pipeline.flows.map((flow) => {
-
                     return this.labelView(flow.name)
-                })
+                }),
             },
-            child$(
-                this.selectedStep$,
-                ({ flowId, step }) => step == undefined ? {} : this.stepView(flowId, step)
-            )
+            child$(this.selectedStep$, ({ flowId, step }) =>
+                step == undefined ? {} : this.stepView(flowId, step),
+            ),
         ]
     }
 
     labelView(flowId: string): VirtualDOM {
-
-
         return child$(
             this.selectedStep$.pipe(map(({ flowId }) => flowId)),
             (selectedFlowId) => {
-                let defaultClasses = 'p-2 border rounded fv-pointer'
+                const defaultClasses = 'p-2 border rounded fv-pointer'
                 return {
-                    class: selectedFlowId == flowId
-                        ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
-                        : `${defaultClasses} fv-hover-bg-background-alt`,
+                    class:
+                        selectedFlowId == flowId
+                            ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
+                            : `${defaultClasses} fv-hover-bg-background-alt`,
                     innerText: flowId,
                     onclick: () => {
-                        this.state.selectStep(this.project.id, flowId, undefined)
+                        this.state.selectStep(
+                            this.project.id,
+                            flowId,
+                            undefined,
+                        )
 
                         // Re-click triggers refresh
-                        if (flowId == selectedFlowId)
-                            PyYouwolClient.projects.getFlowStatus$(this.project.id, flowId).subscribe()
-                    }
+                        if (flowId == selectedFlowId) {
+                            PyYouwolClient.projects
+                                .getFlowStatus$(this.project.id, flowId)
+                                .subscribe()
+                        }
+                    },
                 }
-            }
+            },
         )
     }
 
     stepView(flowId: string, step: PipelineStep): VirtualDOM {
-
-        let pending$ = this.state.projectEvents[this.project.id].messages$.pipe(
+        const pending$ = this.state.projectEvents[
+            this.project.id
+        ].messages$.pipe(
             filterCtxMessage({
                 withAttributes: {
                     stepId: step.id,
-                    flowId: flowId
+                    flowId: flowId,
                 },
-                withLabels: ["Label.STARTED", "Label.RUN_PIPELINE_STEP"]
+                withLabels: ['Label.STARTED', 'Label.RUN_PIPELINE_STEP'],
             }),
-            mapTo('pending')
+            mapTo('pending'),
         )
-        let done$ = this.state.projectEvents[this.project.id].messages$.pipe(
+        const done$ = this.state.projectEvents[this.project.id].messages$.pipe(
             filterCtxMessage({
                 withAttributes: {
                     stepId: step.id,
-                    flowId: flowId
+                    flowId: flowId,
                 },
-                withLabels: ["PipelineStepStatusResponse"]
+                withLabels: ['PipelineStepStatusResponse'],
             }),
-            tap(m => console.log(m)),
-            map((message: ContextMessage) => message.data['status'])
+            tap((m) => console.log(m)),
+            map((message: ContextMessage) => message.data['status']),
         )
         return {
             class: 'd-flex border p-2 rounded fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center',
             innerText: step.id,
-            onclick: () => PyYouwolClient.projects.runStep$(this.project.id, flowId, step.id).subscribe(),
+            onclick: () =>
+                PyYouwolClient.projects
+                    .runStep$(this.project.id, flowId, step.id)
+                    .subscribe(),
             children: [
                 {
                     class: attr$(
                         merge(pending$, done$),
                         (status: string) => statusClassFactory[status],
-                        { wrapper: (d) => `${d} mx-2` }
-                    )
+                        { wrapper: (d) => `${d} mx-2` },
+                    ),
                 },
                 {
-                    class: attr$(
-                        merge(pending$, done$),
-                        (status) => status == 'pending'
+                    class: attr$(merge(pending$, done$), (status) =>
+                        status == 'pending'
                             ? ''
-                            : 'fas fa-play fv-hover-text-secondary fv-pointer mx-3'
-                    )
-                }
-            ]
+                            : 'fas fa-play fv-hover-text-secondary fv-pointer mx-3',
+                    ),
+                },
+            ],
         }
     }
 }
