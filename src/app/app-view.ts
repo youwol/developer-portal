@@ -5,6 +5,7 @@ import { SideBarView } from './views/side-bar.view'
 import { TopBannerView } from './views/top-banner.view'
 import { UpdatesView } from './views/updates/updates.view'
 
+
 export class AppView implements VirtualDOM {
     public readonly class =
         'h-100 w-100 d-flex flex-column fv-bg-background fv-text-primary'

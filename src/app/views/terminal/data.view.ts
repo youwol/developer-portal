@@ -18,6 +18,7 @@ export class LogDataNode extends ImmutableTree.Node {
     static getChildren(data) {
         const isObject =
             data != null &&
+
             typeof data != 'string' &&
             typeof data != 'number' &&
             typeof data != 'boolean'

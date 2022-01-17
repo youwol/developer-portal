@@ -311,7 +311,10 @@ class SimpleCellView implements VirtualDOM {
 }
 
 class StatusCellView implements VirtualDOM {
-    public readonly statusName: Record<StatusType, string> = {
+    public readonly statusName: Record<
+        StatusType,
+        string
+    > = {
         remoteAhead: 'local version outdated',
         localAhead: 'local version ahead',
         mismatch: 'mismatch',
@@ -319,7 +322,10 @@ class StatusCellView implements VirtualDOM {
         pending: 'pending',
         error: 'an error occurred',
     }
-    public readonly statusIcon: Record<StatusType, string> = {
+    public readonly statusIcon: Record<
+        StatusType,
+        string
+    > = {
         remoteAhead: 'fas fa-exclamation-triangle fv-text-focus',
         localAhead: 'fas fa-exclamation-triangle fv-text-focus',
         mismatch: 'fas fa-exclamation-triangle fv-text-focus',

@@ -1,7 +1,9 @@
 import {
     attr$,
     child$,
+    children$,
     childrenAppendOnly$,
+    childrenWithReplace$,
     HTMLElement$,
     VirtualDOM,
 } from '@youwol/flux-view'
@@ -76,6 +78,7 @@ export class NodeView implements VirtualDOM {
     headerMessage: ContextMessage = undefined
 
     constructor(
+        public readonly state: TerminalState,
         public readonly contextId: string,
         public readonly nestedIndex: number,
         public readonly expanded: boolean,
@@ -131,9 +134,8 @@ export class NodeView implements VirtualDOM {
                                 visible ? 'py-2' : 'd-none',
                             ),
                             style: {
-                                paddingLeft: `${
-                                    this.nestedIndex > 0 ? 40 : 0
-                                }px`,
+                                paddingLeft: `${this.nestedIndex > 0 ? 40 : 0
+                                    }px`,
                             },
                             children: childrenAppendOnly$(
                                 messages$[contextId].pipe(
@@ -145,7 +147,10 @@ export class NodeView implements VirtualDOM {
                                 ),
                                 (message: ContextMessage) => {
                                     if (message.contextId == contextId) {
-                                        return new LogView(message)
+                                        return new LogView({
+                                            state: this.state,
+                                            message,
+                                        })
                                     }
 
                                     if (
@@ -158,6 +163,7 @@ export class NodeView implements VirtualDOM {
                                             message.contextId,
                                         )
                                         return new NodeView(
+                                            this.state,
                                             message.contextId,
                                             nestedIndex + 1,
                                             false,
@@ -195,13 +201,43 @@ const invite = `
                   .##      ##.
 `
 
+export class TerminalState {
+    customViews$ = new BehaviorSubject<{ name: string; view: VirtualDOM }[]>([
+        { name: 'TERMINAL', view: undefined },
+    ])
+
+    selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
+    public readonly expanded$ = new BehaviorSubject(true)
+
+    constructor() { }
+
+    openCustomView(name: string, view: VirtualDOM) {
+        const actual = this.customViews$.getValue()
+        this.customViews$.next([...actual, { name, view }])
+    }
+
+    closeCustomView(name: string) {
+        const actual = this.customViews$.getValue()
+        this.customViews$.next(actual.filter(d => d.name != name))
+        if (this.selectedView$.getValue() == name) {
+            this.selectedView$.next('TERMINAL')
+        }
+    }
+
+    selectView(name: string) {
+        this.selectedView$.next(name)
+    }
+}
+
 export class TerminalView implements VirtualDOM {
-    expanded$ = new BehaviorSubject(true)
-    commands$ = new BehaviorSubject([invite, ''])
-    command$ = new BehaviorSubject('>')
+    public readonly state = new TerminalState()
+
+    public readonly commands$ = new BehaviorSubject([invite, ''])
+    public readonly command$ = new BehaviorSubject('>')
     contentElement: HTMLDivElement
-    class = attr$(
-        this.expanded$,
+
+    public readonly class = attr$(
+        this.state.expanded$,
         (expanded) => (expanded ? 'w-100 h-50' : 'w-100'),
         {
             wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
@@ -231,8 +267,8 @@ export class TerminalView implements VirtualDOM {
         })
 
         this.children = [
-            new TerminalHeaderView(this.expanded$),
-            child$(this.expanded$, (expanded) =>
+            new TerminalHeaderView({ state: this.state }),
+            child$(this.state.expanded$, (expanded) =>
                 expanded ? this.contentView() : {},
             ),
         ]
@@ -245,9 +281,9 @@ export class TerminalView implements VirtualDOM {
         })
     }
 
-    contentView() {
+    logsView() {
         return {
-            class: 'd-flex flex-column flex-grow-1 w-100 overflow-auto p-2',
+            class: `d-flex flex-column h-100 w-100 overflow-auto p-2`,
             children: [
                 {
                     children: childrenAppendOnly$(this.commands$, (command) => {
@@ -258,7 +294,7 @@ export class TerminalView implements VirtualDOM {
                         }
                     }),
                 },
-                new NodeView('root', 0, true, this.messages$),
+                new NodeView(this.state, 'root', 0, true, this.messages$),
             ],
             connectedCallback: (elem) => {
                 this.contentElement = elem
@@ -270,9 +306,36 @@ export class TerminalView implements VirtualDOM {
             },
         }
     }
+
+    contentView() {
+        return {
+            class: 'flex-grow-1',
+            style: {
+                minHeight: '0px',
+            },
+            children: childrenWithReplace$(
+                this.state.customViews$,
+                ({ name, view }) => {
+                    return {
+                        class: attr$(
+                            this.state.selectedView$,
+                            (view: string | 'TERMINAL') =>
+                                view == name ? 'd-block' : 'd-none',
+                            {
+                                wrapper: (d) => `${d} w-100 h-100`,
+                            },
+                        ),
+                        children: [name == 'TERMINAL' ? this.logsView() : view],
+                    }
+                },
+                {},
+            ),
+        }
+    }
 }
 
 class TerminalHeaderView implements VirtualDOM {
+    public readonly state: TerminalState
     public readonly class =
         'd-flex align-items-center fv-bg-background-alt border fv-pointer'
     public readonly style = {
@@ -281,20 +344,57 @@ class TerminalHeaderView implements VirtualDOM {
     public readonly children: VirtualDOM[]
     public readonly onclick: (ev: MouseEvent) => void
 
-    constructor(expanded$: BehaviorSubject<boolean>) {
+    constructor(params: { state: TerminalState }) {
+        Object.assign(this, params)
         this.children = [
             {
                 class: attr$(
-                    expanded$,
+                    this.state.expanded$,
                     (expanded) =>
                         expanded ? 'fa-caret-down' : 'fa-caret-right',
                     { wrapper: (d) => `fas ${d} py-1 px-2 fv-pointer` },
                 ),
+                onclick: () => {
+                    this.state.expanded$.next(!this.state.expanded$.getValue())
+                },
             },
             {
-                innerText: 'TERMINAL',
+                class: 'd-flex align-items-center',
+                children: children$(
+                    this.state.customViews$,
+                    (views: { name: string; view: VirtualDOM }[]) => {
+                        return views.map(({ name }) => {
+                            return {
+                                class: attr$(
+                                    this.state.selectedView$,
+                                    (selection) => selection == name ? 'fv-bg-secondary' : '',
+                                    {
+                                        wrapper: (d) => `${d} d-flex align-items-center border fv-hover-bg-secondary fv-hover-xx-lighter px-2 mx-2`
+                                    }
+                                ),
+                                onclick: (ev) => {
+                                    this.state.selectView(name)
+                                    ev.stopPropagation()
+                                },
+                                children: [
+                                    {
+                                        innerText: name,
+                                    },
+                                    name != "TERMINAL"
+                                        ? {
+                                            class: 'fas fa-times mx-2 fv-text-error fv-hover-xx-lighter fv-pointer',
+                                            onclick: (ev) => {
+                                                ev.stopPropagation()
+                                                this.state.closeCustomView(name)
+                                            }
+                                        }
+                                        : {}
+                                ]
+                            }
+                        })
+                    },
+                ),
             },
         ]
-        this.onclick = () => expanded$.next(!expanded$.getValue())
     }
 }

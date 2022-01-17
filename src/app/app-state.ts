@@ -1,3 +1,4 @@
+
 import { YouwolBannerState } from '@youwol/platform-essentials'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import {
@@ -255,7 +256,7 @@ export class AppState {
                 )
             }),
             map(({ data }) => (data as ProjectsLoadingResults).results),
-            shareReplay(1),
+            shareReplay(1)
         )
 
         PyYouwolClient.environment.status$().subscribe()

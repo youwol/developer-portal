@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs'
-import { requestToJson$ } from './utils'
+import { requestToJson$, requestToText$ } from './utils'
 
 export class SystemRouter {
     private static urlBase = '/admin/system'
@@ -25,5 +25,11 @@ export class SystemRouter {
             folders: string[]
             files: string[]
         }>
+    }
+
+    static fileContent$(path): Observable<string> {
+        const url = `${SystemRouter.urlBase}/file/${path}`
+        const request = new Request(url)
+        return requestToText$(request) as Observable<string>
     }
 }

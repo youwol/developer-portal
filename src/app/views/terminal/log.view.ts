@@ -1,6 +1,14 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import { ContextMessage } from '../../client/models'
 import { DataView } from './data.view'
+import { ChartExplorerView } from './factories/helm.view'
+import { TerminalState } from './terminal.view'
+
+type KnownViews = 'HelmPackage'
+
+const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
+    HelmPackage: (data) => new ChartExplorerView(data),
+}
 
 export class LogView implements VirtualDOM {
     public readonly class = 'd-flex align-items-center fv-pointer'
@@ -10,23 +18,48 @@ export class LogView implements VirtualDOM {
     public readonly classesFactory = {
         ERROR: 'fv-text-error ',
     }
+    public readonly state: TerminalState
+    public readonly message: ContextMessage
 
-    constructor(message: ContextMessage) {
-        this.style = message.labels.includes('Label.BASH')
+    constructor(params: { state: TerminalState; message: ContextMessage }) {
+        Object.assign(this, params)
+        let customView: VirtualDOM
+        if (this.message.level == 'DATA') {
+            const views = Object.keys(viewsFactory)
+                .filter((key) => this.message.labels.includes(key as any))
+                .map((key: KnownViews) => ({
+                    name: key,
+                    factory: viewsFactory[key],
+                }))
+
+            if (views.length > 0) {
+                customView = {
+                    innerText: views[0].name,
+                    class: 'fv-bg-secondary border rounded fv-hover-xx-lighter p-1',
+                    onclick: (ev) => {
+                        const view = views[0].factory(this.message.data)
+                        this.state.openCustomView(views[0].name, view)
+                    },
+                }
+            }
+        }
+        this.style = this.message.labels.includes('Label.BASH')
             ? { fontFamily: 'monospace', fontSize: 'x-small' }
             : {}
 
         this.children = [
             {
-                class: this.classesFactory[message.level] || '',
+                class: this.classesFactory[this.message.level] || '',
             },
             {
-                class: this.classesFactory[message.level] || '',
-                innerText:
-                    message.level == 'ERROR' ? message.text : message.text,
+                class: this.classesFactory[this.message.level] || '',
+                innerText: this.message.text,
             },
-            new LabelsView(message.labels),
-            message.data ? new DataView(message.data as any) : undefined,
+            customView,
+            new LabelsView(this.message.labels),
+            this.message.data
+                ? new DataView(this.message.data as any)
+                : undefined,
         ]
     }
 }
