@@ -1115,7 +1115,7 @@
   resolved "https://registry.yarnpkg.com/@youwol/logging/-/logging-0.0.2.tgz#50515dd16af5115e033f0c47cab22753d8d22c36"
   integrity sha512-OVCOP7a4KPKrFiKiQcTKap5oGLlXvcz/CtxD4PdS7Cg4lgy75vsOCF0d2w7T3KX9y9ir7V/zu1w7HL6Jvu6P3w==
 
-"@youwol/platform-essentials@^0.0.2":
+"@youwol/platform-essentials@^0.0.2-next":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@youwol/platform-essentials/-/platform-essentials-0.0.2.tgz#265740bdd609bf70bdfe84b7247052fbaba1a862"
   integrity sha512-1Rls7MYvFvY7wQnoVfv+bvha9uITLRQDwva6wfgh1oC8woBod6RIbzavAhus4iXqCHYE9TvGRwy8Lrm9OGvI7w==

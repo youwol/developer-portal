@@ -1,6 +1,6 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { Select } from '@youwol/fv-input'
-import { ArtifactResponse, Link } from 'src/app/client/models'
+import { ArtifactResponse, Link } from '../../../client/models'
 import { FilesBrowserView } from '../../files-browser.view'
 
 export class ArtifactItem extends Select.ItemData {

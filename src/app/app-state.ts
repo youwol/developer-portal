@@ -1,3 +1,4 @@
+
 import { YouwolBannerState } from '@youwol/platform-essentials'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import {
@@ -8,20 +9,22 @@ import {
     scan,
     shareReplay,
 } from 'rxjs/operators'
-import { PyYouwolClient } from './client/py-youwol.client'
 import {
     CdnResponse,
     CheckUpdateResponse,
     CheckUpdatesResponse,
-    DownloadPackageBody,
-    Label,
     ContextMessage,
+    DownloadPackageBody,
     Environment,
+    Label,
     PipelineStep,
     PipelineStepStatusResponse,
     Project,
+    ProjectLoadingResult,
+    ProjectsLoadingResults,
     ProjectStatusResponse,
 } from './client/models'
+import { PyYouwolClient } from './client/py-youwol.client'
 
 type StepId = string
 
@@ -30,7 +33,7 @@ export function filterCtxMessage<T = unknown>({
     withLabels,
 }: {
     withAttributes?: {
-        [key: string]: string | ((string) => boolean)
+        [_key: string]: string | ((string) => boolean)
     }
     withLabels?: Label[]
 }) {
@@ -218,6 +221,7 @@ export type Topic = 'Projects' | 'Updates' | 'CDN'
 
 export class AppState {
     public readonly environment$: Observable<Environment>
+    public readonly projectsLoading$: Observable<ProjectLoadingResult[]>
     public readonly topBannerState = new YouwolBannerState({
         cmEditorModule$: undefined,
     })
@@ -245,14 +249,21 @@ export class AppState {
             shareReplay(1),
         )
 
+        this.projectsLoading$ = PyYouwolClient.connectWs().pipe(
+            filter(({ labels, data }) => {
+                return (
+                    labels && data && labels.includes('ProjectsLoadingResults')
+                )
+            }),
+            map(({ data }) => (data as ProjectsLoadingResults).results),
+            shareReplay(1)
+        )
+
         PyYouwolClient.environment.status$().subscribe()
     }
 
     selectTopic(topic: Topic) {
         this.selectedTopic$.next(topic)
-        if (topic == 'Updates') {
-            this.collectUpdates()
-        }
     }
 
     selectTab(tabId: string) {

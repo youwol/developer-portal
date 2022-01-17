@@ -1,11 +1,11 @@
-import { VirtualDOM, child$ } from '@youwol/flux-view'
+import { child$, VirtualDOM } from '@youwol/flux-view'
 import { BehaviorSubject, Observable } from 'rxjs'
+import { AppState } from '../../../app-state'
 import {
-    CdnVersionResponse,
     CdnResponse,
+    CdnVersionResponse,
     Project,
 } from '../../../client/models'
-import { AppState } from '../../../app-state'
 import { FilesBrowserView } from '../../files-browser.view'
 
 export class CdnView implements VirtualDOM {

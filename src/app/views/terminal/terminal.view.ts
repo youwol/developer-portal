@@ -9,7 +9,7 @@ import {
 } from '@youwol/flux-view'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
-import { ContextMessage } from 'src/app/client/models'
+import { ContextMessage } from '../../client/models'
 import { AttributesView, LabelsView, LogView } from './log.view'
 
 export class NodeHeaderView implements VirtualDOM {
@@ -235,7 +235,6 @@ export class TerminalView implements VirtualDOM {
 
     public readonly commands$ = new BehaviorSubject([invite, ''])
     public readonly command$ = new BehaviorSubject('>')
-
     contentElement: HTMLDivElement
 
     public readonly class = attr$(

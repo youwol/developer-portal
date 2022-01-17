@@ -1,8 +1,8 @@
 import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
+import { merge, Observable } from 'rxjs'
+import { map, mapTo, tap } from 'rxjs/operators'
 import { AppState, filterCtxMessage } from '../../../app-state'
 import { ContextMessage, PipelineStep, Project } from '../../../client/models'
-import { map, mapTo, tap } from 'rxjs/operators'
-import { merge, Observable } from 'rxjs'
 import { PyYouwolClient } from '../../../client/py-youwol.client'
 
 type StepStatus = 'OK' | 'KO' | 'outdated' | 'none' | 'pending'

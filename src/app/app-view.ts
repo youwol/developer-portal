@@ -1,10 +1,10 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
-import { filter } from 'rxjs/operators'
+import { VirtualDOM } from '@youwol/flux-view'
 import { AppState } from './app-state'
 import { MainPanelView } from './views/projects/projects.view'
 import { SideBarView } from './views/side-bar.view'
 import { TopBannerView } from './views/top-banner.view'
 import { UpdatesView } from './views/updates/updates.view'
+
 
 export class AppView implements VirtualDOM {
     public readonly class =
@@ -26,13 +26,9 @@ export class AppView implements VirtualDOM {
                     new SideBarView({ state: this.state }),
                     // MainPanel is state-full => no 'child$' (state kept in memory when topic changes)
                     new MainPanelView({ state: this.state }),
-                    // UpdatesView is recreated from scratch @ every selectedTopic$ == 'Updates'
-                    child$(
-                        this.state.selectedTopic$.pipe(
-                            filter((t) => t == 'Updates'),
-                        ),
-                        () => new UpdatesView({ state: this.state }),
-                    ),
+                    // UpdatesView is state-full => some of its children are recreated from scratch
+                    // on selectedTopic$ == 'Updates' OR on environment$
+                    new UpdatesView({ state: this.state }),
                 ],
             },
         ]

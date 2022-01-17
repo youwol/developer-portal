@@ -1,13 +1,13 @@
-import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
-import * as d3 from 'd3'
 import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import * as d3 from 'd3'
+import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
+import { BehaviorSubject, combineLatest } from 'rxjs'
+import { AppState } from '../../../app-state'
 import {
     ChildToParentConnections,
     Project,
     ProjectStatusResponse,
 } from '../../../client/models'
-import { AppState } from '../../../app-state'
-import { BehaviorSubject, combineLatest } from 'rxjs'
 
 export class DagDependenciesView implements VirtualDOM {
     public readonly class = 'w-100 h-50 mx-auto d-flex flex-column'

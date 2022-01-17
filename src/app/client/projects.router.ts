@@ -4,6 +4,19 @@ export class ProjectsRouter {
     private static urlBase = '/admin/projects'
     static headers = {}
 
+    static listProjects$() {
+        const url = `${ProjectsRouter.urlBase}/`
+        const request = new Request(url)
+        return requestToJson$(request)
+    }
+
+    // TODO: Expose in UI this feature
+    static clearCache$() {
+        const url = `${ProjectsRouter.urlBase}/cache`
+        const request = new Request(url, { method: 'DELETE' })
+        return requestToJson$(request)
+    }
+
     static getProjectStatus$(projectId: string) {
         const url = `${ProjectsRouter.urlBase}/${projectId}`
         const request = new Request(url)

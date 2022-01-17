@@ -1,15 +1,15 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { AppState } from 'src/app/app-state'
-import { Project } from '../../../client/models'
-import { DagFlowView } from './dag-flow.view'
-import { StepView } from './step.view'
-import { TerminalView } from '../../terminal/terminal.view'
 import { mergeMap } from 'rxjs/operators'
+import { AppState } from '../../../app-state'
+import { Project } from '../../../client/models'
 import { PyYouwolClient } from '../../../client/py-youwol.client'
+import { TerminalView } from '../../terminal/terminal.view'
 import { ArtifactsView } from './artifacts.view'
-import { HeaderBannerView } from './header-banner.view'
 import { DagDependenciesView } from './dag-dependencies.view'
+import { DagFlowView } from './dag-flow.view'
+import { HeaderBannerView } from './header-banner.view'
 import { CdnView } from './local-cdn.view'
+import { StepView } from './step.view'
 
 export class ProjectView implements VirtualDOM {
     public readonly class = 'd-flex flex-column w-100 h-100'
@@ -32,11 +32,14 @@ export class ProjectView implements VirtualDOM {
                     {
                         class: 'd-flex flex-column h-100 w-100 mr-2',
                         children: [
-                            child$(events.selectedStep$, ({ flowId, step }) => {
-                                return flowId != undefined
-                                    ? new DagFlowView(params)
-                                    : new DagDependenciesView(params)
-                            }),
+                            child$(
+                                events.selectedStep$,
+                                ({ flowId, _step }) => {
+                                    return flowId != undefined
+                                        ? new DagFlowView(params)
+                                        : new DagDependenciesView(params)
+                                },
+                            ),
                             new TerminalView(events.messages$),
                         ],
                     },

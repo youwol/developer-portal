@@ -43,7 +43,6 @@ export class LogView implements VirtualDOM {
                 }
             }
         }
-
         this.style = this.message.labels.includes('Label.BASH')
             ? { fontFamily: 'monospace', fontSize: 'x-small' }
             : {}
@@ -88,6 +87,7 @@ export class AttributesView {
         fontSize: 'small',
         maxWidth: '50%',
     }
+
     constructor(attributes: { [key: string]: any }) {
         this.children = [
             {
