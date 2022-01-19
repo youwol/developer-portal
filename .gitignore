@@ -7,3 +7,4 @@ src/auto_generated.ts
 cdn.zip
 /*.iml
 /.idea/
+__pycache__
