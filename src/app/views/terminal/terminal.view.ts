@@ -10,7 +10,10 @@ import {
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
 import { ContextMessage } from '../../client/models'
-import { AttributesView, LabelsView, LogView } from './log.view'
+import { AttributesView, labelIcons, LabelsView, LogView } from './log.view'
+
+
+
 
 export class NodeHeaderView implements VirtualDOM {
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
@@ -153,8 +156,9 @@ export class NodeView implements VirtualDOM {
                             children: childrenAppendOnly$(
                                 messages$[contextId].pipe(
                                     filter(
-                                        (m) =>
-                                            !m.labels.includes('Label.STARTED'),
+                                        (m) => {
+                                            return !m.labels.includes('Label.STARTED')
+                                        },
                                     ),
                                     map((message) => [message]),
                                 ),
