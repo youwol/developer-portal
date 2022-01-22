@@ -253,6 +253,10 @@ export class TerminalView implements VirtualDOM {
 
     constructor(messages$: Observable<ContextMessage>) {
         messages$.subscribe((message) => {
+
+            if (!this.messages$[message.parentContextId]) {
+                message.parentContextId = 'root'
+            }
             if (!message.parentContextId) {
                 return
             }
