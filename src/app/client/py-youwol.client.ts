@@ -8,25 +8,53 @@ import { SystemRouter } from './system.router'
 export class PyYouwolClient {
     static urlBase = '/admin'
 
-    private static webSocket$: Subject<ContextMessage>
+    private static webSocketUser$: Subject<ContextMessage>
+
+    private static webSocketAdmin$: Subject<ContextMessage>
 
     static headers: { [key: string]: string } = {}
 
     static connectWs() {
-        if (PyYouwolClient.webSocket$) {
-            return PyYouwolClient.webSocket$
+        if (PyYouwolClient.webSocketUser$) {
+            return PyYouwolClient.webSocketUser$
         }
 
-        PyYouwolClient.webSocket$ = new Subject()
-        const ws = new WebSocket(`ws://${window.location.host}/ws`)
+        PyYouwolClient.webSocketUser$ = PyYouwolClient._connectWs(`ws://${window.location.host}/ws`)
+        return PyYouwolClient.webSocketUser$
+    }
+    static connectWsAdmin() {
+        if (PyYouwolClient.webSocketAdmin$) {
+            return PyYouwolClient.webSocketAdmin$
+        }
+
+        console.log("Connect admin")
+
+        PyYouwolClient.webSocketAdmin$ = new Subject<ContextMessage>()
+        const ws = new WebSocket(`ws://${window.location.host}/admin/ws`)
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data)
             // console.log("PyYouwolClient", data)
             if (event.data != {}) {
-                PyYouwolClient.webSocket$.next(data)
+                PyYouwolClient.webSocketAdmin$.next(data)
             }
         }
-        return PyYouwolClient.webSocket$
+
+        //PyYouwolClient.webSocketAdmin$ = PyYouwolClient._connectWs(`ws://${window.location.host}/admin/ws`)
+        return PyYouwolClient.webSocketAdmin$
+    }
+
+    static _connectWs(path: string) {
+
+        let channel$ = new Subject<ContextMessage>()
+        const ws = new WebSocket(path)
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data)
+            // console.log("PyYouwolClient", data)
+            if (event.data != {}) {
+                channel$.next(data)
+            }
+        }
+        return channel$
     }
 
     static environment = EnvironmentRouter
