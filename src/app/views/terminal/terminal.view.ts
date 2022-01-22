@@ -48,8 +48,21 @@ export class NodeHeaderView implements VirtualDOM {
                 }),
             },
             {
-                class: 'mr-3',
-                innerText: message.text,
+                children: [
+                    {
+                        class: 'd-flex flex-align-center px-2',
+                        children: message.labels.filter(label => labelIcons[label])
+                            .map(label => {
+                                return {
+                                    class: labelIcons[label] + ' mx-1'
+                                }
+                            })
+                    },
+                    {
+                        class: 'mr-3',
+                        innerText: message.text,
+                    }
+                ]
             },
             new LabelsView(message.labels),
             new AttributesView(message.attributes),

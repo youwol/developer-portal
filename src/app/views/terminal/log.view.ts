@@ -5,6 +5,14 @@ import { ChartExplorerView } from './factories/helm.view'
 import { TerminalState } from './terminal.view'
 
 type KnownViews = 'HelmPackage'
+export let labelIcons = {
+    "Label.ADMIN": "fas fa-users-cog",
+    "Label.API_GATEWAY": "fas fa-door-open",
+    "Label.MIDDLEWARE": "fas fa-ghost",
+    "Label.LOG_WARNING": "fas fa-exclamation-circle fv-text-focus",
+    "Label.LOG_ERROR": "fas fa-times fv-text-error",
+    "Label.END_POINT": "fas fa-microchip"
+}
 
 const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
     HelmPackage: (data) => new ChartExplorerView(data),
@@ -15,9 +23,7 @@ export class LogView implements VirtualDOM {
     public readonly style = {}
     public readonly children: VirtualDOM[]
 
-    public readonly classesFactory = {
-        ERROR: 'fv-text-error ',
-    }
+
     public readonly state: TerminalState
     public readonly message: ContextMessage
 
@@ -49,10 +55,15 @@ export class LogView implements VirtualDOM {
 
         this.children = [
             {
-                class: this.classesFactory[this.message.level] || '',
+                class: 'd-flex flex-align-center px-2',
+                children: this.message.labels.filter(label => labelIcons[label])
+                    .map(label => {
+                        return {
+                            class: labelIcons[label]
+                        }
+                    })
             },
             {
-                class: this.classesFactory[this.message.level] || '',
                 innerText: this.message.text,
             },
             customView,
