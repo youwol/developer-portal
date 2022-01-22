@@ -76,6 +76,10 @@ export class SideBarContentView implements VirtualDOM {
             name: 'CDN',
             icon: 'fas fa-database',
         },
+        {
+            name: 'Admin',
+            icon: 'fas fa-users-cog',
+        },
     ]
     public readonly state: AppState
 

@@ -107,6 +107,18 @@ export class UpdateEvents {
     }
 }
 
+export class AdminEvents {
+    /**
+     * All messages related to admin
+     */
+    messages$: Observable<ContextMessage>
+
+    constructor() {
+        this.messages$ = PyYouwolClient.connectWsAdmin()
+    }
+}
+
+
 export class ProjectEvents {
     /**
      * All messages related to the project
@@ -123,6 +135,7 @@ export class ProjectEvents {
 
     projectStatusResponse$ = new ReplaySubject<ProjectStatusResponse>(1)
     cdnResponse$ = new ReplaySubject<CdnResponse>(1)
+
 
     constructor(public readonly project: Project) {
         this.messages$ = PyYouwolClient.connectWs().pipe(
@@ -217,7 +230,7 @@ export class ProjectEvents {
     }
 }
 
-export type Topic = 'Projects' | 'Updates' | 'CDN'
+export type Topic = 'Projects' | 'Updates' | 'CDN' | 'Admin'
 
 export class AppState {
     public readonly environment$: Observable<Environment>
@@ -235,6 +248,8 @@ export class AppState {
     public readonly downloadQueue$ = new BehaviorSubject<DownloadPackageBody[]>(
         [],
     )
+
+    public readonly adminEvents = new AdminEvents()
 
     constructor() {
         this.environment$ = PyYouwolClient.connectWs().pipe(
