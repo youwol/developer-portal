@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs'
+import { LogsResponse } from './models'
 import { requestToJson$, requestToText$ } from './utils'
 
 export class SystemRouter {
@@ -31,5 +32,23 @@ export class SystemRouter {
         const url = `${SystemRouter.urlBase}/file/${path}`
         const request = new Request(url)
         return requestToText$(request) as Observable<string>
+    }
+
+    static queryLogs$(body: { fromTimestamp: number, maxCount: number }): Observable<LogsResponse> {
+        const url = `${SystemRouter.urlBase}/logs`
+        const request = new Request(
+            url,
+            {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+        return requestToJson$(request) as Observable<LogsResponse>
+    }
+
+    static logs$(parentId: string): Observable<LogsResponse> {
+        const url = `${SystemRouter.urlBase}/logs/${parentId}`
+        const request = new Request(url)
+        return requestToJson$(request) as Observable<LogsResponse>
     }
 }

@@ -26,20 +26,7 @@ export class PyYouwolClient {
         if (PyYouwolClient.webSocketAdmin$) {
             return PyYouwolClient.webSocketAdmin$
         }
-
-        console.log("Connect admin")
-
-        PyYouwolClient.webSocketAdmin$ = new Subject<ContextMessage>()
-        const ws = new WebSocket(`ws://${window.location.host}/admin/ws`)
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data)
-            // console.log("PyYouwolClient", data)
-            if (event.data != {}) {
-                PyYouwolClient.webSocketAdmin$.next(data)
-            }
-        }
-
-        //PyYouwolClient.webSocketAdmin$ = PyYouwolClient._connectWs(`ws://${window.location.host}/admin/ws`)
+        PyYouwolClient.webSocketAdmin$ = PyYouwolClient._connectWs(`ws://${window.location.host}/admin/ws`)
         return PyYouwolClient.webSocketAdmin$
     }
 

@@ -5,6 +5,7 @@ export type Label =
     | 'Label.BASH'
     | 'Label.LOG_ABORT'
     | 'Label.EXCEPTION'
+    | 'Label.FAILED'
     | 'EnvironmentStatusResponse'
     | 'PipelineStepStatusResponse'
     | 'ProjectStatusResponse'
@@ -27,6 +28,15 @@ export interface ContextMessage<T = unknown> {
     parentContextId: string | undefined
     data: T
     attributes: { [key: string]: any }
+}
+
+export interface LogResponse<T = unknown> extends ContextMessage<T> {
+    failed?: boolean
+}
+
+
+export interface LogsResponse {
+    logs: LogResponse[]
 }
 
 export interface UserInfo {
