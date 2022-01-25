@@ -1,17 +1,23 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import { ContextMessage } from '../../client/models'
+import { ContextMessage, Label } from '../../client/models'
 import { DataView } from './data.view'
 import { ChartExplorerView } from './factories/helm.view'
 import { TerminalState } from './terminal.view'
 
 type KnownViews = 'HelmPackage'
-export let labelIcons = {
+
+export let labelMethodIcons = {
     "Label.ADMIN": "fas fa-users-cog",
     "Label.API_GATEWAY": "fas fa-door-open",
     "Label.MIDDLEWARE": "fas fa-ghost",
+    "Label.END_POINT": "fas fa-microchip",
+    "Label.APPLICATION": "fas fa-play",
+    "Label.LOG": "fas fa-edit"
+}
+export let labelLogIcons = {
     "Label.LOG_WARNING": "fas fa-exclamation-circle fv-text-focus",
     "Label.LOG_ERROR": "fas fa-times fv-text-error",
-    "Label.END_POINT": "fas fa-microchip"
+    "Label.DONE": "fas fa-flag"
 }
 
 const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
@@ -26,9 +32,14 @@ export class LogView implements VirtualDOM {
 
     public readonly state: TerminalState
     public readonly message: ContextMessage
+    public readonly parentMessage: ContextMessage
 
-    constructor(params: { state: TerminalState; message: ContextMessage }) {
+    constructor(params: {
+        state: TerminalState,
+        message: ContextMessage
+    }) {
         Object.assign(this, params)
+
         let customView: VirtualDOM
         if (this.message.level == 'DATA') {
             const views = Object.keys(viewsFactory)
@@ -56,10 +67,10 @@ export class LogView implements VirtualDOM {
         this.children = [
             {
                 class: 'd-flex flex-align-center px-2',
-                children: this.message.labels.filter(label => labelIcons[label])
+                children: this.message.labels.filter(label => labelLogIcons[label])
                     .map(label => {
                         return {
-                            class: labelIcons[label]
+                            class: labelLogIcons[label] + ' mx-1'
                         }
                     })
             },
@@ -67,7 +78,6 @@ export class LogView implements VirtualDOM {
                 innerText: this.message.text,
             },
             customView,
-            new LabelsView(this.message.labels),
             this.message.data
                 ? new DataView(this.message.data as any)
                 : undefined,
@@ -75,18 +85,29 @@ export class LogView implements VirtualDOM {
     }
 }
 
-export class LabelsView {
+export class MethodLabelView {
+
     public readonly class = 'd-flex align-items-center mr-3'
     public readonly children: VirtualDOM[]
 
-    constructor(labels: string[]) {
-        const factory = {
-            'Label.INFO': 'fas fa-info',
-            'Label.DONE': 'fas fa-flag-checkered',
-        }
-        this.children = labels
-            .filter((label) => factory[label] != undefined)
-            .map((label) => ({ class: factory[label] }))
+    constructor(message: ContextMessage) {
+
+        this.children = [
+            {
+                class: 'd-flex flex-align-center px-2',
+                children: message.labels.filter(label => labelMethodIcons[label])
+                    .map(label => {
+                        return {
+                            class: labelMethodIcons[label] + ' mx-1'
+                        }
+                    })
+            },
+            {
+                class: 'mr-3',
+                innerText: message.text,
+            }
+        ]
+
     }
 }
 
@@ -124,3 +145,4 @@ export class AttributesView {
         ]
     }
 }
+

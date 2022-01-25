@@ -10,7 +10,7 @@ import {
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
 import { ContextMessage } from '../../client/models'
-import { AttributesView, labelIcons, LabelsView, LogView } from './log.view'
+import { AttributesView, labelMethodIcons, LogView } from './log.view'
 
 
 
@@ -54,10 +54,10 @@ export class NodeHeaderView implements VirtualDOM {
                 children: [
                     {
                         class: 'd-flex flex-align-center px-2',
-                        children: message.labels.filter(label => labelIcons[label])
+                        children: message.labels.filter(label => labelMethodIcons[label])
                             .map(label => {
                                 return {
-                                    class: labelIcons[label] + ' mx-1'
+                                    class: labelMethodIcons[label] + ' mx-1'
                                 }
                             })
                     },
@@ -67,7 +67,6 @@ export class NodeHeaderView implements VirtualDOM {
                     }
                 ]
             },
-            new LabelsView(message.labels),
             new AttributesView(message.attributes),
         ]
         this.onclick = (ev) => {
@@ -109,7 +108,7 @@ export class NodeView implements VirtualDOM {
                 takeUntil(this.status$.pipe(filter((s) => s != 'processing'))),
             )
             .subscribe((message) => {
-                if (message.labels.includes('Label.EXCEPTION')) {
+                if (message.labels.includes('Label.FAILED')) {
                     this.status$.next('error')
                 }
 
@@ -166,7 +165,7 @@ export class NodeView implements VirtualDOM {
                                     if (message.contextId == contextId) {
                                         return new LogView({
                                             state: this.state,
-                                            message,
+                                            message
                                         })
                                     }
 
