@@ -1,4 +1,5 @@
 import {
+    attr$,
     children$,
     VirtualDOM,
 } from '@youwol/flux-view'
@@ -11,6 +12,8 @@ import { ImmutableTree } from '@youwol/fv-tree'
 import { AttributesView, LogView, MethodLabelView } from '../terminal/log.view'
 import { ContextMessage, LogResponse, LogsResponse } from 'src/app/client/models'
 import { TerminalState } from '../terminal/terminal.view'
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
+import { classesButton } from '../utils-view'
 
 
 function uid() {
@@ -63,17 +66,49 @@ export class LogNode extends ImmutableTree.Node {
 export class AdminView implements VirtualDOM {
 
     static ClassSelector = 'admin-view'
-    public readonly class = `${AdminView.ClassSelector} w-100 h-100 flex-column p-2`
+    public readonly class = `${AdminView.ClassSelector} w-100 h-100 d-flex flex-column p-2`
     public readonly children: VirtualDOM[]
     public readonly state: AppState
+
+    public readonly logs$ = new ReplaySubject<LogsResponse>(1)
+    public readonly fetchingLogs$ = new BehaviorSubject<boolean>(false)
+
 
     constructor(params: { state: AppState }) {
 
         Object.assign(this, params)
 
         this.children = [
-            new LogsView(params)
+            {
+                class: `${classesButton} mx-auto px-4`,
+                children: [
+                    {
+                        class: attr$(
+                            this.fetchingLogs$,
+                            (isFetching) => isFetching ? 'fa-spinner fa-spin' : 'fa-sync',
+                            {
+                                wrapper: (d) => `${d} fas`
+                            }
+                        )
+                    }
+                ],
+                style: {
+                    width: 'fit-content'
+                },
+                onclick: () => this.refresh()
+            },
+            new LogsView({ state: this.state, logs$: this.logs$ })
         ]
+        this.refresh()
+    }
+
+    refresh() {
+        this.fetchingLogs$.next(true)
+        PyYouwolClient.system.queryLogs$({ fromTimestamp: Date.now(), maxCount: 1000 })
+            .subscribe((logs) => {
+                this.logs$.next(logs)
+                this.fetchingLogs$.next(false)
+            })
     }
 }
 
@@ -108,19 +143,23 @@ export class LogsView implements VirtualDOM {
 
     static ClassSelector = 'logs-view'
 
-    public readonly class = `${LogsView.ClassSelector} h-100 w-100`
+    public readonly class = `${LogsView.ClassSelector} flex-grow-1 w-100`
+    public readonly style = {
+        minHeight: "0px"
+    }
     public readonly children: VirtualDOM[]
     public readonly state: AppState
     public readonly terminalState = new TerminalState()
+    public readonly logs$: Observable<LogsResponse>
 
-    constructor(params: { state: AppState }) {
+    constructor(params: { state: AppState, logs$: Observable<LogsResponse> }) {
 
         Object.assign(this, params)
         this.children = [
             {
                 class: 'w-100 h-100 overflow-auto',
                 children: children$(
-                    PyYouwolClient.system.queryLogs$({ fromTimestamp: Date.now(), maxCount: 100 }),
+                    this.logs$,
                     (response: LogsResponse) => {
                         return response.logs.map((log) => {
                             return createNodeTreeView(log, this.terminalState)
