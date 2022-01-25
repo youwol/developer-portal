@@ -107,16 +107,6 @@ export class UpdateEvents {
     }
 }
 
-export class AdminEvents {
-    /**
-     * All messages related to admin
-     */
-    messages$: Observable<ContextMessage>
-
-    constructor() {
-        this.messages$ = PyYouwolClient.connectWsAdmin()
-    }
-}
 
 
 export class ProjectEvents {
@@ -233,6 +223,7 @@ export class ProjectEvents {
 export type Topic = 'Projects' | 'Updates' | 'CDN' | 'Admin'
 
 export class AppState {
+
     public readonly environment$: Observable<Environment>
     public readonly projectsLoading$: Observable<ProjectLoadingResult[]>
     public readonly topBannerState = new YouwolBannerState({
@@ -248,8 +239,6 @@ export class AppState {
     public readonly downloadQueue$ = new BehaviorSubject<DownloadPackageBody[]>(
         [],
     )
-
-    public readonly adminEvents = new AdminEvents()
 
     constructor() {
         this.environment$ = PyYouwolClient.connectWs().pipe(

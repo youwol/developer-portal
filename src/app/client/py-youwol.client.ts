@@ -10,8 +10,6 @@ export class PyYouwolClient {
 
     private static webSocketUser$: Subject<ContextMessage>
 
-    private static webSocketAdmin$: Subject<ContextMessage>
-
     static headers: { [key: string]: string } = {}
 
     static connectWs() {
@@ -21,13 +19,6 @@ export class PyYouwolClient {
 
         PyYouwolClient.webSocketUser$ = PyYouwolClient._connectWs(`ws://${window.location.host}/ws`)
         return PyYouwolClient.webSocketUser$
-    }
-    static connectWsAdmin() {
-        if (PyYouwolClient.webSocketAdmin$) {
-            return PyYouwolClient.webSocketAdmin$
-        }
-        PyYouwolClient.webSocketAdmin$ = PyYouwolClient._connectWs(`ws://${window.location.host}/admin/ws`)
-        return PyYouwolClient.webSocketAdmin$
     }
 
     static _connectWs(path: string) {
