@@ -10,36 +10,33 @@ import { AppState } from '../../app-state'
 import { map } from 'rxjs/operators'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { AttributesView, LogView, MethodLabelView } from '../terminal/log.view'
-import { ContextMessage, LogResponse, LogsResponse } from 'src/app/client/models'
+import { ContextMessage, Label, LogResponse, LogsResponse } from 'src/app/client/models'
 import { TerminalState } from '../terminal/terminal.view'
-import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { classesButton } from '../utils-view'
 
 
-function uid() {
-    return `${Math.floor(Math.random() * 1e6)}`
-}
-
-export class LogLeaf extends ImmutableTree.Node {
-
-    constructor(params: {
-        text: string,
-        level: string,
-        attributes: { [key: string]: string },
-        labels: string[],
-        data: any,
-        contextId: string,
-        parentContextId: string
-    }) {
-        super({
-            id: uid()
-        })
-        Object.assign(this, params)
-    }
+function getChildren(contextId: string) {
+    return PyYouwolClient.system.logs$(contextId)
+        .pipe(
+            map(({ logs }) => logs.map(log => {
+                if (log.labels.includes("Label.STARTED"))
+                    return new LogNode(log, getChildren(log.contextId))
+                return new LogNode(log)
+            }))
+        )
 }
 
 export class LogNode extends ImmutableTree.Node {
 
+    text: string
+    level: string
+    attributes: { [key: string]: string }
+    labels: Label[]
+    data: any
+    contextId: string
+    parentContextId: string
+
     constructor(params: {
         text: string,
         level: string,
@@ -48,16 +45,12 @@ export class LogNode extends ImmutableTree.Node {
         data: any,
         contextId: string,
         parentContextId: string
-    }) {
+    },
+        children?: Observable<ImmutableTree.Node[]>
+    ) {
         super({
-            id: uid(),
-            children: PyYouwolClient.system.logs$(params.contextId).pipe(
-                map(({ logs }) => logs.map(log => {
-                    if (log.labels.includes("Label.STARTED"))
-                        return new LogNode(log)
-                    return new LogLeaf(log)
-                }))
-            )
+            id: `${Math.floor(Math.random() * 1e6)}`,
+            children
         })
         Object.assign(this, params)
     }
@@ -85,10 +78,7 @@ export class AdminView implements VirtualDOM {
                     {
                         class: attr$(
                             this.fetchingLogs$,
-                            (isFetching) => isFetching ? 'fa-spinner fa-spin' : 'fa-sync',
-                            {
-                                wrapper: (d) => `${d} fas`
-                            }
+                            (isFetching) => isFetching ? 'fas fa-spinner fa-spin' : 'fas fa-sync'
                         )
                     }
                 ],
@@ -113,31 +103,34 @@ export class AdminView implements VirtualDOM {
 }
 
 
-function createNodeTreeView(log: LogResponse, terminalState: TerminalState) {
+export class TreeView implements VirtualDOM {
 
-    let treeState = new ImmutableTree.State({
-        rootNode: new LogNode(log)
-    })
-    let treeView = new ImmutableTree.View({
-        state: treeState,
-        headerView: (_, node) => {
-            return (node instanceof LogNode)
-                ? new NodeView(node as any)
-                : new LogView({
-                    state: terminalState,
-                    message: node as any
-                })
-        },
-        options: { stepPadding: 30 }
-    })
+    static ClassSelector = 'tree-view'
+    public readonly class = `${TreeView.ClassSelector}`
+    public readonly log: LogResponse
+    public readonly terminalState: TerminalState
+    public readonly children: VirtualDOM[]
 
-    return {
-        children: [
-            treeView
-        ]
+    constructor(params: {
+        log: LogResponse,
+        terminalState: TerminalState
+    }) {
+        Object.assign(this, params)
+        let treeState = new ImmutableTree.State({
+            rootNode: new LogNode(this.log, getChildren(this.log.contextId))
+        })
+        let treeView = new ImmutableTree.View({
+            state: treeState,
+            headerView: (_, node) => {
+                return node.children
+                    ? new NodeView(node)
+                    : new LogView({ state: this.terminalState, message: node as any })
+            },
+            options: { stepPadding: 30 }
+        })
+        this.children = [treeView]
     }
 }
-
 
 export class LogsView implements VirtualDOM {
 
@@ -160,11 +153,10 @@ export class LogsView implements VirtualDOM {
                 class: 'w-100 h-100 overflow-auto',
                 children: children$(
                     this.logs$,
-                    (response: LogsResponse) => {
-                        return response.logs.map((log) => {
-                            return createNodeTreeView(log, this.terminalState)
-                        })
-                    }
+                    (response: LogsResponse) =>
+                        response.logs.map((log) =>
+                            new TreeView({ log, terminalState: this.terminalState })
+                        )
                 )
             }
         ]
@@ -185,7 +177,9 @@ export class NodeView implements VirtualDOM {
     ) {
         this.children = [
             {
-                class: message['failed'] ? 'fas fa-times fv-text-error mr-2' : 'fas fa-check fv-text-success mr-2'
+                class: message['failed']
+                    ? 'fas fa-times fv-text-error mr-2'
+                    : 'fas fa-check fv-text-success mr-2'
             },
             new MethodLabelView(message),
             new AttributesView(message.attributes),
