@@ -10,7 +10,10 @@ import {
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
 import { ContextMessage } from '../../client/models'
-import { AttributesView, LabelsView, LogView } from './log.view'
+import { AttributesView, labelMethodIcons, LogView } from './log.view'
+
+
+
 
 export class NodeHeaderView implements VirtualDOM {
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
@@ -48,10 +51,22 @@ export class NodeHeaderView implements VirtualDOM {
                 }),
             },
             {
-                class: 'mr-3',
-                innerText: message.text,
+                children: [
+                    {
+                        class: 'd-flex flex-align-center px-2',
+                        children: message.labels.filter(label => labelMethodIcons[label])
+                            .map(label => {
+                                return {
+                                    class: labelMethodIcons[label] + ' mx-1'
+                                }
+                            })
+                    },
+                    {
+                        class: 'mr-3',
+                        innerText: message.text,
+                    }
+                ]
             },
-            new LabelsView(message.labels),
             new AttributesView(message.attributes),
         ]
         this.onclick = (ev) => {
@@ -93,7 +108,7 @@ export class NodeView implements VirtualDOM {
                 takeUntil(this.status$.pipe(filter((s) => s != 'processing'))),
             )
             .subscribe((message) => {
-                if (message.labels.includes('Label.EXCEPTION')) {
+                if (message.labels.includes('Label.FAILED')) {
                     this.status$.next('error')
                 }
 
@@ -140,8 +155,9 @@ export class NodeView implements VirtualDOM {
                             children: childrenAppendOnly$(
                                 messages$[contextId].pipe(
                                     filter(
-                                        (m) =>
-                                            !m.labels.includes('Label.STARTED'),
+                                        (m) => {
+                                            return !m.labels.includes('Label.STARTED')
+                                        },
                                     ),
                                     map((message) => [message]),
                                 ),
@@ -149,7 +165,7 @@ export class NodeView implements VirtualDOM {
                                     if (message.contextId == contextId) {
                                         return new LogView({
                                             state: this.state,
-                                            message,
+                                            message
                                         })
                                     }
 
@@ -253,6 +269,10 @@ export class TerminalView implements VirtualDOM {
 
     constructor(messages$: Observable<ContextMessage>) {
         messages$.subscribe((message) => {
+
+            if (!this.messages$[message.parentContextId]) {
+                message.parentContextId = 'root'
+            }
             if (!message.parentContextId) {
                 return
             }

@@ -4,6 +4,7 @@ import { map, mapTo, tap } from 'rxjs/operators'
 import { AppState, filterCtxMessage } from '../../../app-state'
 import { ContextMessage, PipelineStep, Project } from '../../../client/models'
 import { PyYouwolClient } from '../../../client/py-youwol.client'
+import { classesButton } from '../../utils-view'
 
 type StepStatus = 'OK' | 'KO' | 'outdated' | 'none' | 'pending'
 
@@ -115,7 +116,7 @@ export class HeaderBannerView implements VirtualDOM {
             map((message: ContextMessage) => message.data['status']),
         )
         return {
-            class: 'd-flex border p-2 rounded fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center',
+            class: classesButton,
             innerText: step.id,
             onclick: () =>
                 PyYouwolClient.projects

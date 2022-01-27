@@ -14,3 +14,7 @@
 .fv-hover-fill-focus:hover {
     fill: #ffbb00;
 }
+
+.fv-tree-arianeLine{
+    display: none;
+}

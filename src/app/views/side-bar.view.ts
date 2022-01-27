@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs'
 import { AppState, Topic } from '../app-state'
 
 export class SideBarSectionView implements VirtualDOM {
+
     public readonly class = 'fv-pointer w-100 my-2'
     public readonly children: VirtualDOM[]
 
@@ -48,10 +49,10 @@ export class SideBarSectionView implements VirtualDOM {
                     child$(this.extended$, (extended) =>
                         extended
                             ? {
-                                  tag: 'span',
-                                  class: 'px-2',
-                                  innerText: this.name,
-                              }
+                                tag: 'span',
+                                class: 'px-2',
+                                innerText: this.name,
+                            }
                             : {},
                     ),
                 ],
@@ -76,6 +77,10 @@ export class SideBarContentView implements VirtualDOM {
             name: 'CDN',
             icon: 'fas fa-database',
         },
+        {
+            name: 'Admin',
+            icon: 'fas fa-users-cog',
+        },
     ]
     public readonly state: AppState
 
@@ -91,6 +96,7 @@ export class SideBarContentView implements VirtualDOM {
 }
 
 export class SideBarView implements VirtualDOM {
+
     public readonly class = 'fv-bg-background  pt-1 border-right h-100'
     public readonly style: any
     public readonly children: VirtualDOM[]
@@ -105,8 +111,8 @@ export class SideBarView implements VirtualDOM {
         this.style = attr$(this.extended$, (extended) =>
             extended
                 ? {
-                      width: '250px',
-                  }
+                    width: '250px',
+                }
                 : { width: 'auto' },
         )
 
