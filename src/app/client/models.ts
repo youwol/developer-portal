@@ -112,9 +112,10 @@ export interface Flow {
 
 export interface Pipeline {
     id: string
-    language: string
-    compiler: string
-    output: string
+    target: {
+        family: string
+    },
+    tags: string[]
     steps: PipelineStep[]
     flows: Flow[]
 }

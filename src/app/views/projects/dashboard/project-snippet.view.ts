@@ -28,27 +28,15 @@ export class ProjectSnippetView {
                 innerText: this.project.version,
             },
             {
+                tag: 'h5',
+                innerText: this.project.pipeline.target.family,
+            },
+            {
                 class: 'w-100 d-flex align-items-center',
-                children: [
-                    {
-                        class: 'p-1',
-                        innerText: this.project.pipeline.language,
-                    },
-                    {
-                        innerText: '+',
-                    },
-                    {
-                        class: 'p-1',
-                        innerText: this.project.pipeline.compiler,
-                    },
-                    {
-                        class: 'fas fa-arrow-right',
-                    },
-                    {
-                        class: 'p-1',
-                        innerText: this.project.pipeline.output,
-                    },
-                ],
+                children: this.project.pipeline.tags.map((t) => ({
+                    class: 'px-2',
+                    innerText: t,
+                })),
             },
         ]
         this.onclick = () => {
