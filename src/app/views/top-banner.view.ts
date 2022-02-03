@@ -32,7 +32,8 @@ export class UsersSelectView implements VirtualDOM {
                     return PyYouwolClient.environment.login$({ email: id })
                 }),
             )
-            .subscribe(() => {/* NOOP */
+            .subscribe(() => {
+                /* NOOP */
             })
 
         this.children = [

@@ -107,8 +107,6 @@ export class UpdateEvents {
     }
 }
 
-
-
 export class ProjectEvents {
     /**
      * All messages related to the project
@@ -125,7 +123,6 @@ export class ProjectEvents {
 
     projectStatusResponse$ = new ReplaySubject<ProjectStatusResponse>(1)
     cdnResponse$ = new ReplaySubject<CdnResponse>(1)
-
 
     constructor(public readonly project: Project) {
         this.messages$ = PyYouwolClient.connectWs().pipe(
@@ -260,7 +257,7 @@ export class AppState {
                 )
             }),
             map(({ data }) => (data as ProjectsLoadingResults).results),
-            shareReplay(1)
+            shareReplay(1),
         )
 
         PyYouwolClient.environment.status$().subscribe()
