@@ -1,5 +1,4 @@
-
-import { YouwolBannerState } from '@youwol/platform-essentials'
+import { TopBanner } from '@youwol/platform-essentials'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import {
     distinctUntilChanged,
@@ -220,10 +219,9 @@ export class ProjectEvents {
 export type Topic = 'Projects' | 'Updates' | 'CDN' | 'Admin'
 
 export class AppState {
-
     public readonly environment$: Observable<Environment>
     public readonly projectsLoading$: Observable<ProjectLoadingResult[]>
-    public readonly topBannerState = new YouwolBannerState({
+    public readonly topBannerState = new TopBanner.YouwolBannerState({
         cmEditorModule$: undefined,
     })
     public readonly openProjects$ = new BehaviorSubject<Project[]>([])
