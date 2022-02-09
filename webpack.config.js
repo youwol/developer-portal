@@ -24,9 +24,7 @@ module.exports = {
             title: 'Dashboard',
             template: './index.html',
             filename: './index.html',
-            metadata: {
-                baseHref: `/applications/${packageJson.name}/${packageJson.version}/dist/`,
-            },
+            baseHref: `/applications/${packageJson.name}/${packageJson.version}/dist/`,
         }),
         //new BundleAnalyzerPlugin()
     ],
