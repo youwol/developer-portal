@@ -1,7 +1,11 @@
-import { children$, VirtualDOM } from '@youwol/flux-view'
+import { children$, Stream$, VirtualDOM } from '@youwol/flux-view'
 import { map, tap } from 'rxjs/operators'
 import { AppState } from '../../../app-state'
-import { Project, projectLoadingIsSuccess } from '../../../client/models'
+import {
+    Project,
+    projectLoadingIsSuccess,
+    ProjectLoadingResult,
+} from '../../../client/models'
 import { ProjectSnippetView } from './project-snippet.view'
 
 export class DashboardView {
@@ -26,7 +30,10 @@ export class DashboardView {
 export class ProjectsView {
     public readonly class = 'w-100 h-100 d-flex flex-wrap p-2 '
 
-    public readonly children: any
+    public readonly children: Stream$<
+        ProjectLoadingResult[],
+        ProjectSnippetView[]
+    >
 
     public readonly state: AppState
 

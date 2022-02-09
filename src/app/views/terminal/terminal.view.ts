@@ -12,9 +12,6 @@ import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
 import { ContextMessage } from '../../client/models'
 import { AttributesView, labelMethodIcons, LogView } from './log.view'
 
-
-
-
 export class NodeHeaderView implements VirtualDOM {
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
     public readonly style = {
@@ -54,18 +51,19 @@ export class NodeHeaderView implements VirtualDOM {
                 children: [
                     {
                         class: 'd-flex flex-align-center px-2',
-                        children: message.labels.filter(label => labelMethodIcons[label])
-                            .map(label => {
+                        children: message.labels
+                            .filter((label) => labelMethodIcons[label])
+                            .map((label) => {
                                 return {
-                                    class: labelMethodIcons[label] + ' mx-1'
+                                    class: labelMethodIcons[label] + ' mx-1',
                                 }
-                            })
+                            }),
                     },
                     {
                         class: 'mr-3',
                         innerText: message.text,
-                    }
-                ]
+                    },
+                ],
             },
             new AttributesView(message.attributes),
         ]
@@ -140,8 +138,8 @@ export class NodeView implements VirtualDOM {
                             )
                         },
                     ),
-                    child$(this.expanded$, (expanded) => {
-                        if (!expanded) {
+                    child$(this.expanded$, (exp) => {
+                        if (!exp) {
                             return {}
                         }
                         return {
@@ -149,23 +147,24 @@ export class NodeView implements VirtualDOM {
                                 visible ? 'py-2' : 'd-none',
                             ),
                             style: {
-                                paddingLeft: `${this.nestedIndex > 0 ? 40 : 0
-                                    }px`,
+                                paddingLeft: `${
+                                    this.nestedIndex > 0 ? 40 : 0
+                                }px`,
                             },
                             children: childrenAppendOnly$(
                                 messages$[contextId].pipe(
-                                    filter(
-                                        (m) => {
-                                            return !m.labels.includes('Label.STARTED')
-                                        },
-                                    ),
+                                    filter((m) => {
+                                        return !m.labels.includes(
+                                            'Label.STARTED',
+                                        )
+                                    }),
                                     map((message) => [message]),
                                 ),
                                 (message: ContextMessage) => {
                                     if (message.contextId == contextId) {
                                         return new LogView({
                                             state: this.state,
-                                            message
+                                            message,
                                         })
                                     }
 
@@ -225,8 +224,6 @@ export class TerminalState {
     selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
     public readonly expanded$ = new BehaviorSubject(true)
 
-    constructor() { }
-
     openCustomView(name: string, view: VirtualDOM) {
         const actual = this.customViews$.getValue()
         this.customViews$.next([...actual, { name, view }])
@@ -234,7 +231,7 @@ export class TerminalState {
 
     closeCustomView(name: string) {
         const actual = this.customViews$.getValue()
-        this.customViews$.next(actual.filter(d => d.name != name))
+        this.customViews$.next(actual.filter((d) => d.name != name))
         if (this.selectedView$.getValue() == name) {
             this.selectedView$.next('TERMINAL')
         }
@@ -269,7 +266,6 @@ export class TerminalView implements VirtualDOM {
 
     constructor(messages$: Observable<ContextMessage>) {
         messages$.subscribe((message) => {
-
             if (!this.messages$[message.parentContextId]) {
                 message.parentContextId = 'root'
             }
@@ -339,8 +335,8 @@ export class TerminalView implements VirtualDOM {
                     return {
                         class: attr$(
                             this.state.selectedView$,
-                            (view: string | 'TERMINAL') =>
-                                view == name ? 'd-block' : 'd-none',
+                            (selectedView: string | 'TERMINAL') =>
+                                selectedView == name ? 'd-block' : 'd-none',
                             {
                                 wrapper: (d) => `${d} w-100 h-100`,
                             },
@@ -387,10 +383,14 @@ class TerminalHeaderView implements VirtualDOM {
                             return {
                                 class: attr$(
                                     this.state.selectedView$,
-                                    (selection) => selection == name ? 'fv-bg-secondary' : '',
+                                    (selection) =>
+                                        selection == name
+                                            ? 'fv-bg-secondary'
+                                            : '',
                                     {
-                                        wrapper: (d) => `${d} d-flex align-items-center border fv-hover-bg-secondary fv-hover-xx-lighter px-2 mx-2`
-                                    }
+                                        wrapper: (d) =>
+                                            `${d} d-flex align-items-center border fv-hover-bg-secondary fv-hover-xx-lighter px-2 mx-2`,
+                                    },
                                 ),
                                 onclick: (ev) => {
                                     this.state.selectView(name)
@@ -400,16 +400,18 @@ class TerminalHeaderView implements VirtualDOM {
                                     {
                                         innerText: name,
                                     },
-                                    name != "TERMINAL"
+                                    name != 'TERMINAL'
                                         ? {
-                                            class: 'fas fa-times mx-2 fv-text-error fv-hover-xx-lighter fv-pointer',
-                                            onclick: (ev) => {
-                                                ev.stopPropagation()
-                                                this.state.closeCustomView(name)
-                                            }
-                                        }
-                                        : {}
-                                ]
+                                              class: 'fas fa-times mx-2 fv-text-error fv-hover-xx-lighter fv-pointer',
+                                              onclick: (ev) => {
+                                                  ev.stopPropagation()
+                                                  this.state.closeCustomView(
+                                                      name,
+                                                  )
+                                              },
+                                          }
+                                        : {},
+                                ],
                             }
                         })
                     },

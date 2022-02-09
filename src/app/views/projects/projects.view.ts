@@ -102,7 +102,7 @@ export class MainPanelView implements VirtualDOM {
 
 export class HeaderView implements VirtualDOM {
     public readonly class = 'w-100 d-flex align-items-center fv-pointer'
-    public readonly children: any
+    public readonly children: Stream$<unknown, HTMLDivElement[]>
 
     constructor(params: { state: AppState; tabsData$ }) {
         this.children = children$(params.tabsData$, (tabs) =>

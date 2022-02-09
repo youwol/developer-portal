@@ -6,18 +6,18 @@ import { TerminalState } from './terminal.view'
 
 type KnownViews = 'HelmPackage'
 
-export let labelMethodIcons = {
-    "Label.ADMIN": "fas fa-users-cog",
-    "Label.API_GATEWAY": "fas fa-door-open",
-    "Label.MIDDLEWARE": "fas fa-ghost",
-    "Label.END_POINT": "fas fa-microchip",
-    "Label.APPLICATION": "fas fa-play",
-    "Label.LOG": "fas fa-edit"
+export const labelMethodIcons = {
+    'Label.ADMIN': 'fas fa-users-cog',
+    'Label.API_GATEWAY': 'fas fa-door-open',
+    'Label.MIDDLEWARE': 'fas fa-ghost',
+    'Label.END_POINT': 'fas fa-microchip',
+    'Label.APPLICATION': 'fas fa-play',
+    'Label.LOG': 'fas fa-edit',
 }
-export let labelLogIcons = {
-    "Label.LOG_WARNING": "fas fa-exclamation-circle fv-text-focus",
-    "Label.LOG_ERROR": "fas fa-times fv-text-error",
-    "Label.DONE": "fas fa-flag"
+export const labelLogIcons = {
+    'Label.LOG_WARNING': 'fas fa-exclamation-circle fv-text-focus',
+    'Label.LOG_ERROR': 'fas fa-times fv-text-error',
+    'Label.DONE': 'fas fa-flag',
 }
 
 const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
@@ -29,21 +29,17 @@ export class LogView implements VirtualDOM {
     public readonly style = {}
     public readonly children: VirtualDOM[]
 
-
     public readonly state: TerminalState
     public readonly message: ContextMessage
     public readonly parentMessage: ContextMessage
 
-    constructor(params: {
-        state: TerminalState,
-        message: ContextMessage
-    }) {
+    constructor(params: { state: TerminalState; message: ContextMessage }) {
         Object.assign(this, params)
 
         let customView: VirtualDOM
         if (this.message.level == 'DATA') {
             const views = Object.keys(viewsFactory)
-                .filter((key) => this.message.labels.includes(key as any))
+                .filter((key) => this.message.labels.includes(key as Label))
                 .map((key: KnownViews) => ({
                     name: key,
                     factory: viewsFactory[key],
@@ -53,7 +49,7 @@ export class LogView implements VirtualDOM {
                 customView = {
                     innerText: views[0].name,
                     class: 'fv-bg-secondary border rounded fv-hover-xx-lighter p-1',
-                    onclick: (ev) => {
+                    onclick: () => {
                         const view = views[0].factory(this.message.data)
                         this.state.openCustomView(views[0].name, view)
                     },
@@ -67,47 +63,44 @@ export class LogView implements VirtualDOM {
         this.children = [
             {
                 class: 'd-flex flex-align-center px-2',
-                children: this.message.labels.filter(label => labelLogIcons[label])
-                    .map(label => {
+                children: this.message.labels
+                    .filter((label) => labelLogIcons[label])
+                    .map((label) => {
                         return {
-                            class: labelLogIcons[label] + ' mx-1'
+                            class: labelLogIcons[label] + ' mx-1',
                         }
-                    })
+                    }),
             },
             {
                 innerText: this.message.text,
             },
             customView,
-            this.message.data
-                ? new DataView(this.message.data as any)
-                : undefined,
+            this.message.data ? new DataView(this.message.data) : undefined,
         ]
     }
 }
 
 export class MethodLabelView {
-
     public readonly class = 'd-flex align-items-center mr-3'
     public readonly children: VirtualDOM[]
 
     constructor(message: ContextMessage) {
-
         this.children = [
             {
                 class: 'd-flex flex-align-center px-2',
-                children: message.labels.filter(label => labelMethodIcons[label])
-                    .map(label => {
+                children: message.labels
+                    .filter((label) => labelMethodIcons[label])
+                    .map((label) => {
                         return {
-                            class: labelMethodIcons[label] + ' mx-1'
+                            class: labelMethodIcons[label] + ' mx-1',
                         }
-                    })
+                    }),
             },
             {
                 class: 'mr-3',
                 innerText: message.text,
-            }
+            },
         ]
-
     }
 }
 
@@ -120,7 +113,7 @@ export class AttributesView {
         maxWidth: '50%',
     }
 
-    constructor(attributes: { [key: string]: any }) {
+    constructor(attributes: { [key: string]: unknown }) {
         this.children = [
             {
                 tag: 'tr',
@@ -145,4 +138,3 @@ export class AttributesView {
         ]
     }
 }
-
