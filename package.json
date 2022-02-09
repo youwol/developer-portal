@@ -17,7 +17,7 @@
     "author": "",
     "license": "",
     "dependencies": {
-        "@youwol/cdn-client": "^0.0.10",
+        "@youwol/cdn-client": "^0.0.11",
         "@youwol/flux-core": "^0.0.23",
         "@youwol/flux-files": "^0.0.5",
         "@youwol/flux-view": "^0.0.11",
