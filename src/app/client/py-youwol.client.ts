@@ -17,13 +17,14 @@ export class PyYouwolClient {
             return PyYouwolClient.webSocketUser$
         }
 
-        PyYouwolClient.webSocketUser$ = PyYouwolClient._connectWs(`ws://${window.location.host}/ws`)
+        PyYouwolClient.webSocketUser$ = PyYouwolClient._connectWs(
+            `ws://${window.location.host}/ws`,
+        )
         return PyYouwolClient.webSocketUser$
     }
 
     static _connectWs(path: string) {
-
-        let channel$ = new Subject<ContextMessage>()
+        const channel$ = new Subject<ContextMessage>()
         const ws = new WebSocket(path)
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data)

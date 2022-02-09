@@ -8,3 +8,4 @@ cdn.zip
 /*.iml
 /.idea/
 __pycache__
+**/.yw_test_env/**/*

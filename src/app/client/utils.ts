@@ -13,7 +13,6 @@ export function requestToJson$(request, extractFct = (d) => d) {
 }
 
 export function requestToText$(request, extractFct = (d) => d) {
-
     return new Observable((observer) => {
         fetch(request)
             .then((response) => response.text())

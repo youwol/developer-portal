@@ -27,13 +27,12 @@ export interface ContextMessage<T = unknown> {
     labels: Label[]
     parentContextId: string | undefined
     data: T
-    attributes: { [key: string]: any }
+    attributes: { [key: string]: string }
 }
 
 export interface LogResponse<T = unknown> extends ContextMessage<T> {
     failed?: boolean
 }
-
 
 export interface LogsResponse {
     logs: LogResponse[]
@@ -112,9 +111,10 @@ export interface Flow {
 
 export interface Pipeline {
     id: string
-    language: string
-    compiler: string
-    output: string
+    target: {
+        family: string
+    }
+    tags: string[]
     steps: PipelineStep[]
     flows: Flow[]
 }

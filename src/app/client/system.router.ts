@@ -34,7 +34,13 @@ export class SystemRouter {
         return requestToText$(request) as Observable<string>
     }
 
-    static queryLogs$({ fromTimestamp, maxCount }: { fromTimestamp: number, maxCount: number }): Observable<LogsResponse> {
+    static queryLogs$({
+        fromTimestamp,
+        maxCount,
+    }: {
+        fromTimestamp: number
+        maxCount: number
+    }): Observable<LogsResponse> {
         const url = `${SystemRouter.urlBase}/logs/?from-timestamp=${fromTimestamp}&max-count=${maxCount}`
         const request = new Request(url)
         return requestToJson$(request) as Observable<LogsResponse>

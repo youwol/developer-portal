@@ -1,11 +1,6 @@
 import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
 import { Select } from '@youwol/fv-input'
-import {
-    Menu,
-    MenuSection,
-    SettingsMenuItem,
-    YouwolBannerView,
-} from '@youwol/platform-essentials'
+import { TopBanner } from '@youwol/platform-essentials'
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
 import { distinctUntilChanged, mergeMap, skip } from 'rxjs/operators'
 import { AppState } from '../app-state'
@@ -32,7 +27,8 @@ export class UsersSelectView implements VirtualDOM {
                     return PyYouwolClient.environment.login$({ email: id })
                 }),
             )
-            .subscribe(() => {/* NOOP */
+            .subscribe(() => {
+                /* NOOP */
             })
 
         this.children = [
@@ -44,19 +40,19 @@ export class UsersSelectView implements VirtualDOM {
     }
 }
 
-class YwUserMenuView extends Menu {
+class YwUserMenuView extends TopBanner.Menu {
     constructor(params: { state: AppState }) {
         super({
             id: 'expandable-user-menu',
             sections: [
-                new MenuSection({
+                new TopBanner.MenuSection({
                     items: [
-                        new SettingsMenuItem({
+                        new TopBanner.SettingsMenuItem({
                             state: params.state.topBannerState,
                         }),
                     ],
                 }),
-                new MenuSection({
+                new TopBanner.MenuSection({
                     items: [
                         child$(
                             params.state.environment$,
@@ -170,12 +166,12 @@ class ConfigurationPickerView implements VirtualDOM {
     }
 }
 
-class YwMenuView extends Menu {
+class YwMenuView extends TopBanner.Menu {
     constructor(params: { state: AppState }) {
         super({
             id: 'expandable-yw-menu',
             sections: [
-                new MenuSection({
+                new TopBanner.MenuSection({
                     items: [
                         child$(params.state.environment$, (environment) => {
                             return {
@@ -206,7 +202,7 @@ class YwMenuView extends Menu {
 /**
  * Top banner of the application
  */
-export class TopBannerView extends YouwolBannerView {
+export class TopBannerView extends TopBanner.YouwolBannerView {
     constructor(params: { state: AppState }) {
         const loadInProgress$ = new BehaviorSubject(false)
         super({

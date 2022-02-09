@@ -11,8 +11,8 @@ export function button(icon: string, text: string) {
             ],
         }),
         class: 'fv-btn fv-btn-secondary mx-2',
-    } as any)
+    })
 }
 
-
-export let classesButton = "d-flex border p-2 rounded  fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center"
+export const classesButton =
+    'd-flex border p-2 rounded  fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center'

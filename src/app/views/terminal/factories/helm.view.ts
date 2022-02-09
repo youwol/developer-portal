@@ -1,19 +1,14 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { ImmutableTree } from '@youwol/fv-tree'
-import { of, Subject } from 'rxjs'
+import { Subject } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { PyYouwolClient } from '../../../client/py-youwol.client'
-/*
-import { innerTabClasses } from "../utils-view";
-import { DataTreeView } from "../views/data-tree.view";
-import {HelmRouter} from './helm.router'
-*/
 
 export interface HelmPackage {
     name: string
     namespace: string
     icon: string
-    withValues: any
+    withValues: { [key: string]: unknown }
 }
 
 class ChartNode extends ImmutableTree.Node {
@@ -64,7 +59,7 @@ export class ChartExplorerView implements VirtualDOM {
         })
         const view = new ImmutableTree.View({
             state,
-            headerView: (state, node: ChartNode) =>
+            headerView: (_, node: ChartNode) =>
                 headerView(node, this.selectedFile$),
         })
 
@@ -79,7 +74,9 @@ export class ChartExplorerView implements VirtualDOM {
                     child$(
                         this.selectedFile$.pipe(
                             mergeMap((fileNode: FileNode) => {
-                                return PyYouwolClient.system.fileContent$(fileNode.id)
+                                return PyYouwolClient.system.fileContent$(
+                                    fileNode.id,
+                                )
                             }),
                         ),
                         (content: string) => {

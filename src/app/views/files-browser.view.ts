@@ -11,7 +11,7 @@ export class FilesBrowserView implements VirtualDOM {
     public readonly originFolderIndex: number
 
     public readonly folderSelected$: BehaviorSubject<string>
-    public readonly items$: Observable<any>
+    public readonly items$: Observable<unknown>
 
     constructor(params: {
         startingFolder: string

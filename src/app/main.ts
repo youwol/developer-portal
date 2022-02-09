@@ -1,15 +1,9 @@
+import { install } from '@youwol/cdn-client'
+
 export {}
 require('./style.css')
 
-const cdn = window['@youwol/cdn-client']
-
-const loadingScreen = new cdn.LoadingScreenView({
-    container: document.body,
-    mode: 'svg',
-})
-loadingScreen.render()
-
-await cdn.install(
+await install(
     {
         modules: [
             'lodash',
@@ -37,10 +31,8 @@ await cdn.install(
             'codemirror#5.52.0~theme/blackboard.min.css',
         ],
     },
-    window,
-    (event) => {
-        loadingScreen.next(event)
+    {
+        displayLoadingScreen: true,
     },
 )
-loadingScreen.done()
 await import('./on-load')

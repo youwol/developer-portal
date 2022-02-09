@@ -75,7 +75,7 @@ export class MainPanelView implements VirtualDOM {
             this.state.selectedTopic$,
             (topic: Topic) => (topic == 'Projects' ? ' d-flex' : 'd-none'),
             {
-                wrapper: (d) => `${d} w-100 h-100 p-3 flex-column flex-grow-1`,
+                wrapper: (d) => `${d} w-100 h-100 flex-column px-2 flex-grow-1`,
             },
         )
         const wrapChild$ = (targetId, view) => ({
@@ -87,7 +87,7 @@ export class MainPanelView implements VirtualDOM {
         this.children = [
             new HeaderView({ state: this.state, tabsData$ }),
             {
-                class: 'flex-grow-1 border',
+                class: 'flex-grow-1 border-top',
                 style: { minHeight: '0px' },
                 children: childrenWithReplace$(
                     tabsData$,
@@ -102,7 +102,7 @@ export class MainPanelView implements VirtualDOM {
 
 export class HeaderView implements VirtualDOM {
     public readonly class = 'w-100 d-flex align-items-center fv-pointer'
-    public readonly children: any
+    public readonly children: Stream$<unknown, HTMLDivElement[]>
 
     constructor(params: { state: AppState; tabsData$ }) {
         this.children = children$(params.tabsData$, (tabs) =>

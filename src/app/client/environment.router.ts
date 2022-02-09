@@ -19,9 +19,10 @@ export interface ComponentsUpdate {
 }
 
 export function instanceOfComponentUpdates(
-    object: any,
+    object: unknown,
 ): object is ComponentsUpdate {
-    return object.status && object.components
+    const casted = object as ComponentsUpdate
+    return casted.status != undefined && casted.components != undefined
 }
 
 export class EnvironmentRouter {
