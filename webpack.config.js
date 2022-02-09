@@ -3,6 +3,7 @@ const ROOT = path.resolve(__dirname, 'src/app')
 const DESTINATION = path.resolve(__dirname, 'dist')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const packageJson = require('./package.json')
 
 module.exports = {
     context: ROOT,
@@ -23,6 +24,9 @@ module.exports = {
             title: 'Dashboard',
             template: './index.html',
             filename: './index.html',
+            metadata: {
+                baseHref: `/applications/${packageJson.name}/${packageJson.version}/dist/`,
+            },
         }),
         //new BundleAnalyzerPlugin()
     ],

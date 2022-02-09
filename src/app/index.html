@@ -2,10 +2,12 @@
 
 <html lang="en">
     <head>
-        <meta charset="utf-8" />
+        <meta charset='utf-8' />
         <title>Dev. portal</title>
-        <base href='/applications/@youwol/developer-portal/0.0.1-next/dist/' />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <%= htmlWebpackPlugin.options.metadata.base%>
+
+        <base href='<%= htmlWebpackPlugin.options.metadata.baseHref%>' />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
 
         <script
             src='/api/assets-gateway/raw/package/QHlvdXdvbC9jZG4tY2xpZW50/0.0.11/dist/@youwol/cdn-client.js'></script>
