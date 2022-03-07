@@ -32,14 +32,12 @@ export class ProjectView implements VirtualDOM {
                     {
                         class: 'd-flex flex-column h-100 w-100 mr-2',
                         children: [
-                            child$(
-                                events.selectedStep$,
-                                ({ flowId, _step }) => {
-                                    return flowId != undefined
-                                        ? new DagFlowView(params)
-                                        : new DagDependenciesView(params)
-                                },
-                            ),
+                            child$(events.selectedStep$, ({ flowId, step }) => {
+                                const _ = step // Ignoring step
+                                return flowId != undefined
+                                    ? new DagFlowView(params)
+                                    : new DagDependenciesView(params)
+                            }),
                             new TerminalView(events.messages$),
                         ],
                     },
