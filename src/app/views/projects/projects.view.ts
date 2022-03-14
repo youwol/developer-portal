@@ -5,6 +5,7 @@ import {
     Stream$,
     VirtualDOM,
 } from '@youwol/flux-view'
+import { Observable } from 'rxjs'
 
 import { map } from 'rxjs/operators'
 import { AppState, Topic } from '../../app-state'
@@ -73,7 +74,8 @@ export class MainPanelView implements VirtualDOM {
         )
         this.class = attr$(
             this.state.selectedTopic$,
-            (topic: Topic) => (topic == 'Projects' ? ' d-flex' : 'd-none'),
+            (topic: Topic): string =>
+                topic == 'Projects' ? ' d-flex' : 'd-none',
             {
                 wrapper: (d) => `${d} w-100 h-100 flex-column px-2 flex-grow-1`,
             },
@@ -102,14 +104,24 @@ export class MainPanelView implements VirtualDOM {
 
 export class HeaderView implements VirtualDOM {
     public readonly class = 'w-100 d-flex align-items-center fv-pointer'
-    public readonly children: Stream$<unknown, HTMLDivElement[]>
+    public readonly children: Stream$<
+        (DashboardTab | ProjectTab)[],
+        {
+            children: VirtualDOM[]
+            onclick: () => void
+            class: Stream$<string, string>
+        }[]
+    >
 
-    constructor(params: { state: AppState; tabsData$ }) {
+    constructor(params: {
+        state: AppState
+        tabsData$: Observable<(DashboardTab | ProjectTab)[]>
+    }) {
         this.children = children$(params.tabsData$, (tabs) =>
             tabs.map((tab) => ({
                 class: attr$(
                     params.state.selectedTabId$,
-                    (id) => (id == tab.id ? 'fv-text-focus' : ''),
+                    (id): string => (id == tab.id ? 'fv-text-focus' : ''),
                     { wrapper: (d) => `${d} fv-hover-bg-background-alt` },
                 ),
                 children: [tab.headerView(params.state)],

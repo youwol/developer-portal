@@ -28,7 +28,7 @@ export class SideBarSectionView implements VirtualDOM {
             {
                 class: attr$(
                     this.state.selectedTopic$,
-                    (topic: Topic) =>
+                    (topic: Topic): string =>
                         topic == this.name ? 'fv-bg-secondary' : '',
                     {
                         wrapper: (d) =>
@@ -39,7 +39,7 @@ export class SideBarSectionView implements VirtualDOM {
                     {
                         class: attr$(
                             this.extended$,
-                            (extended) => (extended ? '' : 'mx-auto'),
+                            (extended): string => (extended ? '' : 'mx-auto'),
                             {
                                 wrapper: (d) => `${d} ${this.icon}`,
                             },
