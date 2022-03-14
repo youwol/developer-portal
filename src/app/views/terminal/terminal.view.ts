@@ -30,7 +30,8 @@ export class NodeHeaderView implements VirtualDOM {
             {
                 class: attr$(
                     visible$,
-                    (visible) => (visible ? 'fa-caret-down' : 'fa-caret-right'),
+                    (visible): string =>
+                        visible ? 'fa-caret-down' : 'fa-caret-right',
                     {
                         wrapper: (d) => `fas mr-2 ${d}`,
                     },
@@ -251,7 +252,7 @@ export class TerminalView implements VirtualDOM {
 
     public readonly class = attr$(
         this.state.expanded$,
-        (expanded) => (expanded ? 'w-100 h-50' : 'w-100'),
+        (expanded): string => (expanded ? 'w-100 h-50' : 'w-100'),
         {
             wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
         },
@@ -335,7 +336,7 @@ export class TerminalView implements VirtualDOM {
                     return {
                         class: attr$(
                             this.state.selectedView$,
-                            (selectedView: string | 'TERMINAL') =>
+                            (selectedView: string | 'TERMINAL'): string =>
                                 selectedView == name ? 'd-block' : 'd-none',
                             {
                                 wrapper: (d) => `${d} w-100 h-100`,
@@ -366,7 +367,7 @@ class TerminalHeaderView implements VirtualDOM {
             {
                 class: attr$(
                     this.state.expanded$,
-                    (expanded) =>
+                    (expanded): string =>
                         expanded ? 'fa-caret-down' : 'fa-caret-right',
                     { wrapper: (d) => `fas ${d} py-1 px-2 fv-pointer` },
                 ),
@@ -383,7 +384,7 @@ class TerminalHeaderView implements VirtualDOM {
                             return {
                                 class: attr$(
                                     this.state.selectedView$,
-                                    (selection) =>
+                                    (selection): string =>
                                         selection == name
                                             ? 'fv-bg-secondary'
                                             : '',

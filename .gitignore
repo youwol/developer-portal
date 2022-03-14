@@ -9,3 +9,4 @@ cdn.zip
 /.idea/
 __pycache__
 **/.yw_test_env/**/*
+yarn-error.log

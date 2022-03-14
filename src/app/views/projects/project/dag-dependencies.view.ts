@@ -26,7 +26,7 @@ export class DagDependenciesView implements VirtualDOM {
         const class$ = (mode: 'dag' | 'simpleDag') => {
             return attr$(
                 this.mode$,
-                (m) => (m == mode ? 'fv-bg-secondary' : ''),
+                (m): string => (m == mode ? 'fv-bg-secondary' : ''),
                 {
                     wrapper: (d) =>
                         `${d} border rounded p-1 mx-2 fv-hover-xx-lighter fv-pointer`,

@@ -29,7 +29,8 @@ export class UpdatesView implements VirtualDOM {
 
         this.class = attr$(
             this.state.selectedTopic$,
-            (topic: Topic) => (topic == 'Updates' ? ' d-flex' : 'd-none'),
+            (topic: Topic): string =>
+                topic == 'Updates' ? ' d-flex' : 'd-none',
             {
                 wrapper: (d) => `${d} w-100 h-100 flex-column p-2`,
             },
