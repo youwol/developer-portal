@@ -1,6 +1,6 @@
 {
     "name": "@youwol/developer-portal",
-    "version": "0.0.1-next",
+    "version": "0.0.2-wip",
     "description": "Front-end of the developer-portal of YouWol",
     "main": "dist/index.html",
     "scripts": {
@@ -18,15 +18,12 @@
     "license": "",
     "dependencies": {
         "@youwol/cdn-client": "^0.1.0",
-        "@youwol/flux-core": "^0.1.0",
-        "@youwol/flux-files": "^0.0.5",
         "@youwol/flux-view": "^0.1.0",
         "@youwol/fv-button": "^0.0.4",
         "@youwol/fv-group": "^0.1.0",
         "@youwol/fv-input": "^0.0.5",
-        "@youwol/fv-tabs": "^0.0.3",
+        "@youwol/fv-tabs": "^0.1.0",
         "@youwol/fv-tree": "^0.1.1",
-        "@youwol/fv-widgets": "^0.0.5",
         "@youwol/logging": "^0.0.2",
         "@youwol/platform-essentials": "^0.1.0",
         "@youwol/http-clients": "^0.1.1",
@@ -78,8 +75,6 @@
         },
         "cdnDependencies": {
             "@youwol/cdn-client": "^0.1.0",
-            "@youwol/flux-core": "^0.1.0",
-            "@youwol/flux-files": "^0.0.5",
             "@youwol/flux-view": "^0.1.0",
             "@youwol/fv-button": "^0.0.4",
             "@youwol/fv-group": "^0.1.0",
