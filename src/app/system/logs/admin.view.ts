@@ -10,7 +10,7 @@ import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { TerminalState } from '../../common/terminal/terminal.view'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { classesButton } from '../../common/utils-view'
-import { EnvironmentState } from '../environment.state'
+import { SystemState } from '../system.state'
 
 function getChildren(contextId: string) {
     return new pyYw.PyYouwolClient().admin.system.queryLogs$(contextId).pipe(
@@ -59,12 +59,12 @@ export class AdminLogsView implements VirtualDOM {
     static ClassSelector = 'admin-view'
     public readonly class = `${AdminLogsView.ClassSelector} w-100 h-100 d-flex flex-column p-2`
     public readonly children: VirtualDOM[]
-    public readonly environmentState: EnvironmentState
+    public readonly systemState: SystemState
 
     public readonly logs$ = new ReplaySubject<pyYw.LogsResponse>(1)
     public readonly fetchingLogs$ = new BehaviorSubject<boolean>(false)
 
-    constructor(params: { environmentState: EnvironmentState }) {
+    constructor(params: { systemState: SystemState }) {
         Object.assign(this, params)
 
         this.children = [
@@ -85,7 +85,7 @@ export class AdminLogsView implements VirtualDOM {
                 onclick: () => this.refresh(),
             },
             new LogsView({
-                environmentState: this.environmentState,
+                systemState: this.systemState,
                 logs$: this.logs$,
             }),
         ]
@@ -147,7 +147,7 @@ export class LogsView implements VirtualDOM {
     public readonly logs$: Observable<pyYw.LogsResponse>
 
     constructor(params: {
-        environmentState: EnvironmentState
+        systemState: SystemState
         logs$: Observable<pyYw.LogsResponse>
     }) {
         Object.assign(this, params)

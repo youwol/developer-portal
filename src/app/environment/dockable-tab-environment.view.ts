@@ -5,7 +5,6 @@ import {
     SectionHeader,
 } from '../common/utils-view'
 import { EnvironmentState } from './environment.state'
-import { AdminLogsView } from './logs/admin.view'
 import { DashboardView } from './dashboard/dashboard.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
@@ -18,7 +17,7 @@ export class EnvironmentTab extends LeftNavTab<
         super({
             topic: 'Environment',
             title: 'Environment',
-            icon: 'fas fa-cogs',
+            icon: 'fas fa-globe',
             defaultViewId: 'dashboard',
             defaultView: () =>
                 new DashboardView({
@@ -50,7 +49,6 @@ export class EnvironmentTabView implements VirtualDOM {
             new SectionDashboard({ environmentState: this.environmentState }),
             new SectionDispatches({ environmentState: this.environmentState }),
             new SectionCommands({ environmentState: this.environmentState }),
-            new SectionLogs({ environmentState: this.environmentState }),
         ]
     }
 }
@@ -214,33 +212,5 @@ class SectionCommands extends Section {
             }),
             content: new CommandsListView({ environmentState }),
         })
-    }
-}
-
-class SectionLogs extends Section {
-    public readonly environmentState: EnvironmentState
-    public readonly onclick = () => {
-        this.environmentState.appState.registerScreen({
-            topic: 'Environment',
-            viewId: 'logs',
-            view: new AdminLogsView({
-                environmentState: this.environmentState,
-            }),
-        })
-    }
-    constructor(params: { environmentState: EnvironmentState }) {
-        super({
-            header: new SectionHeader({
-                class: leftNavSectionAttr$({
-                    selectedScreen$:
-                        params.environmentState.appState.selectedScreen$,
-                    targetTopic: 'Environment',
-                    targetViewId: 'logs',
-                }),
-                title: 'Logs',
-                icon: 'fa-volume-up fv-pointer',
-            }),
-        })
-        Object.assign(this, params)
     }
 }

@@ -13,6 +13,8 @@ import { EnvironmentState } from './environment/environment.state'
 import { K8sTab } from './k8s/dockable-tab-environment.view'
 import { K8sState } from './k8s/k8s.state'
 import { LeftNavTab } from './common/left-nav-tabs'
+import { SystemState } from './system/system.state'
+import { SystemTab } from './system/dockable-tab-system.view'
 
 export type Topic =
     | 'Projects'
@@ -20,6 +22,7 @@ export type Topic =
     | 'CDN'
     | 'Admin'
     | 'Environment'
+    | 'System'
     | 'K8s'
 
 export interface Screen {
@@ -36,6 +39,7 @@ export class AppState {
     public readonly projectsState: ProjectsState
     public readonly cdnState: CdnState
     public readonly environmentState: EnvironmentState
+    public readonly systemState: SystemState
     public readonly k8sState: K8sState
 
     public readonly leftNavState: DockableTabs.State
@@ -58,6 +62,7 @@ export class AppState {
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })
         this.k8sState = new K8sState({ appState: this })
+        this.systemState = new SystemState({ appState: this })
         this.leftNavTabs = {
             Environment: new EnvironmentTab({
                 environmentState: this.environmentState,
@@ -67,6 +72,7 @@ export class AppState {
             CDN: new CdnTab({ cdnState: this.cdnState }),
             Admin: undefined,
             K8s: new K8sTab({ k8sState: this.k8sState }),
+            System: new SystemTab({ systemState: this.systemState }),
         }
         this.leftNavState = new DockableTabs.State({
             disposition: 'left',
