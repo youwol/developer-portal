@@ -15,7 +15,7 @@ export class AppView implements VirtualDOM {
         this.state = new AppState()
         let sideNav = new DockableTabs.View({
             state: this.state.leftNavState,
-            styleOptions: { initialPanelSize: '300px' },
+            styleOptions: { initialPanelSize: '350px' },
         })
 
         this.children = [
