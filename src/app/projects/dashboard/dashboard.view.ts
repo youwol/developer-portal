@@ -1,52 +1,67 @@
-import { children$, Stream$, VirtualDOM } from '@youwol/flux-view'
+import { VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { ProjectSnippetView } from './project-snippet.view'
 import { ProjectsState } from '../projects.state'
+import { DashboardTemplateView } from '../../common/utils-view'
 
-export class DashboardView {
-    public readonly id: string = 'dashboard'
-    public readonly class = 'w-100 h-100'
+export class DashboardView extends DashboardTemplateView<
+    pyYw.Project,
+    ProjectsState
+> {
+    constructor(params: { projectsState: ProjectsState }) {
+        super({
+            state: params.projectsState,
+            dataSource$: params.projectsState.projects$,
+            cardView: (data) => {
+                return new ProjectSnippetView({
+                    projectsState: params.projectsState,
+                    project: data,
+                })
+            },
+        })
+        params.projectsState.projectsClient.status$().subscribe()
+    }
+}
 
+export class ProjectSnippetView {
     public readonly style = {
-        maxHeight: '100%',
         height: 'fit-content',
     }
-
     public readonly children: VirtualDOM[]
 
-    constructor(params: { projectsState: ProjectsState }) {
-        Object.assign(this, params)
-
-        this.children = [new ProjectsView(params)]
-    }
-}
-
-export function projectLoadingIsSuccess(result: any): result is pyYw.Project {
-    return result['failure'] === undefined
-}
-
-export class ProjectsView {
-    public readonly class =
-        'w-100 h-100 d-flex flex-wrap p-2 overflow-auto justify-content-around '
-
-    public readonly children: Stream$<pyYw.Project[], ProjectSnippetView[]>
-
     public readonly projectsState: ProjectsState
+    public readonly project: pyYw.Project
 
-    constructor(params: { projectsState: ProjectsState }) {
+    public readonly onclick: (ev: MouseEvent) => void
+
+    constructor(params: {
+        projectsState: ProjectsState
+        project: pyYw.Project
+    }) {
         Object.assign(this, params)
 
-        this.children = children$(
-            this.projectsState.projects$,
-            (projects: pyYw.Project[]) => {
-                return projects.map(
-                    (project) =>
-                        new ProjectSnippetView({
-                            projectsState: this.projectsState,
-                            project,
-                        }),
-                )
+        this.children = [
+            {
+                tag: 'h4',
+                innerText: this.project.name,
             },
-        )
+            {
+                tag: 'h5',
+                innerText: this.project.version,
+            },
+            {
+                tag: 'h5',
+                innerText: this.project.pipeline.target.family,
+            },
+            {
+                class: 'w-100 d-flex align-items-center',
+                children: this.project.pipeline.tags.map((t) => ({
+                    class: 'px-2',
+                    innerText: t,
+                })),
+            },
+        ]
+        this.onclick = () => {
+            this.projectsState.openProject(this.project)
+        }
     }
 }

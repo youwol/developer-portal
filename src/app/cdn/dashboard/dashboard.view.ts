@@ -8,16 +8,6 @@ export class DashboardView extends DashboardTemplateView<
     pyYw.CdnPackage,
     CdnState
 > {
-    public readonly id: string = 'dashboard'
-    public readonly class = 'w-100 h-100'
-
-    public readonly style = {
-        maxHeight: '100%',
-        height: 'fit-content',
-    }
-
-    public readonly children: VirtualDOM[]
-
     constructor(params: { cdnState: CdnState }) {
         super({
             state: params.cdnState,
@@ -31,6 +21,8 @@ export class DashboardView extends DashboardTemplateView<
                 })
             },
         })
+
+        params.cdnState.cdnClient.getStatus$().subscribe()
     }
 }
 

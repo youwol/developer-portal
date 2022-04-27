@@ -7,11 +7,15 @@ import {
     mergeMap,
     scan,
     shareReplay,
+    tap,
 } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project/project.view'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
-import { projectLoadingIsSuccess } from './dashboard/dashboard.view'
+
+function projectLoadingIsSuccess(result: any): result is pyYw.Project {
+    return result['failure'] === undefined
+}
 
 type StepId = string
 
@@ -34,11 +38,7 @@ export class ProjectEvents {
             filterCtxMessage({
                 withAttributes: { projectId: this.project.id },
             }),
-        ) /*PyYouwolClient.connectWs().pipe(
-            filterCtxMessage({
-                withAttributes: { projectId: this.project.id },
-            }),
-        )*/
+        )
 
         this.selectedStep$ = new BehaviorSubject<{
             flowId: string
@@ -109,12 +109,6 @@ export class ProjectEvents {
         this.projectsClient
             .getProjectStatus$({ projectId: project.id })
             .subscribe()
-        /*this.projectsClient
-            .getPipelineStatus$({
-                projectId: project.id,
-                flowId: this.project.pipeline.flows[0].name,
-            })
-            .subscribe((s) => {})*/
     }
 
     static fullId(flowId: string, stepId: string) {
@@ -135,12 +129,15 @@ export class ProjectsState {
 
     public readonly openProjects$ = new BehaviorSubject<pyYw.Project[]>([])
 
+    public readonly screensId = {}
+
     constructor(params: { appState: AppState }) {
         Object.assign(this, params)
 
         this.projectsLoading$ = this.projectsClient.webSocket.status$().pipe(
             map(({ data }) => data.results),
             shareReplay(1),
+            tap((p) => console.log('projectsLoading$', p)),
         )
 
         this.projects$ = this.projectsLoading$.pipe(
@@ -149,9 +146,14 @@ export class ProjectsState {
             ),
             map((results) => results as pyYw.Project[]),
             shareReplay(1),
+            tap((p) => console.log('projects$', p)),
         )
 
         this.projectsClient.status$().subscribe()
+    }
+
+    selectDashboard() {
+        this.appState.selectDefaultScreen('Projects')
     }
 
     runStep(projectId, flowId, stepId) {
@@ -168,24 +170,24 @@ export class ProjectsState {
         if (!openProjects.includes(project)) {
             this.openProjects$.next([...openProjects, project])
         }
-        if (!this.appState.inMemoryScreens$.getValue()[project.id]) {
-            this.appState.registerScreen({
-                topic: 'Projects',
-                viewId: project.id,
-                view: new ProjectView({
-                    projectsState: this,
-                    project: project,
-                }),
-            })
-        }
-        this.appState.selectScreen(project.id)
+
+        this.screensId[project.id] = this.appState.registerScreen({
+            topic: 'Projects',
+            viewId: project.id,
+            view: new ProjectView({
+                projectsState: this,
+                project: project,
+            }),
+        })
+    }
+
+    selectProject(projectId: string) {
+        this.appState.selectScreen(this.screensId[projectId])
     }
 
     closeProject(projectId: string) {
         delete this.projectEvents[projectId]
-        this.appState.selectScreen('dashboard')
-        this.appState.removeScreen(projectId)
-
+        this.appState.removeScreen(this.screensId[projectId])
         const openProjects = this.openProjects$.getValue()
         this.openProjects$.next(openProjects.filter((p) => p.id != projectId))
     }

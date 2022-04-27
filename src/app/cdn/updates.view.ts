@@ -10,8 +10,8 @@ import {
 import { Switch } from '@youwol/fv-button'
 import { ywSpinnerView } from '@youwol/platform-essentials'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
-import { filter, map, mergeMap, skip, take, tap } from 'rxjs/operators'
-import { AppState, Topic } from '../app-state'
+import { filter, map, skip, take, tap } from 'rxjs/operators'
+import { AppState } from '../app-state'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
 import { TerminalView } from '../common/terminal/terminal.view'
 import { CdnState } from './cdn.state'
@@ -50,7 +50,7 @@ export class LogsTabView implements VirtualDOM {
 }
 
 export class UpdatesView implements VirtualDOM {
-    public readonly class: Stream$<Topic, string>
+    public readonly class = 'd-flex w-100 h-100 flex-column'
     public readonly children: VirtualDOM[]
     public readonly appState: AppState
     public readonly cdnState: CdnState
@@ -60,14 +60,7 @@ export class UpdatesView implements VirtualDOM {
     constructor(params: { cdnState: CdnState }) {
         Object.assign(this, params)
         this.appState = this.cdnState.appState
-        this.class = attr$(
-            this.cdnState.appState.selectedTopic$,
-            (topic: Topic): string =>
-                topic == 'Updates' ? ' d-flex' : 'd-none',
-            {
-                wrapper: (d) => `${d} w-100 h-100 flex-column`,
-            },
-        )
+
         const bottomNavState = new DockableTabs.State({
             disposition: 'bottom',
             persistTabsView: true,
@@ -91,27 +84,19 @@ export class UpdatesView implements VirtualDOM {
         this.children = [
             {
                 class: 'w-100 d-flex justify-content-center flex-column flex-grow-1 overflow-auto',
-                children: children$(
-                    this.cdnState.appState.selectedTopic$.pipe(
-                        filter((topic) => topic === 'Updates'),
-                        mergeMap(() => {
-                            return this.appState.environment$
-                        }),
-                    ),
-                    () => {
-                        this.cdnState.collectUpdates()
-                        return [
-                            new SpinnerView({ cdnState: this.cdnState }),
-                            new DownloadBtnView({ cdnState: this.cdnState }),
-                            {
-                                class: 'flex-grow-1 mx-auto overflow-auto',
-                                children: [
-                                    new TableView({ cdnState: this.cdnState }),
-                                ],
-                            },
-                        ]
-                    },
-                ),
+                children: children$(this.appState.environment$, () => {
+                    this.cdnState.collectUpdates()
+                    return [
+                        new SpinnerView({ cdnState: this.cdnState }),
+                        new DownloadBtnView({ cdnState: this.cdnState }),
+                        {
+                            class: 'flex-grow-1 mx-auto overflow-auto',
+                            children: [
+                                new TableView({ cdnState: this.cdnState }),
+                            ],
+                        },
+                    ]
+                }),
             },
             bottomNav,
         ]

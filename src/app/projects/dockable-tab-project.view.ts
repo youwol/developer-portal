@@ -1,17 +1,28 @@
-import { DockableTabs } from '@youwol/fv-tabs'
 import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { Section, SectionHeader } from '../common/utils-view'
+import {
+    leftNavSectionAttr$,
+    Section,
+    SectionHeader,
+} from '../common/utils-view'
 import { ProjectsState } from './projects.state'
+import { LeftNavTab } from '../common/left-nav-tabs'
+import { DashboardView } from './dashboard/dashboard.view'
 
-export class ProjectsTab extends DockableTabs.Tab {
+export class ProjectsTab extends LeftNavTab<ProjectsState, ProjectsTabView> {
     constructor(params: { projectsState: ProjectsState }) {
         super({
-            id: 'projects',
+            topic: 'Projects',
             title: 'Projects',
             icon: 'fas fa-file-code',
+            defaultViewId: 'dashboard',
+            defaultView: () =>
+                new DashboardView({
+                    projectsState: params.projectsState,
+                }),
+            state: params.projectsState,
             content: () => {
                 return new ProjectsTabView({
                     projectsState: params.projectsState,
@@ -42,20 +53,17 @@ export class ProjectsTabView implements VirtualDOM {
 class SectionDashboard extends Section {
     public readonly projectsState: ProjectsState
     public readonly onclick = () => {
-        this.projectsState.appState.selectScreen('dashboard')
+        this.projectsState.selectDashboard()
     }
     constructor(params: { projectsState: ProjectsState }) {
         super({
             header: new SectionHeader({
-                class: attr$(
-                    params.projectsState.appState.selectedScreen$,
-                    ({ viewId }): string =>
-                        viewId == 'dashboard' ? 'fv-text-focus' : '',
-                    {
-                        wrapper: (d) =>
-                            `${d} fv-hover-bg-background-alt d-flex align-items-center px-1 rounded`,
-                    },
-                ),
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: 'dashboard',
+                }),
                 title: 'Dashboard',
                 icon: 'fa-th-large fv-pointer',
             }),
@@ -76,15 +84,12 @@ class ProjectItemView {
         Object.assign(this, params)
         this.children = [
             {
-                class: attr$(
-                    this.projectsState.appState.selectedScreen$,
-                    ({ viewId }): string =>
-                        viewId == this.project.id ? 'fv-text-focus' : '',
-                    {
-                        wrapper: (d) =>
-                            `${d} fv-hover-bg-background-alt d-flex align-items-center  rounded px-1`,
-                    },
-                ),
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: this.project.id,
+                }),
                 children: [
                     {
                         innerText: this.project.name,
@@ -98,7 +103,7 @@ class ProjectItemView {
                     },
                 ],
                 onclick: () => {
-                    this.projectsState.appState.selectScreen(this.project.id)
+                    this.projectsState.selectProject(this.project.id)
                 },
             },
         ]

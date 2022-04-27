@@ -1,5 +1,5 @@
 import { attr$, childrenWithReplace$, VirtualDOM } from '@youwol/flux-view'
-import { AppState } from './app-state'
+import { AppState, Screen } from './app-state'
 import { TopBannerView } from './top-banner.view'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { map } from 'rxjs/operators'
@@ -44,11 +44,14 @@ class ContentView implements VirtualDOM {
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
 
-        const wrapChild$ = (targetId, view) => ({
-            class: attr$(this.state.selectedScreen$, ({ viewId }) =>
-                viewId == targetId ? 'h-100 w-100' : 'd-none',
+        const wrapChild$ = (targetScreen: Screen) => ({
+            class: attr$(this.state.selectedScreen$, (screen) =>
+                screen.viewId == targetScreen.viewId &&
+                screen.topic == targetScreen.topic
+                    ? 'h-100 w-100'
+                    : 'd-none',
             ),
-            children: [view],
+            children: [targetScreen.view],
         })
         this.children = [
             {
@@ -57,11 +60,11 @@ class ContentView implements VirtualDOM {
                 children: childrenWithReplace$(
                     this.state.selectedScreen$.pipe(map((s) => [s])),
                     (s) => {
-                        return wrapChild$(s.viewId, s.view)
+                        return wrapChild$(s)
                     },
                     {
                         comparisonOperator: (lhs, rhs) =>
-                            lhs.viewId == rhs.viewId,
+                            lhs.topic + lhs.viewId == rhs.topic + rhs.viewId,
                     },
                 ),
             },

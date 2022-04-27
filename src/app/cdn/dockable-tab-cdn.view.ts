@@ -1,6 +1,9 @@
-import { DockableTabs } from '@youwol/fv-tabs'
 import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
-import { Section, SectionHeader } from '../common/utils-view'
+import {
+    leftNavSectionAttr$,
+    Section,
+    SectionHeader,
+} from '../common/utils-view'
 import { CdnState } from './cdn.state'
 import { DashboardView } from './dashboard/dashboard.view'
 import { BehaviorSubject, combineLatest } from 'rxjs'
@@ -8,12 +11,20 @@ import { map } from 'rxjs/operators'
 
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { UpdatesView } from './updates.view'
-export class CdnTab extends DockableTabs.Tab {
+import { LeftNavTab } from '../common/left-nav-tabs'
+
+export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {
     constructor(params: { cdnState: CdnState }) {
         super({
-            id: 'cdn',
+            topic: 'CDN',
             title: 'CDN',
             icon: 'fas fa-cubes',
+            defaultViewId: 'dashboard',
+            defaultView: () =>
+                new DashboardView({
+                    cdnState: params.cdnState,
+                }),
+            state: params.cdnState,
             content: () => {
                 return new CdnTabView({ cdnState: params.cdnState })
             },
@@ -46,23 +57,18 @@ class SectionDashboard extends Section {
     public readonly onclick = () => {
         this.cdnState.appState.registerScreen({
             topic: 'CDN',
-            viewId: '#CDN-dashboard',
+            viewId: 'dashboard',
             view: new DashboardView({ cdnState: this.cdnState }),
         })
-        this.cdnState.appState.selectScreen('#CDN-dashboard')
     }
     constructor(params: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
-                class: attr$(
-                    params.cdnState.appState.selectedScreen$,
-                    ({ viewId }): string =>
-                        viewId == '#CDN-dashboard' ? 'fv-text-focus' : '',
-                    {
-                        wrapper: (d) =>
-                            `${d} fv-hover-bg-background-alt d-flex align-items-center px-1 rounded`,
-                    },
-                ),
+                class: leftNavSectionAttr$({
+                    selectedScreen$: params.cdnState.appState.selectedScreen$,
+                    targetTopic: 'CDN',
+                    targetViewId: 'dashboard',
+                }),
                 title: 'Dashboard',
                 icon: 'fa-th-large fv-pointer',
             }),
@@ -81,17 +87,11 @@ class PackageItemView {
         Object.assign(this, params)
         this.children = [
             {
-                class: attr$(
-                    this.cdnState.appState.selectedScreen$,
-                    ({ viewId }): string =>
-                        viewId == `#CDN-${this.package.name}`
-                            ? 'fv-text-focus'
-                            : '',
-                    {
-                        wrapper: (d) =>
-                            `${d} fv-hover-bg-background-alt d-flex align-items-center  rounded px-1`,
-                    },
-                ),
+                class: leftNavSectionAttr$({
+                    selectedScreen$: params.cdnState.appState.selectedScreen$,
+                    targetTopic: 'CDN',
+                    targetViewId: this.package.name,
+                }),
                 children: [
                     {
                         innerText: this.package.name,
@@ -105,9 +105,7 @@ class PackageItemView {
                     },
                 ],
                 onclick: () => {
-                    this.cdnState.appState.selectScreen(
-                        `#CDN-${this.package.name}`,
-                    )
+                    this.cdnState.selectProject(this.package.name)
                 },
             },
         ]
@@ -215,15 +213,18 @@ class SectionUpgrades extends Section {
     public readonly onclick = () => {
         this.cdnState.appState.registerScreen({
             topic: 'CDN',
-            viewId: '#CDN-upgrades',
+            viewId: 'upgrades',
             view: new UpdatesView({ cdnState: this.cdnState }),
         })
-        this.cdnState.appState.selectScreen('#CDN-upgrades')
-        this.cdnState.appState.selectedTopic$.next('Updates')
     }
     constructor(params: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
+                class: leftNavSectionAttr$({
+                    selectedScreen$: params.cdnState.appState.selectedScreen$,
+                    targetTopic: 'CDN',
+                    targetViewId: 'upgrades',
+                }),
                 title: 'Upgrades',
                 icon: 'fa-download fv-pointer',
             }),

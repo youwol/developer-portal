@@ -71,6 +71,8 @@ export class CdnState {
     >([])
     public readonly openPackages$ = new BehaviorSubject<pyYw.CdnPackage[]>([])
 
+    public readonly screensId = {}
+
     constructor(params: { appState: AppState }) {
         Object.assign(this, params)
         this.updatesEvents = new UpdateEvents({ client: this.cdnClient })
@@ -96,26 +98,23 @@ export class CdnState {
         if (!openPackages.includes(pack)) {
             this.openPackages$.next([...openPackages, pack])
         }
-        const viewId = `#CDN-${pack.name}`
-        if (!this.appState.inMemoryScreens$.getValue()[viewId]) {
-            this.appState.registerScreen({
-                topic: 'CDN',
-                viewId,
-                view: new PackageView({
-                    cdnState: this,
-                    package: pack,
-                }),
-            })
-        }
-        this.appState.selectScreen(viewId)
+        this.screensId[pack.name] = this.appState.registerScreen({
+            topic: 'CDN',
+            viewId: pack.name,
+            view: new PackageView({
+                cdnState: this,
+                package: pack,
+            }),
+        })
+    }
+
+    selectProject(packageName) {
+        this.appState.selectScreen(this.screensId[packageName])
     }
 
     closePackage(pack: pyYw.CdnPackage) {
         delete this.packagesEvent[pack.name]
-        this.appState.selectScreen('#CDN-dashboard')
-        const viewId = `#CDN-${pack.name}`
-        this.appState.removeScreen(viewId)
-
+        this.appState.removeScreen(this.screensId[pack.name])
         const openPackages = this.openPackages$.getValue()
         this.openPackages$.next(openPackages.filter((p) => p.name != pack.name))
     }
