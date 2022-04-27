@@ -8,7 +8,7 @@ import { EnvironmentState } from './environment.state'
 import { AdminLogsView } from './logs/admin.view'
 import { DashboardView } from './dashboard/dashboard.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
-import { PyYouwol as pyYw } from '@youwol/http-clients/src/lib'
+import { PyYouwol as pyYw } from '@youwol/http-clients'
 
 export class EnvironmentTab extends LeftNavTab<
     EnvironmentState,
@@ -49,6 +49,7 @@ export class EnvironmentTabView implements VirtualDOM {
         this.children = [
             new SectionDashboard({ environmentState: this.environmentState }),
             new SectionDispatches({ environmentState: this.environmentState }),
+            new SectionCommands({ environmentState: this.environmentState }),
             new SectionLogs({ environmentState: this.environmentState }),
         ]
     }
@@ -157,6 +158,61 @@ class SectionDispatches extends Section {
                 icon: 'fa-external-link-alt',
             }),
             content: new DispatchListView({ environmentState }),
+        })
+    }
+}
+
+class CommandsListView implements VirtualDOM {
+    public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+    public readonly children
+
+    constructor({ environmentState }: { environmentState: EnvironmentState }) {
+        this.children = children$(environmentState.environment$, (env) => {
+            return Object.entries(env.configuration.commands).map(
+                ([_type, command]) =>
+                    new CommandView({ command, environmentState }),
+            )
+        })
+    }
+}
+
+class CommandView implements VirtualDOM {
+    public readonly class =
+        'fv-pointer fv-hover-bg-background-alt rounded d-flex align-items-center'
+    public readonly innerText: string
+    public readonly environmentState: EnvironmentState
+    public readonly command: pyYw.Command
+    public readonly onclick = () => {
+        this.environmentState.openCommand(this.command)
+    }
+    constructor(params: {
+        command: pyYw.Command
+        environmentState: EnvironmentState
+    }) {
+        Object.assign(this, params)
+        this.innerText = this.command.name
+    }
+}
+
+class SectionCommands extends Section {
+    public readonly style = {
+        minHeight: '0px',
+        maxHeight: '50%',
+    }
+    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+    constructor({ environmentState }: { environmentState: EnvironmentState }) {
+        super({
+            header: new SectionHeader({
+                title: attr$(
+                    environmentState.environment$,
+                    (env) =>
+                        `Commands (${
+                            Object.values(env.configuration.commands).length
+                        })`,
+                ),
+                icon: 'fa-play',
+            }),
+            content: new CommandsListView({ environmentState }),
         })
     }
 }
