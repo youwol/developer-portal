@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
 import {
     leftNavSectionAttr$,
     Section,
@@ -8,6 +8,7 @@ import { EnvironmentState } from './environment.state'
 import { AdminLogsView } from './logs/admin.view'
 import { DashboardView } from './dashboard/dashboard.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
+import { PyYouwol as pyYw } from '@youwol/http-clients/src/lib'
 
 export class EnvironmentTab extends LeftNavTab<
     EnvironmentState,
@@ -47,6 +48,7 @@ export class EnvironmentTabView implements VirtualDOM {
 
         this.children = [
             new SectionDashboard({ environmentState: this.environmentState }),
+            new SectionDispatches({ environmentState: this.environmentState }),
             new SectionLogs({ environmentState: this.environmentState }),
         ]
     }
@@ -78,6 +80,84 @@ class SectionDashboard extends Section {
             }),
         })
         Object.assign(this, params)
+    }
+}
+
+class DispatchListView implements VirtualDOM {
+    public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+    public readonly children
+
+    constructor({ environmentState }: { environmentState: EnvironmentState }) {
+        this.children = children$(
+            environmentState.customDispatches$,
+            (dispatches: { [k: string]: pyYw.CustomDispatch[] }) => {
+                return Object.entries(dispatches).map(([type, items]) => {
+                    return {
+                        children: [
+                            new DispatchGroupHeader({ type }),
+                            {
+                                children: items.map(
+                                    (dispatch) =>
+                                        new DispatchItemView({ dispatch }),
+                                ),
+                            },
+                        ],
+                    }
+                })
+            },
+        )
+    }
+}
+
+class DispatchGroupHeader implements VirtualDOM {
+    public readonly type: string
+    public readonly innerText: string
+    constructor(params: { type: string }) {
+        Object.assign(this, params)
+        this.innerText = this.type
+    }
+}
+
+class DispatchItemView implements VirtualDOM {
+    public readonly class =
+        'fv-pointer fv-hover-bg-background-alt rounded d-flex align-items-center'
+    public readonly dispatch: pyYw.CustomDispatch
+    public readonly children: VirtualDOM[]
+    constructor(params: { dispatch: pyYw.CustomDispatch }) {
+        Object.assign(this, params)
+        this.children = [
+            {
+                class: this.dispatch.activated
+                    ? 'fas fa-check fv-text-success px-2'
+                    : 'fas fa-times fv-text-disabled px-2',
+            },
+            {
+                innerHTML: this.dispatch.name,
+            },
+        ]
+    }
+}
+
+class SectionDispatches extends Section {
+    public readonly style = {
+        minHeight: '0px',
+        maxHeight: '50%',
+    }
+    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+    constructor({ environmentState }: { environmentState: EnvironmentState }) {
+        super({
+            header: new SectionHeader({
+                title: attr$(
+                    environmentState.customDispatches$,
+                    (dispatches) =>
+                        `Dispatches (${
+                            Object.values(dispatches).flat().length
+                        })`,
+                ),
+                icon: 'fa-external-link-alt',
+            }),
+            content: new DispatchListView({ environmentState }),
+        })
     }
 }
 

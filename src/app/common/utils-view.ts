@@ -248,14 +248,3 @@ export class DashboardTitle {
         this.innerText = this.title
     }
 }
-
-export class DashboardSubTitle {
-    public readonly tag = 'h6'
-    public readonly innerText: string
-    public readonly title: string
-
-    constructor(params: { title: string }) {
-        Object.assign(this, params)
-        this.innerText = this.title
-    }
-}
