@@ -49,6 +49,11 @@ export class AppState {
     }> = new BehaviorSubject({})
 
     constructor() {
+        this.environment$ = this.environmentClient.webSocket.status$().pipe(
+            map(({ data }) => data),
+            shareReplay(1),
+        )
+
         this.projectsState = new ProjectsState({ appState: this })
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })
@@ -71,12 +76,6 @@ export class AppState {
             ),
             selected$: new BehaviorSubject<Topic>('Environment'),
         })
-
-        this.environment$ = this.environmentClient.webSocket.status$().pipe(
-            map(({ data }) => data),
-            shareReplay(1),
-        )
-
         const startingScreen =
             this.leftNavTabs[this.selectedTopic$.getValue()].defaultScreen()
 
