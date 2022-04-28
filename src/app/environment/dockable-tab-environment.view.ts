@@ -65,7 +65,6 @@ class SectionDashboard extends Section {
                 environmentState: this.environmentState,
             }),
         })
-        this.environmentState.appState.selectScreen('#Environment-dashboard')
     }
     constructor(params: { environmentState: EnvironmentState }) {
         super({
