@@ -154,11 +154,13 @@ export class CdnState {
     }
 
     proceedDownloads() {
-        this.cdnClient.download$({
-            body: {
-                packages: this.downloadQueue$.getValue(),
-                checkUpdateStatus: false,
-            },
-        })
+        this.cdnClient
+            .download$({
+                body: {
+                    packages: this.downloadQueue$.getValue(),
+                    checkUpdateStatus: false,
+                },
+            })
+            .subscribe()
     }
 }
