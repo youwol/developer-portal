@@ -2,10 +2,12 @@ import { EnvironmentState, Method } from '../environment.state'
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { AttributeView, DashboardTitle } from '../../common/utils-view'
-import { from, Observable, Subject } from 'rxjs'
+import { BehaviorSubject, from, Observable, of, Subject } from 'rxjs'
 import { ObjectJs } from '@youwol/fv-tree'
 import { install } from '@youwol/cdn-client'
-import { mergeMap, withLatestFrom } from 'rxjs/operators'
+import { catchError, mergeMap, withLatestFrom } from 'rxjs/operators'
+import { DockableTabs } from '@youwol/fv-tabs'
+import { TerminalView } from '../../common/terminal/terminal.view'
 
 function fetchCodeMirror$(): Observable<any> {
     return from(
@@ -21,7 +23,10 @@ function fetchCodeMirror$(): Observable<any> {
 }
 
 export class CommandView implements VirtualDOM {
-    public readonly class = 'p-2'
+    public readonly class = 'p-2 d-flex h-100 flex-column'
+    public readonly style = {
+        position: 'relative',
+    }
     public readonly children: VirtualDOM[]
 
     public readonly environmentState: EnvironmentState
@@ -42,6 +47,26 @@ export class CommandView implements VirtualDOM {
             method = 'PUT'
         }
         const url = `/admin/custom-commands/${this.command.name}`
+
+        const bottomNavState = new DockableTabs.State({
+            disposition: 'bottom',
+            persistTabsView: true,
+            viewState$: new BehaviorSubject<DockableTabs.DisplayMode>(
+                'collapsed',
+            ),
+            tabs$: new BehaviorSubject([
+                new LogsTab({
+                    environmentState: this.environmentState,
+                    command: this.command,
+                }),
+            ]),
+            selected$: new BehaviorSubject<string>('logs'),
+        })
+        let bottomNav = new DockableTabs.View({
+            state: bottomNavState,
+            styleOptions: { initialPanelSize: '500px' },
+        })
+
         this.children = [
             new AttributeView({ text: 'Method', value: method }),
             new AttributeView({
@@ -61,12 +86,14 @@ export class CommandView implements VirtualDOM {
                       method,
                       url,
                   }),
+            { class: 'flex-grow-1', style: { minHeight: '0px' } },
+            bottomNav,
         ]
     }
 }
 
 export class ExecuteView implements VirtualDOM {
-    public readonly class = 'my-3 d-flex flex-column'
+    public readonly class = 'my-3 d-flex flex-column overflow-auto'
 
     public readonly environmentState: EnvironmentState
     public readonly method: Method
@@ -214,5 +241,46 @@ export class OutputView implements VirtualDOM {
                 }),
             }),
         ]
+    }
+}
+
+export class LogsTab extends DockableTabs.Tab {
+    constructor(params: {
+        environmentState: EnvironmentState
+        command: pyYw.Command
+    }) {
+        super({
+            id: 'logs',
+            title: 'Logs',
+            icon: 'fas fa-volume-up',
+            content: () => {
+                return new LogsTabView({
+                    environmentState: params.environmentState,
+                    command: params.command,
+                })
+            },
+        })
+    }
+}
+
+export class LogsTabView implements VirtualDOM {
+    public readonly environmentState: EnvironmentState
+    public readonly command: pyYw.Command
+    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly style = {
+        minHeight: '0px',
+    }
+    public readonly children: VirtualDOM[]
+
+    constructor(params: {
+        environmentState: EnvironmentState
+        command: pyYw.Command
+    }) {
+        Object.assign(this, params)
+        const events = this.environmentState.commandsEvent[this.command.name]
+        events.log$.subscribe((log) => {
+            console.log('LOG', log)
+        })
+        this.children = [new TerminalView(events.log$)]
     }
 }
