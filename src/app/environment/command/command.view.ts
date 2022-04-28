@@ -125,11 +125,18 @@ export class ExecuteNoBodyView extends ExecuteView {
                             url: this.url,
                             method: this.method,
                         })
+                        .pipe(
+                            catchError((err) => of(new ErrorCommandExec(err))),
+                        )
                         .subscribe((out) => this.output$.next(out)),
             }),
             child$(this.output$, (output) => new OutputView({ output })),
         ]
     }
+}
+
+export class ErrorCommandExec {
+    constructor(public readonly details: unknown) {}
 }
 
 export class ExecuteBodyView extends ExecuteView {
@@ -142,15 +149,33 @@ export class ExecuteBodyView extends ExecuteView {
         playView.click$
             .pipe(
                 withLatestFrom(bodyView.body$),
-                mergeMap(([, body]) =>
-                    this.environmentState.executeWithBodyCommand$({
-                        url: this.url,
-                        body: JSON.parse(body),
-                        method: this.method,
-                    }),
-                ),
+                mergeMap(([, body]) => {
+                    try {
+                        const jsonBody = JSON.parse(body)
+                        return this.environmentState
+                            .executeWithBodyCommand$({
+                                url: this.url,
+                                body: jsonBody,
+                                method: this.method,
+                            })
+                            .pipe(
+                                catchError((err) =>
+                                    of(new ErrorCommandExec(err)),
+                                ),
+                            )
+                    } catch (e) {
+                        return of(
+                            new ErrorCommandExec({
+                                error: 'Parsing body in JSON failed',
+                                original: String(e),
+                            }),
+                        )
+                    }
+                }),
             )
-            .subscribe((out) => this.output$.next(out))
+            .subscribe((out) => {
+                this.output$.next(out)
+            })
 
         this.children = [
             new DashboardTitle({ title: 'Execute command' }),
@@ -191,11 +216,12 @@ export class BodyView implements VirtualDOM {
     }
     public readonly style = {
         fontSize: 'small',
-        height: '250px',
+        minHeight: '250px',
     }
-    public readonly body$ = new Subject<string>()
+    public readonly body$ = new BehaviorSubject<string>('{}')
     constructor(params: {}) {
         Object.assign(this, params)
+
         this.children = [
             {
                 innerText: "Command's body (json format):",
@@ -233,7 +259,9 @@ export class OutputView implements VirtualDOM {
     constructor(params: { output: unknown }) {
         Object.assign(this, params)
         this.children = [
-            new DashboardTitle({ title: 'Output' }),
+            this.output instanceof ErrorCommandExec
+                ? new DashboardTitle({ title: 'Error' })
+                : new DashboardTitle({ title: 'Output' }),
             new ObjectJs.View({
                 state: new ObjectJs.State({
                     title: 'response',
