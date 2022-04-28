@@ -10,7 +10,7 @@ import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { UpdatesView } from './updates.view'
+import { UpdatesView } from './updates/updates.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 
 export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {

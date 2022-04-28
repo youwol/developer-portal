@@ -11,10 +11,10 @@ import { Switch } from '@youwol/fv-button'
 import { ywSpinnerView } from '@youwol/platform-essentials'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
-import { AppState } from '../app-state'
+import { AppState } from '../../app-state'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
-import { TerminalView } from '../common/terminal/terminal.view'
-import { CdnState } from './cdn.state'
+import { TerminalView } from '../../common/terminal/terminal.view'
+import { CdnState } from '../cdn.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 
 export class LogsTab extends DockableTabs.Tab {
