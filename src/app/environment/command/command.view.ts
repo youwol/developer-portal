@@ -7,7 +7,7 @@ import { ObjectJs } from '@youwol/fv-tree'
 import { install } from '@youwol/cdn-client'
 import { mergeMap, withLatestFrom } from 'rxjs/operators'
 
-export function fetchCodeMirror$(): Observable<any> {
+function fetchCodeMirror$(): Observable<any> {
     return from(
         install({
             modules: ['codemirror'],
