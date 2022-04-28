@@ -43,6 +43,10 @@ export class DashboardView implements VirtualDOM {
 }
 
 export class EnvSummaryView implements VirtualDOM {
+    public readonly class = 'mx-auto'
+    public readonly style = {
+        width: 'fit-content',
+    }
     public readonly environment: pyYw.EnvironmentStatusResponse
     public readonly children: VirtualDOM[]
 

@@ -6,7 +6,7 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { ProjectEvents, ProjectsState } from '../projects.state'
 
 export class DagFlowView implements VirtualDOM {
-    public readonly class = 'w-100 h-50 mx-auto'
+    public readonly class = 'w-75 h-50 mx-auto'
     public readonly project: pyYw.Project
     public readonly projectsState: ProjectsState
 
