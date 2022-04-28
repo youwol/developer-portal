@@ -8,6 +8,7 @@ import { EnvironmentState } from './environment.state'
 import { DashboardView } from './dashboard/dashboard.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
+import { ConfigFileView } from './config-file/config-file.view'
 
 export class EnvironmentTab extends LeftNavTab<
     EnvironmentState,
@@ -47,6 +48,7 @@ export class EnvironmentTabView implements VirtualDOM {
 
         this.children = [
             new SectionDashboard({ environmentState: this.environmentState }),
+            new SectionConfigFile({ environmentState: this.environmentState }),
             new SectionDispatches({ environmentState: this.environmentState }),
             new SectionCommands({ environmentState: this.environmentState }),
         ]
@@ -76,6 +78,34 @@ class SectionDashboard extends Section {
                 }),
                 title: 'Dashboard',
                 icon: 'fa-th-large fv-pointer',
+            }),
+        })
+        Object.assign(this, params)
+    }
+}
+
+class SectionConfigFile extends Section {
+    public readonly environmentState: EnvironmentState
+    public readonly onclick = () => {
+        this.environmentState.appState.registerScreen({
+            topic: 'Environment',
+            viewId: 'config-file',
+            view: new ConfigFileView({
+                environmentState: this.environmentState,
+            }),
+        })
+    }
+    constructor(params: { environmentState: EnvironmentState }) {
+        super({
+            header: new SectionHeader({
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.environmentState.appState.selectedScreen$,
+                    targetTopic: 'Environment',
+                    targetViewId: 'config-file',
+                }),
+                title: 'Config. file',
+                icon: 'fa-file-alt fv-pointer',
             }),
         })
         Object.assign(this, params)
