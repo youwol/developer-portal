@@ -1,7 +1,8 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { EnvironmentState } from '../environment.state'
 import { AttributeView, DashboardTitle } from '../../common/utils-view'
+import { mergeMap } from 'rxjs/operators'
 
 export class DashboardView implements VirtualDOM {
     public readonly environmentState: EnvironmentState
@@ -11,6 +12,26 @@ export class DashboardView implements VirtualDOM {
     constructor(params: { environmentState: EnvironmentState }) {
         Object.assign(this, params)
         this.children = [
+            child$(
+                this.environmentState.appState.environment$.pipe(
+                    mergeMap(() =>
+                        this.environmentState.client
+                            .queryCowSay$()
+                            .pipe(raiseHTTPErrors()),
+                    ),
+                ),
+                (cowSay) => {
+                    return {
+                        style: {
+                            width: 'fit-content',
+                            fontWeight: 'bolder',
+                        },
+                        class: 'fv-text-secondary mx-auto',
+                        tag: 'pre',
+                        innerText: cowSay,
+                    }
+                },
+            ),
             child$(
                 this.environmentState.appState.environment$,
                 (environment) => {
