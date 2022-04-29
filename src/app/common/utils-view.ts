@@ -109,6 +109,10 @@ export function leftNavSectionAttr$({
 export class ItemView<TState, TData> implements VirtualDOM {
     public readonly class =
         'rounded p-2 fv-pointer fv-border-primary fv-hover-border-focus text-center m-3'
+
+    public readonly style = {
+        height: 'fit-content',
+    }
     public readonly state: TState
     public readonly item: TData
     public readonly cardView: (data: TData, state: TState) => VirtualDOM
