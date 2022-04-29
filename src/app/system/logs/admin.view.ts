@@ -69,20 +69,30 @@ export class AdminLogsView implements VirtualDOM {
 
         this.children = [
             {
-                class: `${classesButton} mx-auto px-4`,
+                class: 'd-flex align-items-center',
                 children: [
                     {
-                        class: attr$(this.fetchingLogs$, (isFetching) =>
-                            isFetching
-                                ? 'fas fa-spinner fa-spin'
-                                : 'fas fa-sync',
-                        ),
+                        class: `${classesButton} mx-auto px-4`,
+                        children: [
+                            {
+                                class: attr$(this.fetchingLogs$, (isFetching) =>
+                                    isFetching
+                                        ? 'fas fa-spinner fa-spin'
+                                        : 'fas fa-sync',
+                                ),
+                            },
+                        ],
+                        style: {
+                            width: 'fit-content',
+                        },
+                        onclick: () => this.refresh(),
+                    },
+                    {
+                        class: `${classesButton} mx-auto px-4`,
+                        innerText: 'clear',
+                        onclick: () => this.clear(),
                     },
                 ],
-                style: {
-                    width: 'fit-content',
-                },
-                onclick: () => this.refresh(),
             },
             new LogsView({
                 systemState: this.systemState,
@@ -101,6 +111,12 @@ export class AdminLogsView implements VirtualDOM {
                 this.logs$.next(logs as any)
                 this.fetchingLogs$.next(false)
             })
+    }
+    clear() {
+        this.fetchingLogs$.next(true)
+        new pyYw.PyYouwolClient().admin.system.clearLogs$().subscribe(() => {
+            this.refresh()
+        })
     }
 }
 
