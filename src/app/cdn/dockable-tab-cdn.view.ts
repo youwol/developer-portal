@@ -4,7 +4,7 @@ import {
     Section,
     SectionHeader,
 } from '../common/utils-view'
-import { CdnState } from './cdn.state'
+import { CdnState, FuturePackage, ActualPackage } from './cdn.state'
 import { DashboardView } from './dashboard/dashboard.view'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -80,32 +80,33 @@ class SectionDashboard extends Section {
 class PackageItemView {
     public readonly class = 'fv-pointer'
     public readonly cdnState: CdnState
-    public readonly package: pyYw.CdnPackage
+    public readonly packageId: string
     public readonly children: VirtualDOM[]
 
-    constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {
+    constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
+        const name = atob(this.packageId)
         this.children = [
             {
                 class: leftNavSectionAttr$({
                     selectedScreen$: params.cdnState.appState.selectedScreen$,
                     targetTopic: 'CDN',
-                    targetViewId: this.package.name,
+                    targetViewId: this.packageId,
                 }),
                 children: [
                     {
-                        innerText: this.package.name,
+                        innerText: name,
                     },
                     {
                         class: 'fas fa-times fv-text-error fv-xx-darker fv-hover-xx-lighter pl-2 mx-2',
                         onclick: (ev) => {
                             ev.stopPropagation()
-                            this.cdnState.closePackage(this.package)
+                            this.cdnState.closePackage(this.packageId)
                         },
                     },
                 ],
                 onclick: () => {
-                    this.cdnState.selectProject(this.package.name)
+                    this.cdnState.selectProject(this.packageId)
                 },
             },
         ]
@@ -130,8 +131,8 @@ class SectionPackagesOpened extends Section {
                 class: 'pl-4 flex-grow-1 overflow-auto',
                 children: children$(cdnState.openPackages$, (packages) => {
                     return packages.map(
-                        (pack) =>
-                            new PackageItemView({ package: pack, cdnState }),
+                        (packageId) =>
+                            new PackageItemView({ packageId, cdnState }),
                     )
                 }),
             },
@@ -175,20 +176,62 @@ class ContentView implements VirtualDOM {
                             )
                         }),
                     ),
-                    (packages: pyYw.CdnPackage[]) => {
-                        return packages.map((pack) => ({
-                            class: 'fv-pointer fv-hover-bg-background-alt rounded px-1',
-                            innerHTML: pack.name,
-                            onclick: () => {
-                                cdnState.openPackage(pack)
-                            },
-                        }))
+                    (packages: (ActualPackage | FuturePackage)[]) => {
+                        return packages.map(
+                            (pack) =>
+                                new CdnPackageItemView({
+                                    item: pack,
+                                    cdnState,
+                                }),
+                        )
                     },
                 ),
             },
         ]
     }
 }
+
+class CdnPackageItemView implements VirtualDOM {
+    public readonly class =
+        'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center'
+    public readonly children: VirtualDOM[]
+    public readonly item: ActualPackage | FuturePackage
+    public readonly cdnState: CdnState
+    static icons: Record<pyYw.DownloadEventType, string> = {
+        enqueued: 'fa-hourglass-start fv-text-disabled',
+        started: 'fa-cloud-download-alt fv-blink  fv-text-focus',
+        succeeded: 'fa-check fv-text-success',
+        failed: 'fa-times fv-text-error',
+    }
+    public readonly onclick = () => {
+        if (this.item instanceof ActualPackage)
+            this.cdnState.openPackage(this.item.id)
+    }
+
+    constructor(params: {
+        item: ActualPackage | FuturePackage
+        cdnState: CdnState
+    }) {
+        Object.assign(this, params)
+        this.children = [
+            this.item instanceof FuturePackage
+                ? {
+                      class: `fas ${
+                          CdnPackageItemView.icons[this.item.event]
+                      } mr-2`,
+                  }
+                : undefined,
+            {
+                class:
+                    this.item instanceof FuturePackage
+                        ? 'fv-text-disabled'
+                        : '',
+                innerText: this.item.name,
+            },
+        ]
+    }
+}
+
 class SectionAllPackages extends Section {
     public readonly style = {
         minHeight: '0px',
@@ -199,7 +242,11 @@ class SectionAllPackages extends Section {
             header: new SectionHeader({
                 title: attr$(
                     cdnState.packages$,
-                    (packages) => `All packages (${packages.length})`,
+                    (packages) =>
+                        `All packages (${
+                            packages.filter((p) => p instanceof ActualPackage)
+                                .length
+                        })`,
                 ),
                 icon: 'fa-list-alt',
             }),

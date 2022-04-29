@@ -12,26 +12,30 @@ import { Assets } from '@youwol/platform-essentials'
 export class PackageView implements VirtualDOM {
     public readonly cdnState: CdnState
     public readonly class = 'd-flex flex-column h-100'
-    public readonly package: pyYw.CdnPackage
+    public readonly packageId: string
     public readonly children: VirtualDOM[]
-    constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {
+    constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
         this.children = [
             {
                 class: 'border-bottom mx-auto mb-2',
-                innerText: this.package.name,
+                innerText: atob(this.packageId),
                 style: {
                     fontSize: '25px',
                     width: 'fit-content',
                 },
             },
-            new VersionsView({
-                cdnState: this.cdnState,
-                package: this.package,
-            }),
+            child$(
+                this.cdnState.packagesEvent[this.packageId].info$,
+                (packageInfo) =>
+                    new VersionsView({
+                        cdnState: this.cdnState,
+                        package: packageInfo,
+                    }),
+            ),
             child$(
                 new AssetsBackend.AssetsClient()
-                    .getAsset$({ assetId: btoa(this.package.id) })
+                    .getAsset$({ assetId: btoa(this.packageId) })
                     .pipe(raiseHTTPErrors()),
                 (asset) => {
                     return {
@@ -41,7 +45,7 @@ export class PackageView implements VirtualDOM {
                             new Assets.PackageInfoView({
                                 asset: {
                                     ...asset,
-                                    rawId: this.package.id,
+                                    rawId: this.packageId,
                                 } as any,
                             }),
                         ],
@@ -59,7 +63,6 @@ export class VersionsView implements VirtualDOM {
     public readonly style = {
         maxHeight: '50%',
     }
-    public readonly cdnState: CdnState
     public readonly package: pyYw.CdnPackage
 
     public readonly selectedVersion$ = new BehaviorSubject<string>(undefined)
@@ -67,8 +70,6 @@ export class VersionsView implements VirtualDOM {
     constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {
         Object.assign(this, params)
 
-        const packageInfo$ =
-            this.cdnState.packagesEvent[this.package.name].info$
         this.children = [
             {
                 class: 'd-flex justify-content-around w-100',
@@ -76,9 +77,7 @@ export class VersionsView implements VirtualDOM {
                     {
                         class: 'd-flex flex-column h-100 px-2 w-100',
                         children: [
-                            child$(packageInfo$, (info) =>
-                                info ? this.packageDetails(info) : {},
-                            ),
+                            this.packageDetails(this.package),
                             {
                                 tag: 'br',
                             },

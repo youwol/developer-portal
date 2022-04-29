@@ -1,36 +1,36 @@
 import { AppState } from '../app-state'
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs'
 
 import {
     filterCtxMessage,
     PyYouwol as pyYw,
     WebSocketResponse$,
 } from '@youwol/http-clients'
-import { map, shareReplay } from 'rxjs/operators'
+import { map, scan, shareReplay } from 'rxjs/operators'
 import { PackageView } from './package/package.view'
 import { LocalCdnRouter } from '@youwol/http-clients/src/lib/py-youwol/routers/local-cdn/local-cdn.router'
 
 export class PackageEvents {
     public readonly client: LocalCdnRouter
-    public readonly package: pyYw.CdnPackage
+    public readonly packageId: string
     public readonly info$: Observable<pyYw.CdnPackage>
 
-    constructor(params: { package: pyYw.CdnPackage; client: LocalCdnRouter }) {
+    constructor(params: { packageId: string; client: LocalCdnRouter }) {
         Object.assign(this, params)
         this.info$ = this.client.webSocket
             .package$({
-                packageId: this.package.id,
+                packageId: this.packageId,
             })
             .pipe(
                 map((wsMessage) => wsMessage.data),
                 shareReplay(1),
             )
 
-        this.client.getPackage$({ packageId: this.package.id }).subscribe()
+        this.client.getPackage$({ packageId: this.packageId }).subscribe()
     }
 }
 
-export class UpdateEvents {
+export class UpdateChecksEvents {
     public readonly client: LocalCdnRouter
     /**
      * All messages related to updates
@@ -57,53 +57,155 @@ export class UpdateEvents {
     }
 }
 
+export class ActualPackage {
+    constructor(
+        public readonly id: string,
+        public readonly name: string,
+        public readonly versions: string[],
+    ) {}
+}
+export class FuturePackage {
+    constructor(
+        public readonly id: string,
+        public readonly name,
+        public readonly event: pyYw.DownloadEventType,
+    ) {}
+}
+
 export class CdnState {
     public readonly cdnClient = new pyYw.PyYouwolClient().admin.localCdn
     public readonly appState: AppState
-    public readonly updatesEvents: UpdateEvents
+    public readonly updatesEvents: UpdateChecksEvents
 
     public readonly packagesEvent: { [k: string]: PackageEvents } = {}
 
-    public readonly status$: WebSocketResponse$<pyYw.CdnStatusResponse>
-    public readonly packages$: Observable<pyYw.CdnPackage[]>
+    public readonly status$: Observable<pyYw.CdnStatusResponse>
+    public readonly packages$: Observable<(ActualPackage | FuturePackage)[]>
+    public readonly downloadedPackages$: Observable<pyYw.DownloadedPackageResponse>
+    public readonly accDownloadedPackages$: Observable<
+        pyYw.DownloadedPackageResponse[]
+    >
+    public readonly accDownloadEvent$: Observable<{
+        [k: string]: pyYw.DownloadEvent
+    }>
+
     public readonly downloadQueue$ = new BehaviorSubject<
         pyYw.DownloadPackageBody[]
     >([])
-    public readonly openPackages$ = new BehaviorSubject<pyYw.CdnPackage[]>([])
+    public readonly openPackages$ = new BehaviorSubject<string[]>([])
 
     public readonly screensId = {}
 
     constructor(params: { appState: AppState }) {
         Object.assign(this, params)
-        this.updatesEvents = new UpdateEvents({ client: this.cdnClient })
-        this.status$ = this.cdnClient.webSocket.status$().pipe(shareReplay(1))
-        this.packages$ = this.status$.pipe(
-            map((status) => status.data.packages),
+        this.updatesEvents = new UpdateChecksEvents({ client: this.cdnClient })
+
+        this.status$ = this.cdnClient.webSocket.status$().pipe(
+            map((message) => message.data),
+            shareReplay(1),
+        )
+        this.downloadedPackages$ = this.cdnClient.webSocket
+            .downloadedPackage$()
+            .pipe(
+                map((message) => message.data),
+                shareReplay(1),
+            )
+        this.accDownloadEvent$ =
+            new pyYw.PyYouwolClient().admin.system.webSocket
+                .downloadEvent$({ kind: 'package' })
+                .pipe(
+                    map((message) => message.data),
+                    scan((acc, e) => ({ ...acc, [e.rawId]: e }), {}),
+                    shareReplay(1),
+                )
+
+        this.accDownloadedPackages$ = merge(
+            this.status$,
+            this.downloadedPackages$,
+        ).pipe(
+            scan((acc, e) => {
+                if (e['packages']) return []
+                return [...acc, e]
+            }, []),
+            shareReplay(1),
+        )
+
+        this.packages$ = combineLatest([
+            this.status$,
+            merge(of([]), this.accDownloadedPackages$),
+            merge(of({}), this.accDownloadEvent$),
+        ]).pipe(
+            map(
+                ([status, packages, downloadEvents]: [
+                    pyYw.CdnStatusResponse,
+                    pyYw.DownloadedPackageResponse[],
+                    pyYw.DownloadEvent[],
+                ]) => {
+                    const starters = status.packages.map(
+                        ({ id, name, versions }) =>
+                            new ActualPackage(
+                                id,
+                                name,
+                                versions.map((v) => v.version),
+                            ),
+                    )
+                    const filterOutAlreadyHere = ({ id }) => {
+                        return !starters.find((atStart) => atStart.id == id)
+                    }
+                    const downloaded = packages
+                        .map(({ packageName, versions }) => ({
+                            id: btoa(packageName),
+                            name: packageName,
+                            versions,
+                        }))
+                        .filter(filterOutAlreadyHere)
+                        .map(
+                            ({ id, name, versions }) =>
+                                new ActualPackage(id, name, versions),
+                        )
+
+                    const fromEvents = Object.values(downloadEvents)
+                        .map(({ rawId, type }) => ({
+                            id: rawId,
+                            name: atob(rawId),
+                            type,
+                        }))
+                        .filter(filterOutAlreadyHere)
+                        .filter(({ type }) => type != 'succeeded')
+                        .map(
+                            ({ id, name, type }) =>
+                                new FuturePackage(id, name, type),
+                        )
+                    return [...starters, ...downloaded, ...fromEvents].sort(
+                        (lhs, rhs) => lhs.name.localeCompare(rhs.name),
+                    )
+                },
+            ),
             shareReplay(1),
         )
         this.packages$.subscribe()
         this.cdnClient.getStatus$().subscribe()
     }
 
-    openPackage(pack: pyYw.CdnPackage) {
-        if (!this.packagesEvent[pack.name]) {
-            this.packagesEvent[pack.name] = new PackageEvents({
-                package: pack,
+    openPackage(packageId: string) {
+        if (!this.packagesEvent[packageId]) {
+            this.packagesEvent[packageId] = new PackageEvents({
+                packageId,
                 client: this.cdnClient,
             })
         }
 
         const openPackages = this.openPackages$.getValue()
 
-        if (!openPackages.includes(pack)) {
-            this.openPackages$.next([...openPackages, pack])
+        if (!openPackages.includes(packageId)) {
+            this.openPackages$.next([...openPackages, packageId])
         }
-        this.screensId[pack.name] = this.appState.registerScreen({
+        this.screensId[packageId] = this.appState.registerScreen({
             topic: 'CDN',
-            viewId: pack.name,
+            viewId: packageId,
             view: new PackageView({
                 cdnState: this,
-                package: pack,
+                packageId: packageId,
             }),
         })
     }
@@ -112,11 +214,11 @@ export class CdnState {
         this.appState.selectScreen(this.screensId[packageName])
     }
 
-    closePackage(pack: pyYw.CdnPackage) {
-        delete this.packagesEvent[pack.name]
-        this.appState.removeScreen(this.screensId[pack.name])
+    closePackage(packageId: string) {
+        delete this.packagesEvent[packageId]
+        this.appState.removeScreen(this.screensId[packageId])
         const openPackages = this.openPackages$.getValue()
-        this.openPackages$.next(openPackages.filter((p) => p.name != pack.name))
+        this.openPackages$.next(openPackages.filter((p) => p != packageId))
     }
 
     collectUpdates() {

@@ -1,18 +1,20 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import { map } from 'rxjs/operators'
-import { CdnState } from '../cdn.state'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import { CdnState, ActualPackage } from '../cdn.state'
 import { DashboardTemplateView } from '../../common/utils-view'
 
 export class DashboardView extends DashboardTemplateView<
-    pyYw.CdnPackage,
+    ActualPackage,
     CdnState
 > {
     constructor(params: { cdnState: CdnState }) {
         super({
             state: params.cdnState,
-            dataSource$: params.cdnState.status$.pipe(
-                map((status: any) => status.data.packages),
+            dataSource$: params.cdnState.packages$.pipe(
+                map((packages) =>
+                    packages.filter((p) => p instanceof ActualPackage),
+                ),
+                map((d) => d as ActualPackage[]),
             ),
             cardView: (data) => {
                 return new PackageSnippetView({
@@ -28,18 +30,18 @@ export class DashboardView extends DashboardTemplateView<
 
 export class PackageSnippetView implements VirtualDOM {
     public readonly children: VirtualDOM[]
-    public readonly package: pyYw.CdnPackage
+    public readonly package: ActualPackage
     public readonly cdnState: CdnState
     public readonly onclick = () => {
-        this.cdnState.openPackage(this.package)
+        this.cdnState.openPackage(this.package.id)
     }
-    constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {
+    constructor(params: { cdnState: CdnState; package: ActualPackage }) {
         Object.assign(this, params)
         this.children = [
             { tag: 'h4', innerText: this.package.name },
             {
                 innerText: `latest version: ${
-                    this.package.versions.slice(-1)[0].version
+                    this.package.versions.slice(-1)[0]
                 }`,
             },
             {
