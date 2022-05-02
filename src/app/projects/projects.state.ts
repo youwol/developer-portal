@@ -216,7 +216,9 @@ export class ProjectsState {
     selectFlow(projectId: string, flowId: string) {
         const events = this.projectEvents[projectId]
         events.selectedFlow$.next(flowId)
+        events.selectedStep$.next({ flowId, step: undefined })
     }
+
     selectStep(
         projectId: string,
         flowId: string | undefined = undefined,
