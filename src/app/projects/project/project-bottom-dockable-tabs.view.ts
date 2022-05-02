@@ -37,7 +37,9 @@ export class LogsTabView implements VirtualDOM {
         project: pyYw.Project
     }) {
         Object.assign(this, params)
-        const events = this.projectsState.projectEvents[this.project.id]
-        this.children = [new TerminalView(events.messages$)]
+        const events =
+            this.projectsState.projectEvents[this.project.id].messages$
+
+        this.children = [new TerminalView(events)]
     }
 }

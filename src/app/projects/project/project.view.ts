@@ -1,10 +1,10 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { map, mergeMap } from 'rxjs/operators'
+import { mergeMap } from 'rxjs/operators'
 import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { ArtifactsView } from './artifacts.view'
 import { DagFlowView } from './dag-flow.view'
 import { StepView } from './step.view'
-import { ProjectsState } from '../projects.state'
+import { FlowId, ProjectsState } from '../projects.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { LogsTab } from './project-bottom-dockable-tabs.view'
@@ -83,48 +83,41 @@ class FlowsSelectorView implements VirtualDOM {
     public readonly project: pyYw.Project
     public readonly children: VirtualDOM[]
 
-    public readonly selectedStep$: Observable<{
-        flowId: string
-        step: pyYw.PipelineStep
-    }>
+    public readonly selectedFlow$: Observable<FlowId>
 
     constructor(params: {
         projectsState: ProjectsState
         project: pyYw.Project
     }) {
         Object.assign(this, params)
-        this.selectedStep$ =
-            this.projectsState.projectEvents[this.project.id].selectedStep$
+        this.selectedFlow$ =
+            this.projectsState.projectEvents[this.project.id].selectedFlow$
+
         this.children = this.project.pipeline.flows.map((flow) => {
             return this.labelView(flow.name)
         })
     }
 
     labelView(targetFlowId: string): VirtualDOM {
-        return child$(
-            this.selectedStep$.pipe(map(({ flowId }) => flowId)),
-            (selectedFlowId) => {
-                const defaultClasses = 'p-2 border rounded fv-pointer'
-                return {
-                    class:
-                        selectedFlowId == targetFlowId
-                            ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
-                            : `${defaultClasses} fv-hover-bg-background-alt`,
-                    innerText: targetFlowId,
-                    onclick: () => {
-                        this.projectsState.selectStep(
-                            this.project.id,
-                            targetFlowId,
-                        )
-                    },
-                }
-            },
-        )
+        return child$(this.selectedFlow$, (selectedFlowId) => {
+            const defaultClasses = 'p-2 border rounded fv-pointer'
+            return {
+                class:
+                    selectedFlowId == targetFlowId
+                        ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
+                        : `${defaultClasses} fv-hover-bg-background-alt`,
+                innerText: targetFlowId,
+                onclick: () => {
+                    this.projectsState.selectFlow(this.project.id, targetFlowId)
+                },
+            }
+        })
     }
 }
 
 class ProjectHeaderView implements VirtualDOM {
     public readonly class = 'w-100'
+    public readonly projectsState: ProjectsState
     public readonly project: pyYw.Project
     public readonly children: VirtualDOM[]
     constructor(params: {
@@ -148,7 +141,15 @@ class ProjectHeaderView implements VirtualDOM {
                     new FlowsSelectorView(params),
                 ],
             },
-            new DagFlowView(params),
+            child$(
+                this.projectsState.projectEvents[this.project.id].selectedFlow$,
+                (flowId) =>
+                    new DagFlowView({
+                        projectsState: this.projectsState,
+                        project: this.project,
+                        flowId: flowId,
+                    }),
+            ),
         ]
     }
 }

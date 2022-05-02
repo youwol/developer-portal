@@ -1,43 +1,58 @@
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
 
-import {
-    distinctUntilChanged,
-    filter,
-    map,
-    mergeMap,
-    scan,
-    shareReplay,
-    tap,
-} from 'rxjs/operators'
+import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project/project.view'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
+import { ContextMessage } from '@youwol/http-clients/dist/lib/py-youwol'
 
 function projectLoadingIsSuccess(result: any): result is pyYw.Project {
     return result['failure'] === undefined
 }
 
-type StepId = string
+export type StepId = string
+export type FlowId = string
+
+export function instanceOfStepStatus(
+    data: unknown,
+): data is pyYw.PipelineStepStatusResponse {
+    return [
+        'projectId',
+        'flowId',
+        'stepId',
+        'artifactFolder',
+        'artifacts',
+    ].reduce((acc, e) => acc && data[e], true)
+}
 
 export class ProjectEvents {
     public readonly projectsClient = new pyYw.PyYouwolClient().admin.projects
     messages$: any
 
+    selectedFlow$: BehaviorSubject<FlowId>
+
     selectedStep$: BehaviorSubject<{
-        flowId: string | undefined
+        flowId: string
         step: pyYw.PipelineStep | undefined
     }>
 
-    stepsStatus$: Observable<Record<StepId, pyYw.PipelineStepStatusResponse>>
-    stepStatusResponse$: Observable<pyYw.PipelineStepStatusResponse>
+    step$: {
+        [k: string]: {
+            status$: ReplaySubject<
+                pyYw.PipelineStepEventKind | pyYw.PipelineStepStatusResponse
+            >
+            log$: Subject<ContextMessage>
+        }
+    } = {}
 
     projectStatusResponse$ = new ReplaySubject<pyYw.ProjectStatus>(1)
 
     constructor(public readonly project: pyYw.Project) {
-        this.messages$ = this.projectsClient.webSocket.ws$().pipe(
+        this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
             filterCtxMessage({
                 withAttributes: { projectId: this.project.id },
             }),
+            shareReplay(1),
         )
 
         this.selectedStep$ = new BehaviorSubject<{
@@ -47,60 +62,45 @@ export class ProjectEvents {
             flowId: this.project.pipeline.flows[0].name,
             step: undefined,
         })
+        this.selectedFlow$ = new BehaviorSubject(
+            this.project.pipeline.flows[0].name,
+        )
 
-        this.stepStatusResponse$ = this.projectsClient.webSocket
-            .stepStatus$({
-                projectId: this.project.id,
-                flowId: this.project.pipeline.flows[0].name,
-            })
+        this.projectsClient.webSocket
+            .stepEvent$({ projectId: this.project.id })
             .pipe(
-                map((message: any) => message.data),
-                shareReplay(1),
+                map((message) => message.data),
+                filter(
+                    (data: pyYw.PipelineStepEvent) =>
+                        data.event == 'runStarted' ||
+                        data.event == 'statusCheckStarted',
+                ),
             )
-
-        this.stepsStatus$ = this.projectsClient.webSocket
-            .stepStatus$({
-                projectId: this.project.id,
-                flowId: this.project.pipeline.flows[0].name,
+            .subscribe((data: pyYw.PipelineStepEvent) => {
+                this.getStep$(data.flowId, data.stepId).status$.next(data.event)
             })
+        this.messages$
             .pipe(
-                scan((acc, message: any) => {
-                    const flowId = message.attributes['flowId']
-                    const stepId = message.attributes['stepId']
-
-                    return {
-                        ...acc,
-                        [ProjectEvents.fullId(flowId, stepId)]: message.data,
-                    }
-                }, {}),
-                shareReplay(1),
-            )
-
-        this.selectedStep$
-            .pipe(
-                distinctUntilChanged((x, y) => x.flowId == y.flowId),
-                filter(({ flowId }) => flowId != undefined),
-                mergeMap(({ flowId }) => {
-                    return this.projectsClient.getPipelineStatus$({
-                        projectId: project.id,
-                        flowId,
-                    })
+                filterCtxMessage({
+                    withLabels: ['Label.PIPELINE_STEP_RUNNING'],
+                    withAttributes: { projectId: this.project.id },
                 }),
             )
-            .subscribe()
+            .subscribe((message) => {
+                console.log('tututu', message)
+                const flowId = message.attributes['flowId']
+                const stepId = message.attributes['stepId']
+                this.getStep$(flowId, stepId).log$.next(message)
+            })
 
-        this.selectedStep$
-            .pipe(
-                filter(({ step }) => step != undefined),
-                mergeMap(({ flowId, step }) => {
-                    return this.projectsClient.getStepStatus$({
-                        projectId: project.id,
-                        flowId,
-                        stepId: step.id,
-                    })
-                }),
-            )
-            .subscribe()
+        this.projectsClient.webSocket
+            .pipelineStepStatus$({
+                projectId: this.project.id,
+            })
+            .pipe(map((message) => message.data))
+            .subscribe((status) => {
+                this.getStep$(status.flowId, status.stepId).status$.next(status)
+            })
 
         this.projectStatusResponse$ = this.projectsClient.webSocket
             .projectStatus$()
@@ -109,6 +109,29 @@ export class ProjectEvents {
         this.projectsClient
             .getProjectStatus$({ projectId: project.id })
             .subscribe()
+
+        this.selectedFlow$
+            .pipe(
+                mergeMap((flowId) => {
+                    return this.projectsClient.getPipelineStatus$({
+                        projectId: project.id,
+                        flowId,
+                    })
+                }),
+            )
+            .subscribe()
+    }
+
+    getStep$(flowId: string, stepId: string) {
+        const fullId = ProjectEvents.fullId(flowId, stepId)
+        if (this.step$[fullId]) {
+            return this.step$[fullId]
+        }
+        this.step$[fullId] = {
+            status$: new ReplaySubject(1),
+            log$: new Subject(),
+        }
+        return this.step$[fullId]
     }
 
     static fullId(flowId: string, stepId: string) {
@@ -137,7 +160,6 @@ export class ProjectsState {
         this.projectsLoading$ = this.projectsClient.webSocket.status$().pipe(
             map(({ data }) => data.results),
             shareReplay(1),
-            tap((p) => console.log('projectsLoading$', p)),
         )
 
         this.projects$ = this.projectsLoading$.pipe(
@@ -146,7 +168,6 @@ export class ProjectsState {
             ),
             map((results) => results as pyYw.Project[]),
             shareReplay(1),
-            tap((p) => console.log('projects$', p)),
         )
 
         this.projectsClient.status$().subscribe()
@@ -192,6 +213,10 @@ export class ProjectsState {
         this.openProjects$.next(openProjects.filter((p) => p.id != projectId))
     }
 
+    selectFlow(projectId: string, flowId: string) {
+        const events = this.projectEvents[projectId]
+        events.selectedFlow$.next(flowId)
+    }
     selectStep(
         projectId: string,
         flowId: string | undefined = undefined,
