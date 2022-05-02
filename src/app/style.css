@@ -19,20 +19,33 @@
     display: none;
 }
 
-svg text {
-    font-family: 'Font Awesome 5';
+.dag-flow-node-title{
+    font-size: 8px;
+    font-weight: bold;
+    font-family: sans-serif;
+    text-anchor: middle;
+    alignment-baseline: middle;
+    fill: white;
 }
 
-.pending {
+.dag-flow-node-status{
+    font-size: 16px;
+    text-anchor: middle;
+    user-select: none;
+    transform: translateY(5px);
+    pointer-events: auto;
+}
+
+.dag-flow-link{
+    fill: none;
+    stroke-width: 3px;
+    stroke: white
+}
+
+g.pending {
     animation: rotate 2s linear infinite;
-    z-index: 2;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -25px 0 0 -25px;
-    width: 50px;
-    height: 50px;
-    stroke: hsl(210, 70, 75);
+}
+circle.pending {
     stroke-linecap: round;
     stroke: aliceblue;
     stroke-width: 2px;
