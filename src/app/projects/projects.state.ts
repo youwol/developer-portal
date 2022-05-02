@@ -227,7 +227,6 @@ export class ProjectsState {
         const events = this.projectEvents[projectId]
         const step = events.project.pipeline.steps.find((s) => s.id == stepId)
         if (events.selectedStep$.getValue().flowId != flowId) {
-            console.log('Select flow', flowId)
             this.projectsClient
                 .getPipelineStatus$({ projectId, flowId })
                 .subscribe()
