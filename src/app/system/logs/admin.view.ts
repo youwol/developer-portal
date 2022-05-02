@@ -13,17 +13,19 @@ import { classesButton } from '../../common/utils-view'
 import { SystemState } from '../system.state'
 
 function getChildren(contextId: string) {
-    return new pyYw.PyYouwolClient().admin.system.queryLogs$(contextId).pipe(
-        raiseHTTPErrors(),
-        map(({ logs }) =>
-            logs.map((log) => {
-                if (log.labels.includes('Label.STARTED')) {
-                    return new LogNode(log, getChildren(log.contextId))
-                }
-                return new LogNode(log)
-            }),
-        ),
-    )
+    return new pyYw.PyYouwolClient().admin.system
+        .queryLogs$({ parentId: contextId })
+        .pipe(
+            raiseHTTPErrors(),
+            map(({ logs }) =>
+                logs.map((log) => {
+                    if (log.labels.includes('Label.STARTED')) {
+                        return new LogNode(log, getChildren(log.contextId))
+                    }
+                    return new LogNode(log)
+                }),
+            ),
+        )
 }
 
 export class LogNode extends ImmutableTree.Node {

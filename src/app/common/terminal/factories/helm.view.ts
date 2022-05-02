@@ -68,7 +68,7 @@ export class ChartExplorerView implements VirtualDOM {
                         this.selectedFile$.pipe(
                             mergeMap((fileNode: FileNode) => {
                                 return new pyYw.PyYouwolClient().admin.system.getFileContent$(
-                                    fileNode.id,
+                                    { path: fileNode.id },
                                 )
                             }),
                         ),

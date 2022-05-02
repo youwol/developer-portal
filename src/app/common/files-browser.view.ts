@@ -22,7 +22,7 @@ export class FilesBrowserView implements VirtualDOM {
         const client = new pyYw.PyYouwolClient().admin.system
         this.folderSelected$ = new BehaviorSubject<string>(this.startingFolder)
         this.items$ = this.folderSelected$.pipe(
-            mergeMap((path) => client.queryFolderContent$(path)),
+            mergeMap((path) => client.queryFolderContent$({ path })),
         )
         this.children = [
             originLocationView(this.startingFolder, this.originFolderIndex),

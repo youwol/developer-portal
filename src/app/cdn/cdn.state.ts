@@ -49,9 +49,9 @@ export class UpdateChecksEvents {
 
     constructor(params: { client: LocalCdnRouter }) {
         Object.assign(this, params)
-        this.messages$ = this.client.webSocket
-            .ws$()
-            .pipe(filterCtxMessage({ withAttributes: { topic: 'updatesCdn' } }))
+        this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
+            filterCtxMessage({ withAttributes: { topic: 'updatesCdn' } }),
+        )
         this.updateChecksResponse$ = this.client.webSocket.updateStatus$()
         this.updatesChecksResponse$ = this.client.webSocket.updatesStatus$()
     }

@@ -5,8 +5,7 @@ import { take } from 'rxjs/operators'
 
 require('./style.css')
 
-new PyYouwol.PyYouwolClient()
-    .webSocket$()
+PyYouwol.PyYouwolClient.startWs$()
     .pipe(take(1))
     .subscribe(() => {
         const vDOM = new AppView()

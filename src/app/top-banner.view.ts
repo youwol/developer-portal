@@ -24,7 +24,7 @@ export class UsersSelectView implements VirtualDOM {
                 distinctUntilChanged(),
                 mergeMap((id) => {
                     return new pyYw.PyYouwolClient().admin.environment.login$({
-                        email: id,
+                        body: { email: id },
                     })
                 }),
             )
@@ -88,7 +88,7 @@ class ProfilesSelectView implements VirtualDOM {
                 inProgress$.next(true)
                 new pyYw.PyYouwolClient().admin.environment
                     .switchProfile$({
-                        active: id,
+                        body: { active: id },
                     })
                     .subscribe(() => {
                         console.warn('on return of select')

@@ -88,8 +88,7 @@ export class AppState {
         this.selectedScreen$ = new BehaviorSubject<Screen>(startingScreen)
         this.registerScreen(startingScreen)
 
-        this.environmentClient.status$().subscribe()
-        this.selectedScreen$.subscribe((s) => console.log('Selected', s))
+        this.environmentClient.getStatus$().subscribe()
         this.leftNavState.selected$.subscribe((topic: Topic) => {
             this.selectedTopic$.next(topic)
             const defaultScreen = this.leftNavTabs[topic].defaultScreen()
