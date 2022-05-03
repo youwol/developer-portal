@@ -43,7 +43,7 @@ export class DashboardView implements VirtualDOM {
 }
 
 export class EnvSummaryView implements VirtualDOM {
-    public readonly class = 'mx-auto'
+    public readonly class = 'mx-auto w-75'
     public readonly style = {
         width: 'fit-content',
     }
