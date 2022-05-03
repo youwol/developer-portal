@@ -147,6 +147,7 @@ export class AttributeTitleView {
     public readonly text: string
     public readonly style = {
         fontWeight: 'bolder',
+        whiteSpace: 'nowrap',
     }
     constructor(params: { text: string }) {
         Object.assign(this, params)
@@ -156,18 +157,18 @@ export class AttributeTitleView {
 
 export class AttributeValueView {
     public readonly class = 'd-flex align-items-center flex-grow-1'
+    public readonly style = {
+        minWidth: '0px',
+    }
     public readonly children: VirtualDOM[]
     public readonly value: string
 
     constructor(params: { value: string; [k: string]: string }) {
         this.value = params.value
-        const displayed =
-            typeof this.value != 'string' || this.value.length < 50
-                ? this.value
-                : this.value.slice(0, 25) + '...' + this.value.slice(-25)
+
         this.children = [
             {
-                innerText: displayed,
+                innerText: this.value,
                 style: {
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
