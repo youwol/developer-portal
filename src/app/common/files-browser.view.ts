@@ -2,6 +2,7 @@ import { children$, VirtualDOM } from '@youwol/flux-view'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
+import { AttributeView } from './utils-view'
 
 export class FilesBrowserView implements VirtualDOM {
     public readonly class = 'w-100 overflow-auto'
@@ -49,15 +50,16 @@ function originLocationView(
         return {}
     }
     return {
-        class: 'm-2',
-        innerText: startingFolder
-            .split('/')
-            .slice(1, originFolderIndex)
-            .reduce((acc, e) => `${acc}/${e}`),
-        style: {
-            overflow: 'auto',
-            whiteSpace: 'nowrap',
-        },
+        class: 'my-2',
+        children: [
+            new AttributeView({
+                text: 'origin:',
+                value: startingFolder
+                    .split('/')
+                    .slice(1, originFolderIndex)
+                    .reduce((acc, e) => `${acc}/${e}`),
+            }),
+        ],
     }
 }
 
