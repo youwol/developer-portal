@@ -33,12 +33,14 @@ export class DagFlowView implements VirtualDOM {
             },
             style: {},
             on: {
-                click: (n) =>
+                click: (n) => {
                     this.projectsState.selectStep(
                         this.project.id,
                         this.flowId,
                         n.data.id,
-                    ),
+                    )
+                    d3.event.stopPropagation()
+                },
             },
         },
         link: {
@@ -64,6 +66,7 @@ export class DagFlowView implements VirtualDOM {
                 r: DagFlowView.nodeRadius,
                 class: 'fv-pointer',
                 fill: 'white',
+                stroke: 'white',
             },
             style: {},
         },
@@ -79,6 +82,20 @@ export class DagFlowView implements VirtualDOM {
         status: {
             attributes: {
                 class: 'fv-pointer  dag-flow-node-status',
+            },
+        },
+        run: {
+            attributes: {
+                class: 'fv-pointer dag-flow-node-run d-none fv-hover-xx-darker',
+            },
+            on: {
+                click: (n) => {
+                    this.projectsState.runStep(
+                        this.project.id,
+                        this.flowId,
+                        n.data.id,
+                    )
+                },
             },
         },
     }
@@ -116,6 +133,9 @@ export class DagFlowView implements VirtualDOM {
                                 text: d3Svg.select(
                                     `g#${this.flowId}_${stepId} .dag-flow-node-status`,
                                 ),
+                                run: d3Svg.select(
+                                    `g#${this.flowId}_${stepId} .dag-flow-node-run`,
+                                ),
                             })),
                         ),
                     this.projectsState.projectEvents[this.project.id]
@@ -124,7 +144,7 @@ export class DagFlowView implements VirtualDOM {
             })
             elem.ownSubscriptions(
                 merge(...events$).subscribe(([event, selected]) => {
-                    applyStyle(this.defaultStyle, selected, event)
+                    this.applyStyle(selected, event)
                 }),
             )
         }
@@ -157,7 +177,11 @@ export class DagFlowView implements VirtualDOM {
             ])
 
         const { width, height } = layout(dag as any)
-        const svgSelection = d3.select(svg)
+        const svgSelection = d3
+            .select(svg)
+            .on('click', () =>
+                this.projectsState.selectStep(this.project.id, this.flowId),
+            )
         svgSelection.attr(
             'viewBox',
             [0, 0, height * 1.2, width * 1.2].join(' '),
@@ -199,9 +223,84 @@ export class DagFlowView implements VirtualDOM {
             this.defaultStyle.title,
         )
         withDefaultStyleAttributes(
-            nodes.append('g').append('text'),
+            nodes.append('text'),
             this.defaultStyle.status,
         )
+
+        withDefaultStyleAttributes(
+            nodes.append('text').text('▶'),
+            this.defaultStyle.run,
+        )
+    }
+
+    applyStyle(
+        selected: { flowId: string; step: pyYw.PipelineStep },
+        event: {
+            stepId
+            status
+            groupThumbnail: d3.selection
+            circle: d3.selection
+            text: d3.selection
+            run: d3.selection
+        },
+    ) {
+        const isSelected = selected.step && selected.step.id == event.stepId
+        const selectedClass = isSelected ? 'fv-xx-lighter' : ''
+        const pendingClass = instanceOfStepStatus(event.status) ? '' : 'pending'
+        event.circle.attr(
+            'class',
+            `${this.defaultStyle.circle.attributes.class} ${selectedClass} ${pendingClass}`,
+        )
+        event.circle.attr(
+            'r',
+            selected.step && selected.step.id == event.stepId ? '25px' : '20px',
+        )
+        if (instanceOfStepStatus(event.status))
+            event.circle.attr(
+                'fill',
+                DagFlowView.colorsFactory[event.status.status],
+            )
+
+        event.groupThumbnail.attr(
+            'class',
+            `${this.defaultStyle.thumbnail.attributes.class} ${pendingClass}`,
+        )
+
+        let factoryPending: Record<pyYw.PipelineStepEventKind, string> = {
+            runStarted: '▶',
+            runDone: '',
+            statusCheckStarted: '',
+        }
+        let factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
+            OK: '✔',
+            KO: '❌',
+            outdated: '⚠',
+            none: '',
+        }
+        event.text.text(
+            instanceOfStepStatus(event.status)
+                ? factoryDone[event.status.status]
+                : factoryPending[event.status],
+        )
+        if (isSelected) {
+            event.run.attr(
+                'class',
+                `${this.defaultStyle.run.attributes.class} d-block`,
+            )
+            event.text.attr(
+                'class',
+                `${this.defaultStyle.status.attributes.class}  d-none`,
+            )
+        } else {
+            event.run.attr(
+                'class',
+                `${this.defaultStyle.run.attributes.class} d-none`,
+            )
+            event.text.attr(
+                'class',
+                `${this.defaultStyle.status.attributes.class}  d-block`,
+            )
+        }
     }
 }
 
@@ -243,58 +342,4 @@ function parseDag(project: pyYw.Project, flowId: string) {
         includedSteps,
         data,
     }
-}
-
-function applyStyle(
-    defaultStyle: {
-        circle: { attributes: { class: string } }
-        thumbnail: { attributes: { class: string } }
-    },
-    selected: { flowId: string; step: pyYw.PipelineStep },
-    event: {
-        stepId
-        status
-        groupThumbnail: d3.selection
-        circle: d3.selection
-        text: d3.selection
-    },
-) {
-    const selectedClass =
-        selected.step && selected.step.id == event.stepId ? 'fv-xx-lighter' : ''
-    const pendingClass = instanceOfStepStatus(event.status) ? '' : 'pending'
-    event.circle.attr(
-        'class',
-        `${defaultStyle.circle.attributes.class} ${selectedClass} ${pendingClass}`,
-    )
-    event.circle.attr(
-        'r',
-        selected.step && selected.step.id == event.stepId ? '25px' : '20px',
-    )
-    if (instanceOfStepStatus(event.status))
-        event.circle.attr(
-            'fill',
-            DagFlowView.colorsFactory[event.status.status],
-        )
-
-    event.groupThumbnail.attr(
-        'class',
-        `${defaultStyle.thumbnail.attributes.class} ${pendingClass}`,
-    )
-
-    let factoryPending: Record<pyYw.PipelineStepEventKind, string> = {
-        runStarted: '▶',
-        runDone: '',
-        statusCheckStarted: '',
-    }
-    let factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
-        OK: '✔',
-        KO: '❌',
-        outdated: '⚠',
-        none: '',
-    }
-    event.text.text(
-        instanceOfStepStatus(event.status)
-            ? factoryDone[event.status.status]
-            : factoryPending[event.status],
-    )
 }

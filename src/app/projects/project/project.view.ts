@@ -58,15 +58,22 @@ export class ProjectView implements VirtualDOM {
                         return {
                             class: 'd-flex flex-grow-1 w-100',
                             children: [
-                                new FlowSummaryView(params),
-                                step != undefined
-                                    ? new StepView({
-                                          projectsState: this.projectsState,
-                                          project: this.project,
-                                          flowId,
-                                          step,
-                                      })
-                                    : undefined,
+                                child$(
+                                    this.projectsState.projectEvents[
+                                        this.project.id
+                                    ].selectedStep$,
+                                    (selection) => {
+                                        return selection.step == undefined
+                                            ? new FlowSummaryView(params)
+                                            : new StepView({
+                                                  projectsState:
+                                                      this.projectsState,
+                                                  project: this.project,
+                                                  flowId,
+                                                  step,
+                                              })
+                                    },
+                                ),
                             ],
                         }
                     }),
