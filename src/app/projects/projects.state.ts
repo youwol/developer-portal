@@ -10,7 +10,6 @@ function projectLoadingIsSuccess(result: any): result is pyYw.Project {
     return result['failure'] === undefined
 }
 
-export type StepId = string
 export type FlowId = string
 
 export function instanceOfStepStatus(
@@ -87,7 +86,6 @@ export class ProjectEvents {
                 }),
             )
             .subscribe((message) => {
-                console.log('tututu', message)
                 const flowId = message.attributes['flowId']
                 const stepId = message.attributes['stepId']
                 this.getStep$(flowId, stepId).log$.next(message)
