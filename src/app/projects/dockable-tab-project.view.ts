@@ -140,12 +140,13 @@ class SectionProjectsOpened extends Section {
     }
 }
 
-class ContentView implements VirtualDOM {
+class ListProjectsView implements VirtualDOM {
     public readonly class = 'pl-4 flex-grow-1 overflow-auto'
     public readonly search$ = new BehaviorSubject('')
-    public readonly children
+    public readonly children: VirtualDOM[]
+    public readonly projectsState: ProjectsState
 
-    constructor({ projectsState }: { projectsState: ProjectsState }) {
+    constructor(params: { projectsState: ProjectsState }) {
         let searchView = {
             class: 'd-flex align-items-center  my-2 w-100 px-2',
             children: [
@@ -164,24 +165,39 @@ class ContentView implements VirtualDOM {
                 },
             ],
         }
+        Object.assign(this, params)
 
         this.children = [
             searchView,
             {
                 children: children$(
-                    combineLatest([projectsState.projects$, this.search$]).pipe(
+                    combineLatest([
+                        this.projectsState.projects$,
+                        this.search$,
+                    ]).pipe(
                         map(([projects, search]) => {
-                            return projects.filter((p) =>
-                                p.name.includes(search),
+                            return projects.filter(
+                                (p) =>
+                                    p.name.includes(search) ||
+                                    p.version.includes(search),
                             )
                         }),
                     ),
                     (projects: pyYw.Project[]) => {
                         return projects.map((project) => ({
-                            class: 'fv-pointer fv-hover-bg-background-alt rounded px-1',
-                            innerHTML: project.name,
+                            class: 'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center',
+                            children: [
+                                {
+                                    innerText: project.name,
+                                },
+                                {
+                                    class: project.version.includes('-wip')
+                                        ? 'fas fa-dot-circle fv-text-focus ml-2'
+                                        : '',
+                                },
+                            ],
                             onclick: () => {
-                                projectsState.openProject(project)
+                                this.projectsState.openProject(project)
                             },
                         }))
                     },
@@ -190,6 +206,7 @@ class ContentView implements VirtualDOM {
         ]
     }
 }
+
 class SectionAllProjects extends Section {
     public readonly style = {
         minHeight: '0px',
@@ -204,7 +221,7 @@ class SectionAllProjects extends Section {
                 ),
                 icon: 'fa-list-alt',
             }),
-            content: new ContentView({ projectsState }),
+            content: new ListProjectsView({ projectsState }),
         })
     }
 }
