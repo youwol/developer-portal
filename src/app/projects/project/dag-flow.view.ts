@@ -90,6 +90,7 @@ export class DagFlowView implements VirtualDOM {
             },
             on: {
                 click: (n) => {
+                    d3.event.stopPropagation()
                     this.projectsState.runStep(
                         this.project.id,
                         this.flowId,
