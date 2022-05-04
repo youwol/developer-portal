@@ -118,6 +118,19 @@ export class ProjectEvents {
                 }),
             )
             .subscribe()
+
+        this.selectedStep$
+            .pipe(
+                filter(({ step }) => step != undefined),
+                mergeMap(({ flowId, step }) => {
+                    return this.projectsClient.getPipelineStepStatus$({
+                        projectId: project.id,
+                        flowId,
+                        stepId: step.id,
+                    })
+                }),
+            )
+            .subscribe()
     }
 
     getStep$(flowId: string, stepId: string) {
