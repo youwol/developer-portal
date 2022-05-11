@@ -1,6 +1,8 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import {
+    commonClassesLeftSideNav,
     leftNavSectionAttr$,
+    leftTabWidth,
     Section,
     SectionHeader,
 } from '../common/utils-view'
@@ -32,9 +34,9 @@ export class SystemTab extends LeftNavTab<SystemState, SystemTabView> {
 
 export class SystemTabView implements VirtualDOM {
     public readonly systemState: SystemState
-    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly class = commonClassesLeftSideNav
     public readonly style = {
-        minHeight: '0px',
+        width: leftTabWidth,
     }
     public readonly children: VirtualDOM[]
 

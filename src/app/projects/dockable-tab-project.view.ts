@@ -3,7 +3,9 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
+    commonClassesLeftSideNav,
     leftNavSectionAttr$,
+    leftTabWidth,
     Section,
     SectionHeader,
 } from '../common/utils-view'
@@ -34,9 +36,9 @@ export class ProjectsTab extends LeftNavTab<ProjectsState, ProjectsTabView> {
 
 export class ProjectsTabView implements VirtualDOM {
     public readonly projectsState: ProjectsState
-    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly class = commonClassesLeftSideNav
     public readonly style = {
-        minHeight: '0px',
+        width: leftTabWidth,
     }
     public readonly children: VirtualDOM[]
 

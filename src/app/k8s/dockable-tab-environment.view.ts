@@ -1,6 +1,8 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import {
+    commonClassesLeftSideNav,
     leftNavSectionAttr$,
+    leftTabWidth,
     Section,
     SectionHeader,
 } from '../common/utils-view'
@@ -31,9 +33,9 @@ export class K8sTab extends LeftNavTab<K8sState, K8sTabView> {
 
 export class K8sTabView implements VirtualDOM {
     public readonly k8sState: K8sState
-    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly class = commonClassesLeftSideNav
     public readonly style = {
-        minHeight: '0px',
+        width: leftTabWidth,
     }
     public readonly children: VirtualDOM[]
 

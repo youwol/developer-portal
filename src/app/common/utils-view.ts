@@ -5,6 +5,10 @@ import { Screen, Topic } from '../app-state'
 export const classesButton =
     'd-flex border p-2 rounded  fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center'
 
+export const leftTabWidth = '300px'
+export const commonClassesLeftSideNav =
+    'p-2 d-flex flex-column h-100 fv-bg-background fv-x-lighter'
+
 export class Section implements VirtualDOM {
     public readonly class: string = 'my-2'
     public readonly header: VirtualDOM

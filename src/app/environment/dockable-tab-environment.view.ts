@@ -1,6 +1,8 @@
 import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
 import {
+    commonClassesLeftSideNav,
     leftNavSectionAttr$,
+    leftTabWidth,
     Section,
     SectionHeader,
 } from '../common/utils-view'
@@ -37,9 +39,9 @@ export class EnvironmentTab extends LeftNavTab<
 
 export class EnvironmentTabView implements VirtualDOM {
     public readonly environmentState: EnvironmentState
-    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly class = commonClassesLeftSideNav
     public readonly style = {
-        minHeight: '0px',
+        width: leftTabWidth,
     }
     public readonly children: VirtualDOM[]
 
