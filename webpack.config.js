@@ -57,9 +57,8 @@ module.exports = {
             '@youwol/fv-tabs': "window['@youwol/fv-tabs']",
             '@youwol/cdn-client': "window['@youwol/cdn-client']",
             '@youwol/http-clients': "window['@youwol/http-clients']",
-            '@youwol/platform-essentials':
-                "window['@youwol/platform-essentials']",
-            '@youwol/flux-files': "window['@youwol/flux-files']",
+            '@youwol/os-top-banner': "window['@youwol/os-top-banner']",
+            '@youwol/installers-youwol': "window['@youwol/installers-youwol']",
             d3: "window['d3']",
         },
     ],
