@@ -1,6 +1,6 @@
 import { attr$, childrenWithReplace$, VirtualDOM } from '@youwol/flux-view'
 import { AppState, Screen } from './app-state'
-import { TopBannerView } from './top-banner.view'
+import { DevPortalTopBannerView } from './top-banner.view'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { map } from 'rxjs/operators'
 
@@ -19,7 +19,7 @@ export class AppView implements VirtualDOM {
         })
 
         this.children = [
-            new TopBannerView({ state: this.state }),
+            new DevPortalTopBannerView({ state: this.state }),
             {
                 class: 'flex-grow-1 d-flex',
                 style: {

@@ -1,4 +1,3 @@
-import { TopBanner } from '@youwol/platform-essentials'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { map, shareReplay } from 'rxjs/operators'
 import { DockableTabs } from '@youwol/fv-tabs'
@@ -35,7 +34,6 @@ export class AppState {
     public readonly environmentClient = new pyYw.PyYouwolClient().admin
         .environment
     public readonly environment$: Observable<pyYw.EnvironmentStatusResponse>
-    public readonly topBannerState = new TopBanner.YouwolBannerState()
     public readonly projectsState: ProjectsState
     public readonly cdnState: CdnState
     public readonly environmentState: EnvironmentState

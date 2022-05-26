@@ -1,6 +1,6 @@
 import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
 import { Select } from '@youwol/fv-input'
-import { TopBanner } from '@youwol/platform-essentials'
+import { TopBannerView } from '@youwol/os-top-banner'
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
 import { distinctUntilChanged, mergeMap, skip } from 'rxjs/operators'
 import { AppState } from './app-state'
@@ -36,31 +36,6 @@ export class UsersSelectView implements VirtualDOM {
             },
             new Select.View({ state: selectState, class: 'mx-2' } as any),
         ]
-    }
-}
-
-class YwUserMenuView extends TopBanner.Menu {
-    constructor(params: { state: AppState }) {
-        super({
-            id: 'expandable-user-menu',
-            sections: [
-                new TopBanner.MenuSection({
-                    items: [
-                        new TopBanner.SettingsMenuItem({
-                            state: params.state.topBannerState,
-                        }),
-                    ],
-                }),
-                new TopBanner.MenuSection({
-                    items: [
-                        child$(
-                            params.state.environment$,
-                            (env) => new UsersSelectView(env as any),
-                        ) as any,
-                    ],
-                }),
-            ],
-        })
     }
 }
 
@@ -168,62 +143,53 @@ class ConfigurationPickerView implements VirtualDOM {
     }
 }
 
-class YwMenuView extends TopBanner.Menu {
+class ConnectionView implements VirtualDOM {
+    public readonly children: VirtualDOM[]
+
     constructor(params: { state: AppState }) {
-        super({
-            id: 'expandable-yw-menu',
-            sections: [
-                new TopBanner.MenuSection({
-                    items: [
-                        child$(
-                            params.state.environment$,
-                            (environment: any) => {
-                                return {
-                                    class: 'd-flex align-items-center justify-content-center',
-                                    children: [
-                                        {
-                                            class:
-                                                'fas fa-wifi px-2 ' +
-                                                (environment.remoteGatewayInfo
-                                                    .connected
-                                                    ? 'fv-text-success'
-                                                    : 'fv-text-error'),
-                                        },
-                                        {
-                                            innerText:
-                                                environment.remoteGatewayInfo
-                                                    .host,
-                                        },
-                                    ],
-                                }
-                            },
-                        ) as any,
+        this.children = [
+            child$(params.state.environment$, (environment: any) => {
+                return {
+                    class: 'd-flex align-items-center justify-content-center',
+                    children: [
+                        {
+                            class:
+                                'fas fa-wifi px-2 ' +
+                                (environment.remoteGatewayInfo.connected
+                                    ? 'fv-text-success'
+                                    : 'fv-text-error'),
+                        },
+                        {
+                            innerText: environment.remoteGatewayInfo.host,
+                        },
                     ],
-                }),
-            ],
-        })
+                }
+            }),
+        ]
     }
 }
 
 /**
  * Top banner of the application
  */
-export class TopBannerView extends TopBanner.YouwolBannerView {
+export class DevPortalTopBannerView extends TopBannerView {
     constructor(params: { state: AppState }) {
         const loadInProgress$ = new BehaviorSubject(false)
         super({
-            state: params.state.topBannerState,
-            customActionsView: {
-                class: 'd-flex align-items-center justify-content-center flex-grow-1 flex-wrap',
+            innerView: {
+                class: 'd-flex align-items-center justify-content-around flex-grow-1 flex-wrap',
                 children: [
+                    new ConnectionView({ state: params.state }),
                     new ConfigurationPickerView(
                         params.state.environment$,
                         loadInProgress$,
                     ),
+                    child$(
+                        params.state.environment$,
+                        (env) => new UsersSelectView(env),
+                    ),
                 ],
             },
-            userMenuView: new YwUserMenuView(params),
-            youwolMenuView: new YwMenuView(params),
         })
     }
 }
