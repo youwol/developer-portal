@@ -1,5 +1,6 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { CdnState } from '../cdn.state'
+import { basic } from '@youwol/installers-youwol'
 
 import {
     PyYouwol as pyYw,
@@ -7,7 +8,6 @@ import {
     raiseHTTPErrors,
 } from '@youwol/http-clients'
 import { BehaviorSubject } from 'rxjs'
-import { Assets } from '@youwol/platform-essentials'
 
 export class PackageView implements VirtualDOM {
     public readonly cdnState: CdnState
@@ -42,7 +42,7 @@ export class PackageView implements VirtualDOM {
                         class: 'flex-grow-1',
                         style: { minHeight: '0px' },
                         children: [
-                            new Assets.PackageInfoView({
+                            new basic.PackageInfoView({
                                 asset: {
                                     ...asset,
                                     rawId: this.packageId,
