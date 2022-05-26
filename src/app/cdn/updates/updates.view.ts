@@ -8,7 +8,6 @@ import {
     VirtualDOM,
 } from '@youwol/flux-view'
 import { Switch } from '@youwol/fv-button'
-import { ywSpinnerView } from '@youwol/platform-essentials'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
 import { AppState } from '../../app-state'
@@ -403,11 +402,9 @@ class SpinnerView implements VirtualDOM {
                 (d: pyYw.ContextMessage) => {
                     return d.labels.includes('CheckUpdatesResponse')
                         ? {}
-                        : ywSpinnerView({
-                              classes: '',
-                              size: '25px',
-                              duration: 1.5,
-                          })
+                        : {
+                              classes: 'fas fa-spinner fa-spin',
+                          }
                 },
             ),
         ]
