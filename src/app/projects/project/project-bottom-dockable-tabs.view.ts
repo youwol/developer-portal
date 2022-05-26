@@ -26,9 +26,10 @@ export class LogsTab extends DockableTabs.Tab {
 export class LogsTabView implements VirtualDOM {
     public readonly projectsState: ProjectsState
     public readonly project: pyYw.Project
-    public readonly class = 'p-2 d-flex flex-column h-100'
+    public readonly class = 'p-2 d-flex flex-column overflow-auto'
     public readonly style = {
-        minHeight: '0px',
+        minHeight: '500px',
+        maxHeight: '500px',
     }
     public readonly children: VirtualDOM[]
 
