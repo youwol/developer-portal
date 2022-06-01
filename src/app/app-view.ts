@@ -58,14 +58,10 @@ class ContentView implements VirtualDOM {
                 class: 'w-100 h-100',
                 style: { minHeight: '0px' },
                 children: childrenWithReplace$(
-                    this.state.selectedScreen$.pipe(map((s) => [s])),
-                    (s) => {
-                        return wrapChild$(s)
-                    },
-                    {
-                        comparisonOperator: (lhs, rhs) =>
-                            lhs.topic + lhs.viewId == rhs.topic + rhs.viewId,
-                    },
+                    this.state.inMemoryScreens$.pipe(
+                        map((screens) => Object.values(screens)),
+                    ),
+                    (s) => wrapChild$(s),
                 ),
             },
         ]
