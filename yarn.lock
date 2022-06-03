@@ -633,14 +633,6 @@
     "@types/estree" "*"
     "@types/json-schema" "*"
 
-"@types/eslint@^7.2.6":
-  version "7.29.0"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-7.29.0.tgz#e56ddc8e542815272720bb0b4ccc2aff9c3e1c78"
-  integrity sha512-VNcvioYDH8/FxaeTKkM4/TiTwt6pBV9E3OfGmvaw8tPl0rrHCJ4Ll15HRT+pMiFAf/MLQvAzC+6RzUMEL9Ceng==
-  dependencies:
-    "@types/estree" "*"
-    "@types/json-schema" "*"
-
 "@types/estree@*", "@types/estree@^0.0.50":
   version "0.0.50"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.50.tgz#1e0caa9364d3fccd2931c3ed96fdbeaa5d4cca83"
@@ -1060,70 +1052,70 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@youwol/cdn-client@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-0.0.11.tgz#f8cb2e84a84c048e3162f9ee1f57f85cd352e55e"
-  integrity sha512-wKYCtpBtbPg8QqYSP6XFUdbnx+M55ZIG8H+psRRNYY4ECaSeG8alVaZk+ue6OZFBQShM1tGZm2d88QQ7nOyeOA==
+"@youwol/cdn-client@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-0.1.3.tgz#ae1296f94d6fbc772307a3055dfcca17242c21e7"
+  integrity sha512-Af7/snvWTPErMKC+fzT9XB8dAD19FIdGZU1Ux+27twiOVZ1kvze3nT9qh0Ig6WX9+K/fvst1DFhYu7S6fZLNiQ==
 
-"@youwol/flux-core@^0.0.23":
-  version "0.0.23"
-  resolved "https://registry.yarnpkg.com/@youwol/flux-core/-/flux-core-0.0.23.tgz#c09dd3061d14f596a6230ee442178c52534948aa"
-  integrity sha512-iVYDaXkbLWLasJ2mCeYPNlUNepeHUWbOI0l/N/ALrfNDAK+fA+glFz8wIJY67R+wB9adS1mTaTqp0ahdINLesg==
-
-"@youwol/flux-files@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@youwol/flux-files/-/flux-files-0.0.5.tgz#8a26386289717ff1674470d4a597644c20717c4e"
-  integrity sha512-gwLz0Y8RKPISS8byuQqEF7TZUbA6wP8dtr93jbfiXCMxiNJmBSFxdNANPycoU/lEHU7fQMpgGMP75nACyS+19Q==
-
-"@youwol/flux-view@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-0.0.11.tgz#6b3524068faa91207aeaf94e4f1e1961c7f4279e"
-  integrity sha512-HzytxFaQ0D2BKxs83hLJz/9cydaVBuVLfbf0KVObEb1Wc2H9kWB2M3QACRSLRCty/zD+oZEqygXZH71u8a+aow==
+"@youwol/flux-view@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-0.1.1.tgz#9349e1806e60e846b137ba36d5933aff949e41c8"
+  integrity sha512-s0L/SFDGNf72thhwfXe/vU5TwoQWMvbIFhsjoWV2kBIiRviCUWPJSzJpjCiF9p0HjQ2zVxSL0xs8+Cd7x3teWw==
 
 "@youwol/fv-button@^0.0.4":
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/@youwol/fv-button/-/fv-button-0.0.4.tgz#bb3874b3da8455430dfbd9cdbbfac4b1efff9063"
   integrity sha512-FVJbX/pcu0lnynNgYTNN7EstAbAMs+W5ujzg5NoCqoPWgeX+D1qh2HyWaxqS5TbMd5zzcO0QKcKNpefayXQ5KQ==
 
-"@youwol/fv-group@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-group/-/fv-group-0.0.6.tgz#b4d1af00cdc2b27e8665dbfee0e392efeb80e072"
-  integrity sha512-ErHRz+p8ZUMUxIPN+Hc5YusZNuTt3Ycmaidvbr8fNaHCyeFENlf9qXdQvJA6JGnGUTOu1VeK4ae+GiXfkPct2w==
+"@youwol/fv-group@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@youwol/fv-group/-/fv-group-0.1.1.tgz#b0389ba7fbff636beefa8f6e128dfcca688efc2f"
+  integrity sha512-h3fybsEzKHtY4yxsfFmOcorYeejy9gD88xgHsypziFcqJMKRwfN95XjXs8ZOE2v1Igrad5OdVN/Y2AoZEoEK+A==
 
-"@youwol/fv-input@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-input/-/fv-input-0.0.5.tgz#cd91d7de8a09db406299f3eaec46d5bfb91a1561"
-  integrity sha512-/6uaok86L7i3kZl/sHAXDkE1QQ7QGphqRZjjkFpyOpkzb3iT1SZyDSyblfuZ5E7YfglCLRnTlVEpeJkVLMFK4g==
+"@youwol/fv-input@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@youwol/fv-input/-/fv-input-0.1.0.tgz#88fb8f3407ebbb51b3ae6b7b53c55eb81f8b2e12"
+  integrity sha512-pLaAdSJnO7GWj15z69Iwnp1+TPUDJ/SuHc7P5HLaTv8+JrnJWBphAVXZ3M35jwmKZlOXnNKa+tZfGCVG4iicbw==
 
-"@youwol/fv-tabs@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-tabs/-/fv-tabs-0.0.3.tgz#94e7da9abf39c19b7c8a115c89ddf655c83d498c"
-  integrity sha512-rpHMAbEvW2Ps0SC5+Bcow908kf9uQjwRvNDkenTdjvT7T/TKJoN1pKbk9QmlECMpHTtV+iR/+hKsofheNotXoQ==
+"@youwol/fv-tabs@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@youwol/fv-tabs/-/fv-tabs-0.1.2.tgz#8efcd34b0cf1b36c13e418dccee829be0c19f510"
+  integrity sha512-KJZVpbECNhV+T+IPoLuTGTB+ISsHlkzpD+DvvkcCTkphOKZR0tsB+Lixx8gXjshcqUQ/P/RCYrd4SNyNcaF++Q==
 
-"@youwol/fv-tree@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-tree/-/fv-tree-0.0.4.tgz#45315452cdb837f89f59a70d4ff4161f6eae65f1"
-  integrity sha512-DD/WEPbJDq/hhEqNsiVaEZj0m/1e2qUp6hKuzW7iuYJJ8KwWcpqAfDHUNt94IiYZoIJZdwCYG2ZIDIJZclrweg==
+"@youwol/fv-tree@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@youwol/fv-tree/-/fv-tree-0.1.4.tgz#50aac4850a604371abd1edfbb3b94377471801a5"
+  integrity sha512-HCBFjq8a6wgeOXFuJ7QeLojOYWdXjhwE5GG3BHAmf2p3wMKJF4gNJNpX6Qnwk69xDuC7ibs3kQFeKmq+TC9evg==
 
-"@youwol/fv-widgets@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-widgets/-/fv-widgets-0.0.5.tgz#66d75761a0316e8a74ee6643a7b54b3fe5aea257"
-  integrity sha512-c1BDQMdCDuNvvUi4y2JEJQ4UJsNVRrfpVyZ2RCZl/LG0r+uoeJb1mUUOBvZ6VFfFTrdwEHAUwV5VkWZHnZfHqg==
+"@youwol/http-clients@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-0.1.9.tgz#9ef7a0e51ca983f22989aaea813866baf8eb6583"
+  integrity sha512-PRcV5FxObaNbBf75X/Y9OoRnN5nomPOnWImHorU4QpRMmGIWgEugRmXkduK2dFBCDnrnyGX0CFCoQkCdVLmRjQ==
 
-"@youwol/http-clients@^0.0.1":
+"@youwol/installers-flux@^0.0.1":
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-0.0.1.tgz#848d97e950502f65477e5690f09fd531af0ec68b"
-  integrity sha512-iPBKQ9XuE3NcLGNA00RotyXlxic4eB+DVi33ui6s1IYlEUyuJJrytPV8LfU0Jy/7hYsnAckjCAPAY7nJAqJ+Lg==
+  resolved "https://registry.yarnpkg.com/@youwol/installers-flux/-/installers-flux-0.0.1.tgz#a8807b8fe4433f17aa987ca6876a5601c2f54aff"
+  integrity sha512-UZIu878zSo847HK9Qf63PreF+aBAweibelnLW1EPcZHDN7aXjCRur/CZuDrdrIK15QYfVj9Qt1j7Wj0oLYEL1g==
 
-"@youwol/logging@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@youwol/logging/-/logging-0.0.2.tgz#50515dd16af5115e033f0c47cab22753d8d22c36"
-  integrity sha512-OVCOP7a4KPKrFiKiQcTKap5oGLlXvcz/CtxD4PdS7Cg4lgy75vsOCF0d2w7T3KX9y9ir7V/zu1w7HL6Jvu6P3w==
+"@youwol/installers-stories@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/installers-stories/-/installers-stories-0.0.1.tgz#0fc8a875e972c4af70b5f03890b19b177181a67c"
+  integrity sha512-9lyXL9x8ELeKad+Ezf2ZTZkhzVD7e7scoI1k5DAbMTcU639Dj5IN25YFuK06ivJd05YlfPvQBnxojVWdhSdUtg==
 
-"@youwol/platform-essentials@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@youwol/platform-essentials/-/platform-essentials-0.0.4.tgz#64eab5c15531475a1536359c146849495eb34125"
-  integrity sha512-Chi0/KIqZ0O8EKPeY3gSCw7PMuOauQ72NXcsxOA3CF8HTkUPPZmcGHFZ9OgT0FdXTWR0v2iDJ7n2NkERq1kUXg==
+"@youwol/installers-youwol@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/installers-youwol/-/installers-youwol-0.0.1.tgz#2d1f1d1bfa8355bfa151ba17e0e1d6880895c424"
+  integrity sha512-tI7FKlGcgiWiOYX7v3PLMvEGlKeNs16iMkzu1K830u48q2lOe5OvqaFY4To8cccxYlO3ZBOkOdvbqmyfkL80Fw==
+
+"@youwol/os-core@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/os-core/-/os-core-0.0.1.tgz#ba8ed3330ea32351df4b2a203872cff3bd836edf"
+  integrity sha512-Wl5UHWv599WITWHVsV/fMiRZwcm3K6ywgXL+i9dEZLUjpywrxMyHXavKZrWvJAsqSIqhCZRzAxMLsPPQe4K/vQ==
+
+"@youwol/os-top-banner@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@youwol/os-top-banner/-/os-top-banner-0.0.1.tgz#c1f6219edea34bd4e9955c10604905881e8670c8"
+  integrity sha512-Da4j8FSdhzDcHBIHAUGxp3ZIdruwj4DL6yp0cy2Lv/5xEtWzBYuZ0P7SONu3r4FLoj9U62THQ8X5E9iT2fjvIA==
 
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.5"
@@ -1340,11 +1332,6 @@ arrify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
   integrity sha1-iYUI2iIm84DfkEcoRWhJwVAaSw0=
-
-arrify@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
-  integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
 astral-regex@^2.0.0:
   version "2.0.0"
@@ -2677,17 +2664,6 @@ eslint-visitor-keys@^3.0.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.1.0.tgz#eee4acea891814cda67a7d8812d9647dd0179af2"
   integrity sha512-yWJFpu4DtjsWKkt5GeNBBuZMlNcYVs6vRCLoCVEJrTjaSB6LC98gFipNK/erM2Heg/E8mIK+hXG/pJMLK+eRZA==
 
-eslint-webpack-plugin@2.5.3:
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/eslint-webpack-plugin/-/eslint-webpack-plugin-2.5.3.tgz#a125585a1d8bb9c939f2a920a9bc9be4a21cdb58"
-  integrity sha512-LewNevZf9ghDCxCGT6QltNWVi8KIYWc4LKcin8K9Azh1hypG7YAmobUDIU67fAPa+eMjRnU4rjEkLbYI1w5/UA==
-  dependencies:
-    "@types/eslint" "^7.2.6"
-    arrify "^2.0.1"
-    jest-worker "^26.6.2"
-    micromatch "^4.0.2"
-    schema-utils "^3.0.0"
-
 eslint@7.23.0:
   version "7.23.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-7.23.0.tgz#8d029d252f6e8cf45894b4bee08f5493f8e94325"
@@ -3634,6 +3610,14 @@ isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
+isomorphic-fetch@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-3.0.0.tgz#0267b005049046d2421207215d45d6a262b8b8b4"
+  integrity sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==
+  dependencies:
+    node-fetch "^2.6.1"
+    whatwg-fetch "^3.4.1"
+
 istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.0.tgz#189e7909d0a39fa5a3dfad5b03f71947770191d3"
@@ -4091,15 +4075,6 @@ jest-watcher@^27.4.6:
     chalk "^4.0.0"
     jest-util "^27.4.2"
     string-length "^4.0.1"
-
-jest-worker@^26.6.2:
-  version "26.6.2"
-  resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-26.6.2.tgz#7f72cbc4d643c365e27b9fd775f9d0eaa9c7a8ed"
-  integrity sha512-KWYVV1c4i+jbMpaBC+U++4Va0cp8OisU185o73T1vo99hqi7w8tSJfUXYswwqqrjzwxa6KpRK54WhPvwf5w6PQ==
-  dependencies:
-    "@types/node" "*"
-    merge-stream "^2.0.0"
-    supports-color "^7.0.0"
 
 jest-worker@^27.4.1, jest-worker@^27.4.6:
   version "27.4.6"
@@ -4576,6 +4551,13 @@ no-case@^3.0.4:
   dependencies:
     lower-case "^2.0.2"
     tslib "^2.0.3"
+
+node-fetch@^2.6.1:
+  version "2.6.7"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
+  integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
+  dependencies:
+    whatwg-url "^5.0.0"
 
 node-forge@^1.2.0:
   version "1.2.1"
@@ -5168,11 +5150,6 @@ redent@^3.0.0:
   dependencies:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
-
-reflect-metadata@0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
-  integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
 
 regexp.prototype.flags@^1.2.0:
   version "1.4.1"
@@ -5870,6 +5847,11 @@ tr46@^2.1.0:
   dependencies:
     punycode "^2.1.1"
 
+tr46@~0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
+  integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
+
 trim-newlines@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/trim-newlines/-/trim-newlines-3.0.1.tgz#260a5d962d8b752425b32f3a7db0dcacd176c144"
@@ -6049,7 +6031,7 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@^8.3.2:
+uuid@8.3.2, uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
@@ -6126,6 +6108,11 @@ wbuf@^1.1.0, wbuf@^1.7.3:
   integrity sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==
   dependencies:
     minimalistic-assert "^1.0.0"
+
+webidl-conversions@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-3.0.1.tgz#24534275e2a7bc6be7bc86611cc16ae0a5654871"
+  integrity sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=
 
 webidl-conversions@^5.0.0:
   version "5.0.0"
@@ -6289,10 +6276,23 @@ whatwg-encoding@^1.0.5:
   dependencies:
     iconv-lite "0.4.24"
 
+whatwg-fetch@^3.4.1:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.2.tgz#dced24f37f2624ed0281725d51d0e2e3fe677f8c"
+  integrity sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==
+
 whatwg-mimetype@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/whatwg-mimetype/-/whatwg-mimetype-2.3.0.tgz#3d4b1e0312d2079879f826aff18dbeeca5960fbf"
   integrity sha512-M4yMwr6mAnQz76TbJm914+gPpB/nCwvZbJU28cUD6dR004SAxDLOOSUaB1JDRqLtaOV/vi0IC5lEAGFgrjGv/g==
+
+whatwg-url@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/whatwg-url/-/whatwg-url-5.0.0.tgz#966454e8765462e37644d3626f6742ce8b70965d"
+  integrity sha1-lmRU6HZUYuN2RNNib2dCzotwll0=
+  dependencies:
+    tr46 "~0.0.3"
+    webidl-conversions "^3.0.0"
 
 whatwg-url@^8.0.0, whatwg-url@^8.5.0:
   version "8.7.0"

@@ -1,11 +1,11 @@
 import { render } from '@youwol/flux-view'
-import { take } from 'rxjs/operators'
 import { AppView } from './app-view'
-import { PyYouwolClient } from './client/py-youwol.client'
+import { PyYouwol } from '@youwol/http-clients'
+import { take } from 'rxjs/operators'
 
 require('./style.css')
 
-PyYouwolClient.connectWs()
+PyYouwol.PyYouwolClient.startWs$()
     .pipe(take(1))
     .subscribe(() => {
         const vDOM = new AppView()
