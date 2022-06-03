@@ -1,6 +1,6 @@
 {
     "name": "@youwol/developer-portal",
-    "version": "0.0.2-wip",
+    "version": "0.0.2",
     "description": "Front-end of the developer-portal of YouWol",
     "main": "dist/index.html",
     "scripts": {
