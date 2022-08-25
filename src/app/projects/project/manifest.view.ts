@@ -63,6 +63,7 @@ export class ManifestView implements VirtualDOM {
                                 style: {
                                     fontFamily: 'monospace',
                                     fontSize: 'x-small',
+                                    whiteSpace: 'pre'
                                 },
                                 children: Array.isArray(manifest.cmdOutputs)
                                     ? manifest.cmdOutputs.map((output) => {

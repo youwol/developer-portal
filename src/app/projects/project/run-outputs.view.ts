@@ -25,6 +25,7 @@ export class RunOutputsView implements VirtualDOM {
                 style: {
                     fontFamily: 'monospace',
                     fontSize: 'x-small',
+                    whiteSpace:'pre'
                 },
                 children: childrenAppendOnly$(
                     messages$.pipe(map((m) => [m])),
