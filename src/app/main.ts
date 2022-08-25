@@ -6,18 +6,14 @@ require('./style.css')
 await install(
     {
         modules: [
-            'lodash',
-            '@youwol/flux-view',
-            '@youwol/fv-group',
-            '@youwol/fv-input',
-            '@youwol/fv-button',
-            '@youwol/fv-tree',
-            '@youwol/fv-tabs',
-            '@youwol/http-clients',
-            '@youwol/os-top-banner',
-            '@youwol/installers-youwol',
-            'd3',
-            'rxjs',
+            { name: '@youwol/fv-group', version: '0.x' },
+            { name: '@youwol/fv-input', version: '0.x' },
+            { name: '@youwol/fv-button', version: '0.x' },
+            { name: '@youwol/fv-tree', version: '0.x' },
+            { name: '@youwol/fv-tabs', version: '0.x' },
+            { name: '@youwol/os-top-banner', version: '0.x' },
+            { name: '@youwol/installers-youwol', version: '0.x' },
+            { name: 'd3', version: '5.x' },
         ],
         scripts: [
             'codemirror#5.52.0~codemirror.min.js',
