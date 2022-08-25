@@ -2,7 +2,7 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
 
 import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
-import { ProjectView } from './project/project.view'
+import { ProjectView } from './project'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
 import { ContextMessage } from '@youwol/http-clients/dist/lib/py-youwol'
 

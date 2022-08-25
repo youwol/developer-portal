@@ -12,7 +12,7 @@ import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
 import { AppState } from '../../app-state'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
-import { TerminalView } from '../../common/terminal/terminal.view'
+import { TerminalView } from '../../common/terminal'
 import { CdnState } from '../cdn.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 

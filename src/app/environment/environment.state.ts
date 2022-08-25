@@ -7,7 +7,7 @@ import {
 } from '@youwol/http-clients'
 import { Observable } from 'rxjs'
 import { map, mergeMap, shareReplay } from 'rxjs/operators'
-import { CommandView } from './command/command.view'
+import { CommandView } from './command'
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 

@@ -1,7 +1,7 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import { map } from 'rxjs/operators'
 import { CdnState, ActualPackage } from '../cdn.state'
-import { DashboardTemplateView } from '../../common/utils-view'
+import { DashboardTemplateView } from '../../common'
 
 /**
  * @category View

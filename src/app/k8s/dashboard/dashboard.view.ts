@@ -6,7 +6,7 @@ import {
     AttributeView,
     DashboardTitle,
     TableView,
-} from '../../common/utils-view'
+} from '../../common'
 import { K8sState } from '../k8s.state'
 
 /**

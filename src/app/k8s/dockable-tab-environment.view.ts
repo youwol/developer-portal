@@ -5,10 +5,10 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-} from '../common/utils-view'
+    LeftNavTab
+} from '../common'
 import { K8sState } from './k8s.state'
-import { DashboardView } from './dashboard/dashboard.view'
-import { LeftNavTab } from '../common/left-nav-tabs'
+import { DashboardView } from './dashboard'
 
 /**
  * @category View

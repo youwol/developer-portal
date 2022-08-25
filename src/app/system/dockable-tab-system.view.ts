@@ -5,10 +5,10 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-} from '../common/utils-view'
+    LeftNavTab
+} from '../common'
 import { SystemState } from './system.state'
-import { AdminLogsView } from './logs/admin.view'
-import { LeftNavTab } from '../common/left-nav-tabs'
+import { AdminLogsView } from './logs'
 
 /**
  * @category View

@@ -8,10 +8,10 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-} from '../common/utils-view'
+    LeftNavTab
+} from '../common'
 import { ProjectsState } from './projects.state'
-import { LeftNavTab } from '../common/left-nav-tabs'
-import { DashboardView } from './dashboard/dashboard.view'
+import { DashboardView } from './dashboard'
 
 /**
  * @category View

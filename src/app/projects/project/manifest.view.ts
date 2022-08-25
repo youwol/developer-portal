@@ -2,7 +2,7 @@ import { VirtualDOM } from '@youwol/flux-view'
 
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 
-import { DataView } from '../../common/terminal/data.view'
+import { DataView } from '../../common/terminal'
 
 /**
  * @category View

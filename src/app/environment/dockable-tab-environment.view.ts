@@ -5,12 +5,12 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-} from '../common/utils-view'
+    LeftNavTab
+} from '../common'
 import { EnvironmentState } from './environment.state'
-import { DashboardView } from './dashboard/dashboard.view'
-import { LeftNavTab } from '../common/left-nav-tabs'
+import { DashboardView } from './dashboard'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { ConfigFileView } from './config-file/config-file.view'
+import { ConfigFileView } from './config-file'
 
 /**
  * @category View

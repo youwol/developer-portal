@@ -3,7 +3,7 @@ import { Select } from '@youwol/fv-input'
 
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 
-import { FilesBrowserView } from '../../common/files-browser.view'
+import { FilesBrowserView } from '../../common'
 
 export class ArtifactItem extends Select.ItemData {
     constructor(public readonly artifact: pyYw.Artifact) {

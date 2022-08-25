@@ -1,13 +1,13 @@
 import { EnvironmentState, Method } from '../environment.state'
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { AttributeView, DashboardTitle } from '../../common/utils-view'
+import { AttributeView, DashboardTitle } from '../../common'
 import { BehaviorSubject, from, Observable, of, Subject } from 'rxjs'
 import { ObjectJs } from '@youwol/fv-tree'
 import { install } from '@youwol/cdn-client'
 import { catchError, mergeMap, withLatestFrom } from 'rxjs/operators'
 import { DockableTabs } from '@youwol/fv-tabs'
-import { TerminalView } from '../../common/terminal/terminal.view'
+import { TerminalView } from '../../common/terminal'
 
 function fetchCodeMirror$(): Observable<any> {
     return from(

@@ -1,7 +1,7 @@
 import { DockableTabs } from '@youwol/fv-tabs'
 import { ProjectsState } from '../projects.state'
 import { VirtualDOM } from '@youwol/flux-view'
-import { TerminalView } from '../../common/terminal/terminal.view'
+import { TerminalView } from '../../common/terminal'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 
 /**

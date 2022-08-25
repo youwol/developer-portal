@@ -1,7 +1,7 @@
 import { VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { ProjectsState } from '../projects.state'
-import { DashboardTemplateView } from '../../common/utils-view'
+import { DashboardTemplateView } from '../../common'
 
 /**
  * @category View

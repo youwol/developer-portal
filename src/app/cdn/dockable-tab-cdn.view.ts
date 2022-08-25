@@ -5,15 +5,15 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-} from '../common/utils-view'
+    LeftNavTab
+} from '../common'
 import { CdnState, FuturePackage, ActualPackage } from './cdn.state'
-import { DashboardView } from './dashboard/dashboard.view'
+import { DashboardView } from './dashboard'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
 
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { UpdatesView } from './updates/updates.view'
-import { LeftNavTab } from '../common/left-nav-tabs'
+import { UpdatesView } from './updates'
 
 /**
  * @category View

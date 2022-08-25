@@ -1,7 +1,7 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { EnvironmentState } from '../environment.state'
-import { AttributeView, DashboardTitle } from '../../common/utils-view'
+import { AttributeView, DashboardTitle } from '../../common'
 import { mergeMap } from 'rxjs/operators'
 
 /**

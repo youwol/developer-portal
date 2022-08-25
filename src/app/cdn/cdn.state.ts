@@ -7,7 +7,7 @@ import {
     WebSocketResponse$,
 } from '@youwol/http-clients'
 import { map, scan, shareReplay } from 'rxjs/operators'
-import { PackageView } from './package/package.view'
+import { PackageView } from './package'
 import { LocalCdnRouter } from '@youwol/http-clients/src/lib/py-youwol/routers/local-cdn/local-cdn.router'
 
 /**

@@ -5,11 +5,11 @@ import {
     AttributesView,
     LogView,
     MethodLabelView,
-} from '../../common/terminal/log.view'
+    TerminalState
+} from '../../common/terminal'
 import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
-import { TerminalState } from '../../common/terminal/terminal.view'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
-import { classesButton } from '../../common/utils-view'
+import { classesButton } from '../../common'
 import { SystemState } from '../system.state'
 
 function getChildren(contextId: string) {
