@@ -6,25 +6,63 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { instanceOfStepStatus, ProjectsState } from '../projects.state'
 import { map } from 'rxjs/operators'
 
+/**
+ * @category View
+ */
 export class DagFlowView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-75 h-50 mx-auto'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly flowId: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly dag: {
         includedSteps: Set<string>
         data: { id: string; parentIds: string[] }[]
     }
+
+    /**
+     * @group Immutable Constants
+     */
     static colorsFactory = {
         none: 'gray',
         KO: 'red',
         OK: 'green',
         outdated: 'orange',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
+    /**
+     * @group Immutable Constants
+     */
     static nodeRadius = 20
-    defaultStyle = {
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly defaultStyle = {
         group: {
             attributes: {
                 id: (d) => this.flowId + '_' + d.data.id,

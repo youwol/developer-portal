@@ -18,7 +18,13 @@ function fetchCodeMirror$(): Observable<any> {
     ).pipe(shareReplay(1))
 }
 
+/**
+ * @category View
+ */
 export class ConfigFileView implements VirtualDOM {
+    /**
+     * @group Configurations
+     */
     public readonly codeMirrorConfiguration = {
         lineNumbers: true,
         theme: 'blackboard',
@@ -26,11 +32,26 @@ export class ConfigFileView implements VirtualDOM {
         indentUnit: 4,
         readOnly: true,
     }
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-100 p-2 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         fontSize: 'smaller',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { environmentState: EnvironmentState }) {
@@ -47,7 +68,7 @@ export class ConfigFileView implements VirtualDOM {
                 ([content]) => {
                     return {
                         class: 'h-100 w-100',
-                        connectedCallback: (htmlElement) => {
+                        connectedCallback: (htmlElement: HTMLDivElement) => {
                             const config = {
                                 ...this.codeMirrorConfiguration,
                                 value: content,

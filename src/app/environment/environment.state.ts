@@ -11,7 +11,14 @@ import { CommandView } from './command/command.view'
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
+/**
+ * @category Event
+ */
 export class CommandEvents {
+
+    /**
+     * @group Observables
+     */
     log$: WebSocketResponse$<unknown>
 
     constructor(public readonly command: pyYw.Command) {
@@ -24,13 +31,33 @@ export class CommandEvents {
     }
 }
 
+/**
+ * @category State
+ */
 export class EnvironmentState {
+    /**
+     * @group Immutable Constants
+     */
     public readonly client = new pyYw.PyYouwolClient().admin.environment
+
+    /**
+     * @group Observables
+     */
     public readonly environment$: Observable<pyYw.EnvironmentStatusResponse>
+
+    /**
+     * @group State
+     */
     public readonly appState: AppState
 
+    /**
+     * @group Immutable Constants
+     */
     public readonly commandsEvent: { [k: string]: CommandEvents } = {}
 
+    /**
+     * @group Observables
+     */
     public readonly customDispatches$: Observable<{
         [k: string]: pyYw.CustomDispatch[]
     }>

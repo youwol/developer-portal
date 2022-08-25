@@ -9,10 +9,29 @@ import {
 } from '@youwol/http-clients'
 import { BehaviorSubject } from 'rxjs'
 
+/**
+ * @category View
+ */
 export class PackageView implements VirtualDOM {
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex flex-column h-100'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly packageId: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
     constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
@@ -56,15 +75,42 @@ export class PackageView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class VersionsView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: Array<VirtualDOM>
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'overflow-auto mx-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         maxHeight: '50%',
     }
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly package: pyYw.CdnPackage
 
+
+    /**
+     * @group Observables
+     */
     public readonly selectedVersion$ = new BehaviorSubject<string>(undefined)
 
     constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {

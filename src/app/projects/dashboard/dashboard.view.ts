@@ -3,6 +3,9 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { ProjectsState } from '../projects.state'
 import { DashboardTemplateView } from '../../common/utils-view'
 
+/**
+ * @category View
+ */
 export class DashboardView extends DashboardTemplateView<
     pyYw.Project,
     ProjectsState
@@ -22,15 +25,34 @@ export class DashboardView extends DashboardTemplateView<
     }
 }
 
+/**
+ * @category View
+ */
 export class ProjectSnippetView {
+
+    /**
+     * @category Immutable DOM Constants
+     */
     public readonly style = {
         height: 'fit-content',
     }
+    /**
+     * @category Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
-
+    /**
+     * @category States
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @category Immutable Constants
+     */
     public readonly project: pyYw.Project
 
+    /**
+     * @category Immutable DOM Constants
+     */
     public readonly onclick: (ev: MouseEvent) => void
 
     constructor(params: {

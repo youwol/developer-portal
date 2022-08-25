@@ -4,8 +4,19 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 
 import { DataView } from '../../common/terminal/data.view'
 
+/**
+ * @category View
+ */
 export class ManifestView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = ''
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(manifest: pyYw.Manifest) {

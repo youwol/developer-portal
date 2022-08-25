@@ -9,10 +9,29 @@ export const leftTabWidth = '300px'
 export const commonClassesLeftSideNav =
     'p-2 d-flex flex-column h-100 fv-bg-background fv-x-lighter'
 
+/**
+ * @category View
+ */
 export class Section implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class: string = 'my-2'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly header: VirtualDOM
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly content?: VirtualDOM
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
     constructor(params: {
         header: VirtualDOM
@@ -24,9 +43,24 @@ export class Section implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class SectionHeader implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly title: string | Stream$<unknown, string>
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly icon: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: {
@@ -51,16 +85,42 @@ export class SectionHeader implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class DashboardTemplateView<TData, TState> implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-100'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         maxHeight: '100%',
         height: 'fit-content',
     }
+
+    /**
+     * @group Observables
+     */
     public readonly dataSource$: Observable<TData[]>
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly cardView: (data: TData, state: TState) => VirtualDOM
+
+    /**
+     * @group States
+     */
     public readonly state: TState
 
     constructor(params: {
@@ -110,17 +170,44 @@ export function leftNavSectionAttr$({
     )
 }
 
+/**
+ * @category View
+ */
 export class ItemView<TState, TData> implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'rounded p-2 fv-pointer fv-border-primary fv-hover-border-focus text-center m-3'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         height: 'fit-content',
     }
+
+    /**
+     * @group States
+     */
     public readonly state: TState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly item: TData
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly cardView: (data: TData, state: TState) => VirtualDOM
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
     constructor(params: {
         state: TState
         item: TData
@@ -131,10 +218,25 @@ export class ItemView<TState, TData> implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class CopyClipboardView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'fas fa-clipboard p-1 rounded fv-pointer fv-bg-background-alt fv-bg-secondary_active fv-hover-xx-lighter mx-2'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly text: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () =>
         navigator.clipboard.writeText(this.text).then(() => {
             /*NOOP*/
@@ -145,10 +247,29 @@ export class CopyClipboardView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class AttributeTitleView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'col col-sm-3'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly innerText: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly text: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         fontWeight: 'bolder',
         whiteSpace: 'nowrap',
@@ -159,12 +280,31 @@ export class AttributeTitleView {
     }
 }
 
+/**
+ * @category View
+ */
 export class AttributeValueView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center flex-grow-1'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minWidth: '0px',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly value: string
 
     constructor(params: { value: string; [k: string]: string }) {
@@ -186,9 +326,21 @@ export class AttributeValueView {
     }
 }
 
-export class AttributeView {
+/**
+ * @category View
+ */
+export class AttributeView implements VirtualDOM{
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
     constructor({ text, value }) {
         this.children = [
             new AttributeTitleView({ text }),
@@ -197,13 +349,40 @@ export class AttributeView {
     }
 }
 
+/**
+ * @category View
+ */
 export class TableView<TData> implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'table'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'fv-color-primary text-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = { maxHeight: '100%', width: 'fit-content' }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly columns: { property: (TData) => string; name: string }[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly items: TData[]
 
     constructor(params: {
@@ -247,9 +426,24 @@ export class TableView<TData> implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class DashboardTitle {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'h5'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly innerText: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly title: string
 
     constructor(params: { title: string }) {

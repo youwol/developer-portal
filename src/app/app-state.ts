@@ -30,22 +30,69 @@ export interface Screen {
     view: VirtualDOM
 }
 
+/**
+ * @category State
+ */
 export class AppState {
+    /**
+     * @group Immutable Constants
+     */
     public readonly environmentClient = new pyYw.PyYouwolClient().admin
         .environment
+
+    /**
+     * @group Observables
+     */
     public readonly environment$: Observable<pyYw.EnvironmentStatusResponse>
+
+    /**
+     * @group State
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group State
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group State
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group State
+     */
     public readonly systemState: SystemState
+
+    /**
+     * @group State
+     */
     public readonly k8sState: K8sState
 
+    /**
+     * @group State
+     */
     public readonly leftNavState: DockableTabs.State
 
+    /**
+     * @group Immutable Constants
+     */
     public readonly leftNavTabs: Record<Topic, LeftNavTab<unknown, unknown>>
 
+    /**
+     * @group Observables
+     */
     public readonly selectedTopic$ = new BehaviorSubject<Topic>('Environment')
+
+    /**
+     * @group Observables
+     */
     public readonly selectedScreen$: BehaviorSubject<Screen>
+
+    /**
+     * @group Observables
+     */
     public readonly inMemoryScreens$: BehaviorSubject<{
         [k: string]: Screen
     }> = new BehaviorSubject({})

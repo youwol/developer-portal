@@ -28,14 +28,45 @@ function getChildren(contextId: string) {
         )
 }
 
+/**
+ * @category Data-structure
+ */
 export class LogNode extends ImmutableTree.Node {
-    text: string
-    level: string
-    attributes: { [key: string]: string }
-    labels: pyYw.Label[]
-    data: unknown
-    contextId: string
-    parentContextId: string
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly text: string
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly level: string
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly attributes: { [key: string]: string }
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly labels: pyYw.Label[]
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly data: unknown
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly contextId: string
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly parentContextId: string
 
     constructor(
         params: {
@@ -57,13 +88,39 @@ export class LogNode extends ImmutableTree.Node {
     }
 }
 
+/**
+ * @category View
+ */
 export class AdminLogsView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     static ClassSelector = 'admin-view'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = `${AdminLogsView.ClassSelector} w-100 h-100 d-flex flex-column p-2`
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public readonly systemState: SystemState
 
+    /**
+     * @group Observables
+     */
     public readonly logs$ = new ReplaySubject<pyYw.LogsResponse>(1)
+
+    /**
+     * @group Observables
+     */
     public readonly fetchingLogs$ = new BehaviorSubject<boolean>(false)
 
     constructor(params: { systemState: SystemState }) {
@@ -122,11 +179,34 @@ export class AdminLogsView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class TreeView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     static ClassSelector = 'tree-view'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = `${TreeView.ClassSelector}`
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly log: pyYw.LogResponse
+
+    /**
+     * @group States
+     */
     public readonly terminalState: TerminalState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: {
@@ -153,15 +233,41 @@ export class TreeView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class LogsView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     static ClassSelector = 'logs-view'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = `${LogsView.ClassSelector} flex-grow-1 w-100`
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public readonly terminalState = new TerminalState()
+
+    /**
+     * @group Observables
+     */
     public readonly logs$: Observable<pyYw.LogsResponse>
 
     constructor(params: {
@@ -186,11 +292,25 @@ export class LogsView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class NodeView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     static ClassSelector = 'node-view'
 
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = `${NodeView.ClassSelector} d-flex align-items-center fv-pointer my-2`
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(message: pyYw.ContextMessage) {

@@ -5,16 +5,44 @@ import { ManifestView } from './manifest.view'
 import { RunOutputsView } from './run-outputs.view'
 import { ProjectsState } from '../projects.state'
 
+/**
+ * @category View
+ */
 export class StepView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-100 d-flex flex-column px-4'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly flowId: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly step: pyYw.PipelineStep
 
+    /**
+     * @group Immutable DOM Constants
+     */
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
     constructor(params: {

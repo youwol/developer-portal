@@ -12,12 +12,31 @@ import { AttributesView, labelMethodIcons, LogView } from './log.view'
 
 type ContextMessage = any
 
+/**
+ * @category View
+ */
 export class NodeHeaderView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center fv-pointer my-2'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         maxWidth: '50%',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick: (ev: MouseEvent) => void
 
     constructor(
@@ -80,16 +99,38 @@ export class NodeHeaderView implements VirtualDOM {
 
 type Status = 'processing' | 'error' | 'success'
 
+/**
+ * @category View
+ */
 export class NodeView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
-    createdChildren = []
-    expanded$: BehaviorSubject<boolean>
-    visible$: BehaviorSubject<boolean>
+    /**
+     * @group Immutable Constants
+     */
+    public readonly createdChildren = []
+    /**
+     * @group Observables
+     */
+    public readonly expanded$: BehaviorSubject<boolean>
+    /**
+     * @group Observables
+     */
+    public readonly visible$: BehaviorSubject<boolean>
 
-    status$ = new BehaviorSubject<Status>('processing')
+    /**
+     * @group Observables
+     */
+    public readonly status$ = new BehaviorSubject<Status>('processing')
 
-    headerMessage: ContextMessage = undefined
+    /**
+     * @group Mutable Variables
+     */
+    private headerMessage: ContextMessage = undefined
 
     constructor(
         public readonly state: TerminalState,
@@ -217,12 +258,25 @@ const invite = `
                   .##      ##.
 `
 
+/**
+ * @category State
+ */
 export class TerminalState {
-    customViews$ = new BehaviorSubject<{ name: string; view: VirtualDOM }[]>([
+    /**
+     * @group Observables
+     */
+    public readonly customViews$ = new BehaviorSubject<{ name: string; view: VirtualDOM }[]>([
         { name: 'TERMINAL', view: undefined },
     ])
 
-    selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
+    /**
+     * @group Observables
+     */
+    public readonly selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
+
+    /**
+     * @group Observables
+     */
     public readonly expanded$ = new BehaviorSubject(true)
 
     openCustomView(name: string, view: VirtualDOM) {
@@ -231,12 +285,29 @@ export class TerminalState {
     }
 }
 
+/**
+ * @category View
+ */
 export class TerminalView implements VirtualDOM {
+    /**
+     * @group States
+     */
     public readonly state = new TerminalState()
 
+    /**
+     * @group Observables
+     */
     public readonly commands$ = new BehaviorSubject([invite, ''])
-    contentElement: HTMLDivElement
 
+    /**
+     * @group Mutable Variables
+     */
+    private contentElement: HTMLDivElement
+
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = attr$(
         this.state.expanded$,
         (expanded): string => (expanded ? 'w-100 h-50' : 'w-100'),
@@ -244,10 +315,20 @@ export class TerminalView implements VirtualDOM {
             wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
         },
     )
+
+    /**
+     * @group Immutable DOM Constants
+     */
     children: VirtualDOM[]
 
+    /**
+     * @group Immutable DOM Constants
+     */
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
+    /**
+     * @group Observables
+     */
     messages$: { [key: string]: ReplaySubject<ContextMessage> } = {
         root: new ReplaySubject(),
     }

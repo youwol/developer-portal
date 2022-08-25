@@ -10,6 +10,9 @@ import { SystemState } from './system.state'
 import { AdminLogsView } from './logs/admin.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 
+/**
+ * @category View
+ */
 export class SystemTab extends LeftNavTab<SystemState, SystemTabView> {
     constructor(params: { systemState: SystemState }) {
         super({
@@ -32,12 +35,31 @@ export class SystemTab extends LeftNavTab<SystemState, SystemTabView> {
     }
 }
 
+/**
+ * @category View
+ */
 export class SystemTabView implements VirtualDOM {
+
+    /**
+     * @group States
+     */
     public readonly systemState: SystemState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = commonClassesLeftSideNav
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: leftTabWidth,
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { systemState: SystemState }) {
@@ -47,8 +69,19 @@ export class SystemTabView implements VirtualDOM {
     }
 }
 
-class SectionLogs extends Section {
+/**
+ * @category View
+ */
+export class SectionLogs extends Section {
+
+    /**
+     * @group States
+     */
     public readonly systemState: SystemState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.systemState.appState.registerScreen({
             topic: 'System',

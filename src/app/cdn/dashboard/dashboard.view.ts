@@ -3,6 +3,9 @@ import { map } from 'rxjs/operators'
 import { CdnState, ActualPackage } from '../cdn.state'
 import { DashboardTemplateView } from '../../common/utils-view'
 
+/**
+ * @category View
+ */
 export class DashboardView extends DashboardTemplateView<
     ActualPackage,
     CdnState
@@ -28,10 +31,29 @@ export class DashboardView extends DashboardTemplateView<
     }
 }
 
+/**
+ * @category View
+ */
 export class PackageSnippetView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly package: ActualPackage
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.cdnState.openPackage(this.package.id)
     }

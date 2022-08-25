@@ -2,9 +2,21 @@ import { VirtualDOM } from '@youwol/flux-view'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { of } from 'rxjs'
 
+/**
+ * @category Data structure
+ */
 export class LogDataNode extends ImmutableTree.Node {
-    name: string
-    data: unknown
+
+    /**
+     * @group Immutable Constants
+     */
+
+    public readonly name: string
+    /**
+     * @group Immutable Constants
+     */
+
+    public readonly data: unknown
 
     constructor({ name, data }: { name: string; data: unknown }) {
         super({
@@ -31,9 +43,24 @@ export class LogDataNode extends ImmutableTree.Node {
     }
 }
 
+/**
+ * @category View
+ */
 export class DataView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'fv-pointer'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         fontSize: 'small',
     }
@@ -42,7 +69,7 @@ export class DataView implements VirtualDOM {
         const rootNode = new LogDataNode({ name: 'data', data })
         const treeState = new ImmutableTree.State({ rootNode })
         const headerView = (
-            state: ImmutableTree.State<LogDataNode>,
+            _state: ImmutableTree.State<LogDataNode>,
             node: LogDataNode,
         ) => {
             const title = { innerText: node.name }

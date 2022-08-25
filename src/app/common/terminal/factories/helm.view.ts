@@ -76,7 +76,7 @@ export class ChartExplorerView implements VirtualDOM {
                             return {
                                 class: 'flex-grow-1 w-100 h-100 py-1',
                                 style: { 'font-size': 'small' },
-                                connectedCallback: (elem) => {
+                                connectedCallback: (elem: HTMLDivElement) => {
                                     const config = {
                                         value: content,
                                         mode: 'yaml',

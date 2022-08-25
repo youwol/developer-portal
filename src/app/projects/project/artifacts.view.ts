@@ -11,8 +11,19 @@ export class ArtifactItem extends Select.ItemData {
     }
 }
 
+/**
+ * @category View
+ */
 export class ArtifactsView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'pl-3'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(artifacts: pyYw.Artifact[]) {
@@ -50,8 +61,19 @@ export class ArtifactsView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 class ArtifactView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = ''
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(artifact: pyYw.Artifact) {

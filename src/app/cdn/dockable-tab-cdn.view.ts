@@ -15,6 +15,9 @@ import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { UpdatesView } from './updates/updates.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 
+/**
+ * @category View
+ */
 export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {
     constructor(params: { cdnState: CdnState }) {
         super({
@@ -34,12 +37,31 @@ export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {
     }
 }
 
+/**
+ * @category View
+ */
 export class CdnTabView implements VirtualDOM {
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = commonClassesLeftSideNav
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: leftTabWidth,
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { cdnState: CdnState }) {
@@ -54,8 +76,19 @@ export class CdnTabView implements VirtualDOM {
     }
 }
 
-class SectionDashboard extends Section {
+/**
+ * @category View
+ */
+export class SectionDashboard extends Section {
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.cdnState.appState.registerScreen({
             topic: 'CDN',
@@ -79,10 +112,29 @@ class SectionDashboard extends Section {
     }
 }
 
-class PackageItemView {
+/**
+ * @category View
+ */
+export class PackageItemView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'fv-pointer'
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly packageId: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { cdnState: CdnState; packageId: string }) {
@@ -114,8 +166,20 @@ class PackageItemView {
         ]
     }
 }
+
+/**
+ * @category View
+ */
 class SectionPackagesOpened extends Section {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 d-flex flex-column'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         maxHeight: '30%',
     }
@@ -142,9 +206,24 @@ class SectionPackagesOpened extends Section {
     }
 }
 
-class ContentView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class ContentView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+
+    /**
+     * @group Observables
+     */
     public readonly search$ = new BehaviorSubject('')
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children
 
     constructor({ cdnState }: { cdnState: CdnState }) {
@@ -193,18 +272,45 @@ class ContentView implements VirtualDOM {
     }
 }
 
-class CdnPackageItemView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class CdnPackageItemView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly item: ActualPackage | FuturePackage
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable Constants
+     */
     static icons: Record<pyYw.DownloadEventType, string> = {
         enqueued: 'fa-hourglass-start fv-text-disabled',
         started: 'fa-cloud-download-alt fv-blink  fv-text-focus',
         succeeded: 'fa-check fv-text-success',
         failed: 'fa-times fv-text-error',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         if (this.item instanceof ActualPackage)
             this.cdnState.openPackage(this.item.id)
@@ -234,11 +340,23 @@ class CdnPackageItemView implements VirtualDOM {
     }
 }
 
-class SectionAllPackages extends Section {
+/**
+ * @category View
+ */
+export class SectionAllPackages extends Section {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+
     constructor({ cdnState }: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
@@ -257,8 +375,19 @@ class SectionAllPackages extends Section {
     }
 }
 
-class SectionUpgrades extends Section {
+/**
+ * @category View
+ */
+export class SectionUpgrades extends Section {
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.cdnState.appState.registerScreen({
             topic: 'CDN',

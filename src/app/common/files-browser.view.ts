@@ -4,14 +4,44 @@ import { mergeMap } from 'rxjs/operators'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { AttributeView } from './utils-view'
 
+/**
+ * @category View
+ */
 export class FilesBrowserView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {}
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly startingFolder: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly originFolderIndex: number
 
+    /**
+     * @group Observables
+     */
     public readonly folderSelected$: BehaviorSubject<string>
+
+    /**
+     * @group Observables
+     */
     public readonly items$: Observable<unknown>
 
     constructor(params: {

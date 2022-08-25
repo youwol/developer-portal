@@ -16,6 +16,9 @@ import { TerminalView } from '../../common/terminal/terminal.view'
 import { CdnState } from '../cdn.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 
+/**
+ * @category View
+ */
 export class LogsTab extends DockableTabs.Tab {
     constructor(params: { cdnState: CdnState }) {
         super({
@@ -31,13 +34,36 @@ export class LogsTab extends DockableTabs.Tab {
     }
 }
 
+/**
+ * @category View
+ */
 export class LogsTabView implements VirtualDOM {
+
+    /**
+     * @group State
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'p-2 d-flex flex-column h-100'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { cdnState: CdnState }) {
@@ -48,11 +74,34 @@ export class LogsTabView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class UpdatesView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex w-100 h-100 flex-column'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public readonly appState: AppState
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         position: 'relative',
     }
@@ -102,7 +151,14 @@ export class UpdatesView implements VirtualDOM {
     }
 }
 
-class TableView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class TableView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly orders: Record<pyYw.UpdateStatus, number> = {
         remoteAhead: 0,
         localAhead: 1,
@@ -110,12 +166,24 @@ class TableView implements VirtualDOM {
         upToDate: 3,
     }
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'table'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly connectedCallback: (
         elem: HTMLElement$ & HTMLDivElement,
     ) => void
@@ -182,9 +250,19 @@ class TableView implements VirtualDOM {
 
 type StatusType = pyYw.UpdateStatus | 'pending' | 'error'
 
-class RowView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class RowView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'tr'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     public readonly connectedCallback: (
@@ -340,9 +418,25 @@ class RowView implements VirtualDOM {
     }
 }
 
-class SimpleCellView implements VirtualDOM {
+
+/**
+ * @category View
+ */
+export class SimpleCellView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'td'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'px-2'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly innerText: string | Stream$<string, string>
 
     constructor(text: string | Observable<string>) {
@@ -351,7 +445,14 @@ class SimpleCellView implements VirtualDOM {
     }
 }
 
-class StatusCellView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class StatusCellView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly statusName: Record<StatusType, string> = {
         remoteAhead: 'local version outdated',
         localAhead: 'local version ahead',
@@ -360,6 +461,10 @@ class StatusCellView implements VirtualDOM {
         pending: 'pending',
         error: 'an error occurred',
     }
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly statusIcon: Record<StatusType, string> = {
         remoteAhead: 'fas fa-exclamation-triangle fv-text-focus',
         localAhead: 'fas fa-exclamation-triangle fv-text-focus',
@@ -369,8 +474,20 @@ class StatusCellView implements VirtualDOM {
         error: 'fas fa-times fv-text-error',
     }
 
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'td'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'px-2'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(status$: Observable<StatusType>) {
@@ -385,9 +502,24 @@ class StatusCellView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 class SpinnerView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 d-flex justify-content-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public readonly cdnState: CdnState
 
     constructor(params: { cdnState: CdnState }) {
@@ -411,9 +543,24 @@ class SpinnerView implements VirtualDOM {
     }
 }
 
-class DownloadBtnView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class DownloadBtnView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 d-flex justify-content-center my-2'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public cdnState: CdnState
 
     constructor(params: { cdnState: CdnState }) {

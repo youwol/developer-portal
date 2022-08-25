@@ -4,9 +4,23 @@ import { EnvironmentState } from '../environment.state'
 import { AttributeView, DashboardTitle } from '../../common/utils-view'
 import { mergeMap } from 'rxjs/operators'
 
+/**
+ * @category View
+ */
 export class DashboardView implements VirtualDOM {
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-100 p-2 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { environmentState: EnvironmentState }) {
@@ -42,12 +56,31 @@ export class DashboardView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class EnvSummaryView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mx-auto w-75'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: 'fit-content',
     }
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly environment: pyYw.EnvironmentStatusResponse
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { environment: pyYw.EnvironmentStatusResponse }) {
@@ -60,9 +93,24 @@ export class EnvSummaryView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class PathsView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mb-4'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly pathsBook: pyYw.PathsBook
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { pathsBook: pyYw.PathsBook }) {

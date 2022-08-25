@@ -10,6 +10,9 @@ import { K8sState } from './k8s.state'
 import { DashboardView } from './dashboard/dashboard.view'
 import { LeftNavTab } from '../common/left-nav-tabs'
 
+/**
+ * @category View
+ */
 export class K8sTab extends LeftNavTab<K8sState, K8sTabView> {
     constructor(params: { k8sState: K8sState }) {
         super({
@@ -31,12 +34,31 @@ export class K8sTab extends LeftNavTab<K8sState, K8sTabView> {
     }
 }
 
+/**
+ * @category View
+ */
 export class K8sTabView implements VirtualDOM {
+
+    /**
+     * @group States
+     */
     public readonly k8sState: K8sState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = commonClassesLeftSideNav
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: leftTabWidth,
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { k8sState: K8sState }) {
@@ -46,8 +68,19 @@ export class K8sTabView implements VirtualDOM {
     }
 }
 
-class SectionDashboard extends Section {
+/**
+ * @category View
+ */
+export class SectionDashboard extends Section {
+
+    /**
+     * @group States
+     */
     public readonly k8sState: K8sState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.k8sState.appState.registerScreen({
             topic: 'K8s',

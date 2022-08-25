@@ -4,11 +4,25 @@ import { DevPortalTopBannerView } from './top-banner.view'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { map } from 'rxjs/operators'
 
+/**
+ * @category View
+ */
 export class AppView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'h-100 w-100 d-flex flex-column fv-bg-background fv-text-primary'
+
+    /**
+     * @group State
+     */
     public readonly state: AppState
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor() {
@@ -32,13 +46,31 @@ export class AppView implements VirtualDOM {
     }
 }
 
-class ContentView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class ContentView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'h-100 flex-grow-1'
 
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minWidth: '0px',
     }
+
+    /**
+     * @group State
+     */
     public readonly state: AppState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { state: AppState }) {

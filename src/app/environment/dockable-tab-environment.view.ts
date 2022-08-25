@@ -12,6 +12,9 @@ import { LeftNavTab } from '../common/left-nav-tabs'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { ConfigFileView } from './config-file/config-file.view'
 
+/**
+ * @category View
+ */
 export class EnvironmentTab extends LeftNavTab<
     EnvironmentState,
     EnvironmentTabView
@@ -37,12 +40,30 @@ export class EnvironmentTab extends LeftNavTab<
     }
 }
 
+/**
+ * @category View
+ */
 export class EnvironmentTabView implements VirtualDOM {
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = commonClassesLeftSideNav
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: leftTabWidth,
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { environmentState: EnvironmentState }) {
@@ -57,8 +78,18 @@ export class EnvironmentTabView implements VirtualDOM {
     }
 }
 
-class SectionDashboard extends Section {
+/**
+ * @category View
+ */
+export class SectionDashboard extends Section {
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.environmentState.appState.registerScreen({
             topic: 'Environment',
@@ -85,8 +116,18 @@ class SectionDashboard extends Section {
     }
 }
 
-class SectionConfigFile extends Section {
+/**
+ * @category View
+ */
+export class SectionConfigFile extends Section {
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.environmentState.appState.registerScreen({
             topic: 'Environment',
@@ -113,8 +154,19 @@ class SectionConfigFile extends Section {
     }
 }
 
-class DispatchListView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class DispatchListView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children
 
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
@@ -139,19 +191,46 @@ class DispatchListView implements VirtualDOM {
     }
 }
 
-class DispatchGroupHeader implements VirtualDOM {
+/**
+ * @category View
+ */
+export class DispatchGroupHeader implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly type: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly innerText: string
+
     constructor(params: { type: string }) {
         Object.assign(this, params)
         this.innerText = this.type
     }
 }
 
-class DispatchItemView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class DispatchItemView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'fv-pointer fv-hover-bg-background-alt rounded d-flex align-items-center'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly dispatch: pyYw.CustomDispatch
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
     constructor(params: { dispatch: pyYw.CustomDispatch }) {
         Object.assign(this, params)
@@ -168,12 +247,22 @@ class DispatchItemView implements VirtualDOM {
     }
 }
 
-class SectionDispatches extends Section {
+/**
+ * @category View
+ */
+export class SectionDispatches extends Section {
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
         maxHeight: '50%',
     }
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({
@@ -191,8 +280,18 @@ class SectionDispatches extends Section {
     }
 }
 
-class CommandsListView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class CommandsListView implements VirtualDOM {
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children
 
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
@@ -205,10 +304,24 @@ class CommandsListView implements VirtualDOM {
     }
 }
 
-class CommandView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class CommandView implements VirtualDOM {
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class =
         'fv-pointer fv-hover-bg-background-alt rounded d-flex align-items-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly innerText: string
+
+    /**
+     * @group States
+     */
     public readonly environmentState: EnvironmentState
     public readonly command: pyYw.Command
     public readonly onclick = () => {
@@ -223,12 +336,22 @@ class CommandView implements VirtualDOM {
     }
 }
 
-class SectionCommands extends Section {
+/**
+ * @category View
+ */
+export class SectionCommands extends Section {
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
         maxHeight: '50%',
     }
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({

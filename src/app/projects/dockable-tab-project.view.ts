@@ -13,6 +13,9 @@ import { ProjectsState } from './projects.state'
 import { LeftNavTab } from '../common/left-nav-tabs'
 import { DashboardView } from './dashboard/dashboard.view'
 
+/**
+ * @category View
+ */
 export class ProjectsTab extends LeftNavTab<ProjectsState, ProjectsTabView> {
     constructor(params: { projectsState: ProjectsState }) {
         super({
@@ -34,12 +37,30 @@ export class ProjectsTab extends LeftNavTab<ProjectsState, ProjectsTabView> {
     }
 }
 
+/**
+ * @category View
+ */
 export class ProjectsTabView implements VirtualDOM {
+    /**
+     * @group State
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = commonClassesLeftSideNav
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         width: leftTabWidth,
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { projectsState: ProjectsState }) {
@@ -52,8 +73,18 @@ export class ProjectsTabView implements VirtualDOM {
     }
 }
 
-class SectionDashboard extends Section {
+/**
+ * @category View
+ */
+export class SectionDashboard extends Section {
+    /**
+     * @group State
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly onclick = () => {
         this.projectsState.selectDashboard()
     }
@@ -74,10 +105,28 @@ class SectionDashboard extends Section {
     }
 }
 
-class ProjectItemView {
+/**
+ * @category View
+ */
+export class ProjectItemView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'fv-pointer'
+    /**
+     * @group State
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
     constructor(params: {
         projectsState: ProjectsState
@@ -111,8 +160,20 @@ class ProjectItemView {
         ]
     }
 }
-class SectionProjectsOpened extends Section {
+
+/**
+ * @category View
+ */
+export class SectionProjectsOpened extends Section {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 d-flex flex-column'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         maxHeight: '30%',
     }
@@ -142,10 +203,29 @@ class SectionProjectsOpened extends Section {
     }
 }
 
-class ListProjectsView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class ListProjectsView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+
+    /**
+     * @group Observables
+     */
     public readonly search$ = new BehaviorSubject('')
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
 
     constructor(params: { projectsState: ProjectsState }) {
@@ -209,11 +289,23 @@ class ListProjectsView implements VirtualDOM {
     }
 }
 
-class SectionAllProjects extends Section {
+/**
+ * @category View
+ */
+export class SectionAllProjects extends Section {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
     }
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
             header: new SectionHeader({

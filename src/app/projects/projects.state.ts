@@ -24,18 +24,34 @@ export function instanceOfStepStatus(
     ].reduce((acc, e) => acc && data[e], true)
 }
 
+/**
+ * @category Event
+ */
 export class ProjectEvents {
+    /**
+     * @group Immutable Constants
+     */
     public readonly projectsClient = new pyYw.PyYouwolClient().admin.projects
-    messages$: any
 
-    selectedFlow$: BehaviorSubject<FlowId>
+    /**
+     * @group Observables
+     */
+    public readonly messages$: Observable<any>
 
-    selectedStep$: BehaviorSubject<{
+    /**
+     * @group Observables
+     */
+    public readonly selectedFlow$: BehaviorSubject<FlowId>
+
+    /**
+     * @group Observables
+     */
+    public readonly selectedStep$: BehaviorSubject<{
         flowId: string
         step: pyYw.PipelineStep | undefined
     }>
 
-    step$: {
+    public readonly step$: {
         [k: string]: {
             status$: ReplaySubject<
                 pyYw.PipelineStepEventKind | pyYw.PipelineStepStatusResponse
@@ -44,7 +60,10 @@ export class ProjectEvents {
         }
     } = {}
 
-    projectStatusResponse$ = new ReplaySubject<pyYw.ProjectStatus>(1)
+    /**
+     * @group Observables
+     */
+    public readonly projectStatusResponse$ = new ReplaySubject<pyYw.ProjectStatus>(1)
 
     constructor(public readonly project: pyYw.Project) {
         this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
@@ -150,19 +169,46 @@ export class ProjectEvents {
     }
 }
 
+/**
+ * @category State
+ */
 export class ProjectsState {
+
+    /**
+     * @group States
+     */
     public readonly appState: AppState
 
+    /**
+     * @group Immutable Constants
+     */
     public readonly projectsClient = new pyYw.PyYouwolClient().admin.projects
 
+    /**
+     * @group Immutable Constants
+     */
     public readonly projectEvents: { [k: string]: ProjectEvents } = {}
+
+    /**
+     * @group Observables
+     */
     public readonly projectsLoading$: Observable<
         (pyYw.Project | pyYw.Failure)[]
     >
+
+    /**
+     * @group Observables
+     */
     public readonly projects$: Observable<pyYw.Project[]>
 
+    /**
+     * @group Observables
+     */
     public readonly openProjects$ = new BehaviorSubject<pyYw.Project[]>([])
 
+    /**
+     * @group Mutable Variables
+     */
     public readonly screensId = {}
 
     constructor(params: { appState: AppState }) {

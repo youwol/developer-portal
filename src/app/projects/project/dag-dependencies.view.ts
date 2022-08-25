@@ -5,16 +5,41 @@ import { BehaviorSubject, combineLatest } from 'rxjs'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
 import { ProjectsState } from '../projects.state'
 
+/**
+ * @category View
+ */
 export class DagDependenciesView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-50 mx-auto d-flex flex-column'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
 
+    /**
+     * @group Observables
+     */
     public readonly mode$ = new BehaviorSubject<'dag' | 'simpleDag'>(
         'simpleDag',
     )
 
+    /**
+     * @group Immutable DOM Constants
+     */
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
     constructor(params: {

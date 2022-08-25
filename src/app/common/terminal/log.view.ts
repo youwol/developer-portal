@@ -24,12 +24,35 @@ const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
     HelmPackage: (data) => new ChartExplorerView(data),
 }
 
+/**
+ * @category View
+ */
 export class LogView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center fv-pointer'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {}
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+
+    /**
+     * @group State
+     */
     public readonly state: TerminalState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly message: pyYw.ContextMessage
 
     constructor(params: {
@@ -84,8 +107,19 @@ export class LogView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class MethodLabelView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center mr-3'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(message: pyYw.ContextMessage) {
@@ -108,10 +142,29 @@ export class MethodLabelView {
     }
 }
 
+/**
+ * @category View
+ */
 export class AttributesView {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly tag = 'table'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = ''
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         fontSize: 'small',
         maxWidth: '50%',

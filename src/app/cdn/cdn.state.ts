@@ -10,9 +10,24 @@ import { map, scan, shareReplay } from 'rxjs/operators'
 import { PackageView } from './package/package.view'
 import { LocalCdnRouter } from '@youwol/http-clients/src/lib/py-youwol/routers/local-cdn/local-cdn.router'
 
+/**
+ * @category Event
+ */
 export class PackageEvents {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly client: LocalCdnRouter
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly packageId: string
+
+    /**
+     * @group Observables
+     */
     public readonly info$: Observable<pyYw.CdnPackage>
 
     constructor(params: { packageId: string; client: LocalCdnRouter }) {
@@ -30,22 +45,32 @@ export class PackageEvents {
     }
 }
 
+/**
+ * @category Event
+ */
 export class UpdateChecksEvents {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly client: LocalCdnRouter
     /**
      * All messages related to updates
+     * @group Observables
      */
-    messages$: Observable<pyYw.ContextMessage>
+    public readonly messages$: Observable<pyYw.ContextMessage>
 
     /**
      * update response on particular package
+     * @group Observables
      */
-    updateChecksResponse$: WebSocketResponse$<pyYw.CheckUpdateResponse>
+    public readonly updateChecksResponse$: WebSocketResponse$<pyYw.CheckUpdateResponse>
 
     /**
      * update response on all packages
+     * @group Observables
      */
-    updatesChecksResponse$: WebSocketResponse$<pyYw.CheckUpdatesResponse>
+    public readonly updatesChecksResponse$: WebSocketResponse$<pyYw.CheckUpdatesResponse>
 
     constructor(params: { client: LocalCdnRouter }) {
         Object.assign(this, params)
@@ -72,28 +97,75 @@ export class FuturePackage {
     ) {}
 }
 
+/**
+ * @category State
+ */
 export class CdnState {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly cdnClient = new pyYw.PyYouwolClient().admin.localCdn
+
+    /**
+     * @group States
+     */
     public readonly appState: AppState
+
+    /**
+     * @group Events
+     */
     public readonly updatesEvents: UpdateChecksEvents
 
+    /**
+     * @group Events
+     */
     public readonly packagesEvent: { [k: string]: PackageEvents } = {}
 
+    /**
+     * @group Observables
+     */
     public readonly status$: Observable<pyYw.CdnStatusResponse>
+
+    /**
+     * @group Observables
+     */
     public readonly packages$: Observable<(ActualPackage | FuturePackage)[]>
+
+    /**
+     * @group Observables
+     */
     public readonly downloadedPackages$: Observable<pyYw.DownloadedPackageResponse>
+
+    /**
+     * @group Observables
+     */
     public readonly accDownloadedPackages$: Observable<
         pyYw.DownloadedPackageResponse[]
     >
+
+    /**
+     * @group Observables
+     */
     public readonly accDownloadEvent$: Observable<{
         [k: string]: pyYw.DownloadEvent
     }>
 
+    /**
+     * @group Observables
+     */
     public readonly downloadQueue$ = new BehaviorSubject<
         pyYw.DownloadPackageBody[]
     >([])
+
+    /**
+     * @group Observables
+     */
     public readonly openPackages$ = new BehaviorSubject<string[]>([])
 
+    /**
+     * @group Mutable Variables
+     */
     public readonly screensId = {}
 
     constructor(params: { appState: AppState }) {

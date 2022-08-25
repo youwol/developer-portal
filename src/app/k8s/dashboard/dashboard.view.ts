@@ -9,9 +9,24 @@ import {
 } from '../../common/utils-view'
 import { K8sState } from '../k8s.state'
 
+/**
+ * @category View
+ */
 export class DashboardView implements VirtualDOM {
+
+    /**
+     * @group States
+     */
     public readonly k8sState: K8sState
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100 h-100 p-2 overflow-auto'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { k8sState: K8sState }) {
@@ -26,8 +41,19 @@ export class DashboardView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class EnvSummaryView implements VirtualDOM {
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly k8sInstance: pyYw.K8sInstance
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { k8sInstance: pyYw.K8sInstance }) {
@@ -48,9 +74,24 @@ export class EnvSummaryView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class InstanceInfoView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mb-4'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly k8sInstanceInfo: pyYw.K8sInstanceInfo
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { k8sInstanceInfo: pyYw.K8sInstanceInfo }) {
@@ -69,10 +110,30 @@ export class InstanceInfoView implements VirtualDOM {
     }
 }
 
-class KubeConfigView implements VirtualDOM {
+
+/**
+ * @category View
+ */
+export class KubeConfigView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = ''
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly configFile: string
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly contextName: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { configFile: string; contextName: string }) {
@@ -84,9 +145,24 @@ class KubeConfigView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class OpenIdConnectView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mb-4'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly openId: pyYw.OpenIdConnect
 
     constructor(params: { openId: pyYw.OpenIdConnect }) {
@@ -102,9 +178,25 @@ export class OpenIdConnectView implements VirtualDOM {
     }
 }
 
+
+/**
+ * @category View
+ */
 export class DockersView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mb-4'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly docker: pyYw.K8sDockerRepositories
 
     constructor(params: { docker: pyYw.K8sDockerRepositories }) {
@@ -121,9 +213,24 @@ export class DockersView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class K8sDashboardUrlView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly url: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { url: string }) {
@@ -140,9 +247,24 @@ export class K8sDashboardUrlView implements VirtualDOM {
     }
 }
 
+/**
+ * @category View
+ */
 export class NodesView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-3'
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly nodes: pyYw.K8sNodeInfo[]
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
     constructor(params: { nodes: pyYw.K8sNodeInfo[] }) {

@@ -9,16 +9,42 @@ import { DockableTabs } from '@youwol/fv-tabs'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { LogsTab } from './project-bottom-dockable-tabs.view'
 
+/**
+ * @category View
+ */
 export class ProjectView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex flex-column w-100 h-100'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         position: 'relative',
     }
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly id: string
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
 
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
 
     constructor(params: {
@@ -84,12 +110,34 @@ export class ProjectView implements VirtualDOM {
     }
 }
 
-class FlowsSelectorView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class FlowsSelectorView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex mx-2'
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
 
+    /**
+     * @group Observables
+     */
     public readonly selectedFlow$: Observable<FlowId>
 
     constructor(params: {
@@ -122,10 +170,29 @@ class FlowsSelectorView implements VirtualDOM {
     }
 }
 
-class ProjectHeaderView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class ProjectHeaderView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-100'
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
     constructor(params: {
         projectsState: ProjectsState
@@ -161,11 +228,30 @@ class ProjectHeaderView implements VirtualDOM {
     }
 }
 
-class FlowSummaryView implements VirtualDOM {
+/**
+ * @category View
+ */
+export class FlowSummaryView implements VirtualDOM {
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'w-50'
+
+    /**
+     * @group States
+     */
     public readonly projectsState: ProjectsState
 
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable Constants
+     */
     public readonly project: pyYw.Project
 
     constructor(params: {
