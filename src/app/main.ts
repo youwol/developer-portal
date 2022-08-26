@@ -6,14 +6,14 @@ require('./style.css')
 await install(
     {
         modules: [
-            { name: '@youwol/fv-group', version: '0.x' },
-            { name: '@youwol/fv-input', version: '0.x' },
-            { name: '@youwol/fv-button', version: '0.x' },
-            { name: '@youwol/fv-tree', version: '0.x' },
-            { name: '@youwol/fv-tabs', version: '0.x' },
-            { name: '@youwol/os-top-banner', version: '0.x' },
-            { name: '@youwol/installers-youwol', version: '0.x' },
-            { name: 'd3', version: '5.x' },
+            '@youwol/fv-group#0.x',
+            '@youwol/fv-input#0.x',
+            '@youwol/fv-button#0.x',
+            '@youwol/fv-tree#0.x',
+            '@youwol/fv-tabs#0.x',
+            '@youwol/os-top-banner#0.x',
+            '@youwol/installers-youwol#0.x',
+            'd3#5.x'
         ],
         scripts: [
             'codemirror#5.52.0~codemirror.min.js',
@@ -26,9 +26,7 @@ await install(
             'codemirror#5.52.0~codemirror.min.css',
             'codemirror#5.52.0~theme/blackboard.min.css',
         ],
-    },
-    {
         displayLoadingScreen: true,
-    },
+    }
 )
 await import('./on-load')
