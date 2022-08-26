@@ -87,7 +87,7 @@ module.exports = {
             },
         ],
     },
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
     devServer: {
         static: {
             directory: path.join(__dirname, './src'),
@@ -96,42 +96,3 @@ module.exports = {
         port: 3000,
     },
 }
-
-/*const webpack = require("webpack");
-const path = require("path");
-
-let config = {
-    entry: "./src/index.js",
-    output: {
-        path: path.resolve(__dirname, "./dist"),
-        filename: "./bundle.js"
-    },
-    plugins: [
-    ],
-    devServer: {
-        contentBase: path.resolve(__dirname, "./dist"),
-        historyApiFallback: true,
-        inline: true,
-        open: false,
-        hot: true,
-        port:3009,
-    },
-    module: {
-        rules: [
-          {
-            test: /\.(html|css|png)$/i,
-            use: [
-              {
-                loader: 'file-loader',options: {
-                    name: '[name].[ext]',
-                  },
-              },
-            ],
-          },
-        ],
-      },
-    //devtool: "eval-source-map"
-}
-
-module.exports = config;
-*/
