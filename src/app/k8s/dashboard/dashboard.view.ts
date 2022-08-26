@@ -66,9 +66,6 @@ export class EnvSummaryView implements VirtualDOM {
             new InstanceInfoView({
                 k8sInstanceInfo: this.k8sInstance.instanceInfo,
             }),
-            new OpenIdConnectView({
-                openId: this.k8sInstance.openIdConnect,
-            }),
             new DockersView({ docker: this.k8sInstance.docker }),
         ]
     }
@@ -141,39 +138,6 @@ export class KubeConfigView implements VirtualDOM {
         this.children = [
             new AttributeView({ text: 'Config. file', value: this.configFile }),
             new AttributeView({ text: 'Context', value: this.contextName }),
-        ]
-    }
-}
-
-/**
- * @category View
- */
-export class OpenIdConnectView implements VirtualDOM {
-
-    /**
-     * @group Immutable DOM Constants
-     */
-    public readonly class = 'mb-4'
-
-    /**
-     * @group Immutable DOM Constants
-     */
-    public readonly children: VirtualDOM[]
-
-    /**
-     * @group Immutable Constants
-     */
-    public readonly openId: pyYw.OpenIdConnect
-
-    constructor(params: { openId: pyYw.OpenIdConnect }) {
-        Object.assign(this, params)
-        this.children = [
-            new DashboardTitle({ title: 'OpenId Connect' }),
-            new AttributeView({ text: 'host', value: this.openId.host }),
-            new AttributeView({
-                text: 'secret',
-                value: this.openId.authSecret,
-            }),
         ]
     }
 }
