@@ -248,7 +248,16 @@ export class ListProjectsView implements VirtualDOM {
             ],
         }
         Object.assign(this, params)
-
+        const searchTerm = (term: string, project: pyYw.Project) => {
+            return (
+                project.name.includes(term) ||
+                project.version.includes(term) ||
+                project.pipeline.tags.reduce(
+                    (acc, tag) => acc || tag.includes(term),
+                    false,
+                )
+            )
+        }
         this.children = [
             searchView,
             {
@@ -258,11 +267,7 @@ export class ListProjectsView implements VirtualDOM {
                         this.search$,
                     ]).pipe(
                         map(([projects, search]) => {
-                            return projects.filter(
-                                (p) =>
-                                    p.name.includes(search) ||
-                                    p.version.includes(search),
-                            )
+                            return projects.filter((p) => searchTerm(search, p))
                         }),
                     ),
                     (projects: pyYw.Project[]) => {
