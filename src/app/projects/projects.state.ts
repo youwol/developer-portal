@@ -4,7 +4,8 @@ import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
-import { ContextMessage } from '@youwol/http-clients/dist/lib/py-youwol'
+
+type ContextMessage = pyYw.ContextMessage
 
 function projectLoadingIsSuccess(result: any): result is pyYw.Project {
     return result['failure'] === undefined
@@ -63,7 +64,8 @@ export class ProjectEvents {
     /**
      * @group Observables
      */
-    public readonly projectStatusResponse$ = new ReplaySubject<pyYw.ProjectStatus>(1)
+    public readonly projectStatusResponse$ =
+        new ReplaySubject<pyYw.ProjectStatus>(1)
 
     constructor(public readonly project: pyYw.Project) {
         this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
@@ -173,7 +175,6 @@ export class ProjectEvents {
  * @category State
  */
 export class ProjectsState {
-
     /**
      * @group States
      */

@@ -8,7 +8,7 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-    LeftNavTab
+    LeftNavTab,
 } from '../common'
 import { ProjectsState } from './projects.state'
 import { DashboardView } from './dashboard'
@@ -109,7 +109,6 @@ export class SectionDashboard extends Section {
  * @category View
  */
 export class ProjectItemView {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -165,7 +164,6 @@ export class ProjectItemView {
  * @category View
  */
 export class SectionProjectsOpened extends Section {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -207,7 +205,6 @@ export class SectionProjectsOpened extends Section {
  * @category View
  */
 export class ListProjectsView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -229,7 +226,7 @@ export class ListProjectsView implements VirtualDOM {
     public readonly projectsState: ProjectsState
 
     constructor(params: { projectsState: ProjectsState }) {
-        let searchView = {
+        const searchView = {
             class: 'd-flex align-items-center  my-2 w-100 px-2',
             children: [
                 {
@@ -248,7 +245,16 @@ export class ListProjectsView implements VirtualDOM {
             ],
         }
         Object.assign(this, params)
-
+        const searchTerm = (term: string, project: pyYw.Project) => {
+            return (
+                project.name.includes(term) ||
+                project.version.includes(term) ||
+                project.pipeline.tags.reduce(
+                    (acc, tag) => acc || tag.includes(term),
+                    false,
+                )
+            )
+        }
         this.children = [
             searchView,
             {
@@ -258,11 +264,7 @@ export class ListProjectsView implements VirtualDOM {
                         this.search$,
                     ]).pipe(
                         map(([projects, search]) => {
-                            return projects.filter(
-                                (p) =>
-                                    p.name.includes(search) ||
-                                    p.version.includes(search),
-                            )
+                            return projects.filter((p) => searchTerm(search, p))
                         }),
                     ),
                     (projects: pyYw.Project[]) => {
@@ -293,7 +295,6 @@ export class ListProjectsView implements VirtualDOM {
  * @category View
  */
 export class SectionAllProjects extends Section {
-
     /**
      * @group Immutable DOM Constants
      */

@@ -3,10 +3,7 @@ node_modules
 dist/
 coverage/
 junit.xml
-src/auto_generated.ts
 cdn.zip
-/*.iml
-/.idea/
 __pycache__
-**/.yw_test_env/**/*
-yarn-error.log
+*.iml
+.template

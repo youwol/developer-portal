@@ -1,14 +1,13 @@
 import { attr$, childrenWithReplace$, VirtualDOM } from '@youwol/flux-view'
 import { AppState, Screen } from './app-state'
-import { DevPortalTopBannerView } from './top-banner.view'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { map } from 'rxjs/operators'
+import { DevPortalTopBannerView } from './top-banner.view'
 
 /**
  * @category View
  */
 export class AppView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -27,7 +26,7 @@ export class AppView implements VirtualDOM {
 
     constructor() {
         this.state = new AppState()
-        let sideNav = new DockableTabs.View({
+        const sideNav = new DockableTabs.View({
             state: this.state.leftNavState,
             styleOptions: { initialPanelSize: '350px' },
         })
@@ -50,7 +49,6 @@ export class AppView implements VirtualDOM {
  * @category View
  */
 export class ContentView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
