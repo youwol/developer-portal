@@ -35,6 +35,9 @@ template = Template(
                 'codemirror': '^5.52.0',
                 "d3-dag": "0.8.2",
             },
+            differed={
+                '@youwol/fv-code-mirror-editors': '^0.1.1'
+            },
             includedInBundle=["d3-dag"]
         ),
         devTime={}

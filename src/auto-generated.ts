@@ -16,7 +16,9 @@ const runTimeDependencies = {
         "codemirror": "^5.52.0",
         "d3-dag": "0.8.2"
     },
-    "differed": {},
+    "differed": {
+        "@youwol/fv-code-mirror-editors": "^0.1.1"
+    },
     "includedInBundle": [
         "d3-dag"
     ]
@@ -35,6 +37,7 @@ const externals = {
     "@youwol/installers-youwol": "window['@youwol/installers-youwol_APIv01']",
     "d3": "window['d3_APIv5']",
     "codemirror": "window['CodeMirror_APIv5']",
+    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv01']",
     "rxjs/operators": "window['rxjs_APIv6']['operators']"
 }
 const exportedSymbols = {
@@ -89,12 +92,16 @@ const exportedSymbols = {
     "codemirror": {
         "apiKey": "5",
         "exportedSymbol": "CodeMirror"
+    },
+    "@youwol/fv-code-mirror-editors": {
+        "apiKey": "01",
+        "exportedSymbol": "@youwol/fv-code-mirror-editors"
     }
 }
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.0',
+    version:'0.1.1-wip',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
