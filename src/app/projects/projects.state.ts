@@ -4,6 +4,7 @@ import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
 import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
+import { NewProjectFromTemplateView } from './new-project'
 
 type ContextMessage = pyYw.ContextMessage
 
@@ -208,6 +209,11 @@ export class ProjectsState {
     public readonly openProjects$ = new BehaviorSubject<pyYw.Project[]>([])
 
     /**
+     * @group Observables
+     */
+    public readonly creatingProjects$ = new BehaviorSubject<string[]>([])
+
+    /**
      * @group Mutable Variables
      */
     public readonly screensId = {}
@@ -290,5 +296,43 @@ export class ProjectsState {
                 .subscribe()
         }
         events.selectedStep$.next({ flowId, step })
+    }
+
+    newProjectFromTemplate(projectTemplate: pyYw.ProjectTemplate) {
+        console.log('new project', projectTemplate.type)
+        this.screensId[projectTemplate.type] = this.appState.registerScreen({
+            topic: 'Projects',
+            viewId: projectTemplate.type,
+            view: new NewProjectFromTemplateView({
+                projectsState: this,
+                projectTemplate,
+            }),
+        })
+    }
+
+    createProjectFromTemplate({
+        type,
+        parameters,
+    }: {
+        type: string
+        parameters: { [_k: string]: string }
+    }) {
+        this.creatingProjects$.next([
+            ...this.creatingProjects$.getValue().filter((t) => t != type),
+            type,
+        ])
+        this.projectsClient
+            .createProjectFromTemplate({
+                body: {
+                    type,
+                    parameters,
+                },
+            })
+            .subscribe((resp) => {
+                this.creatingProjects$.next(
+                    this.creatingProjects$.getValue().filter((t) => t != type),
+                )
+                this.openProject(resp as any)
+            })
     }
 }

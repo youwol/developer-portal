@@ -67,6 +67,7 @@ export class ProjectsTabView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             new SectionDashboard({ projectsState: this.projectsState }),
+            new SectionNewProject({ projectsState: this.projectsState }),
             new SectionProjectsOpened({ projectsState: this.projectsState }),
             new SectionAllProjects({ projectsState: this.projectsState }),
         ]
@@ -108,6 +109,42 @@ export class SectionDashboard extends Section {
 /**
  * @category View
  */
+export class SectionNewProject extends Section {
+    constructor({ projectsState }: { projectsState: ProjectsState }) {
+        super({
+            header: new SectionHeader({
+                class: leftNavSectionAttr$({
+                    selectedScreen$: projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: 'new',
+                }),
+                title: 'New project',
+                icon: 'fa-plus-square fv-pointer',
+            }),
+            content: {
+                class: 'pl-4 flex-grow-1 overflow-auto',
+                children: children$(
+                    projectsState.appState.environment$,
+                    (environment: pyYw.EnvironmentStatusResponse) => {
+                        return environment.configuration[
+                            'projectTemplates'
+                        ].map(
+                            (projectTemplate) =>
+                                new ProjectTemplateItemView({
+                                    projectTemplate,
+                                    projectsState,
+                                }),
+                        )
+                    },
+                ),
+            },
+        })
+    }
+}
+
+/**
+ * @category View
+ */
 export class ProjectItemView {
     /**
      * @group Immutable DOM Constants
@@ -127,6 +164,7 @@ export class ProjectItemView {
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
+
     constructor(params: {
         projectsState: ProjectsState
         project: pyYw.Project
@@ -154,6 +192,65 @@ export class ProjectItemView {
                 ],
                 onclick: () => {
                     this.projectsState.selectProject(this.project.id)
+                },
+            },
+        ]
+    }
+}
+
+/**
+ * @category View
+ */
+export class ProjectTemplateItemView {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = 'fv-pointer'
+    /**
+     * @group State
+     */
+    public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly projectTemplate: pyYw.ProjectTemplate
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: VirtualDOM[]
+    constructor(params: {
+        projectsState: ProjectsState
+        projectTemplate: pyYw.ProjectTemplate
+    }) {
+        Object.assign(this, params)
+
+        console.log('projectTemplate', this.projectTemplate)
+        this.children = [
+            {
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: this.projectTemplate.type,
+                }),
+                children: [
+                    {
+                        class: 'd-flex align-items-center p-1',
+                        children: [
+                            this.projectTemplate.icon,
+                            { class: 'px-2' },
+                            {
+                                innerText: this.projectTemplate.type,
+                            },
+                        ],
+                    },
+                ],
+                onclick: () => {
+                    this.projectsState.newProjectFromTemplate(
+                        this.projectTemplate,
+                    )
                 },
             },
         ]
