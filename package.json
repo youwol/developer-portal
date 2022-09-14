@@ -1,7 +1,7 @@
 {
     "name": "@youwol/developer-portal",
     "description": "",
-    "version": "0.1.0",
+    "version": "0.1.1-wip",
     "author": "",
     "homepage": "https://github.com/youwol/developer-portal#README.md",
     "main": "dist/index.html",
@@ -78,7 +78,8 @@
         "@youwol/installers-youwol": "^0.1.1",
         "d3": "^5.15.0",
         "codemirror": "^5.52.0",
-        "d3-dag": "0.8.2"
+        "d3-dag": "0.8.2",
+        "@youwol/fv-code-mirror-editors": "^0.1.1"
     },
     "youwol": {
         "cdnDependencies": {
