@@ -8,13 +8,13 @@ import {
 } from '@youwol/http-clients'
 import { map, scan, shareReplay } from 'rxjs/operators'
 import { PackageView } from './package'
-import { LocalCdnRouter } from '@youwol/http-clients/src/lib/py-youwol/routers/local-cdn/local-cdn.router'
+
+type LocalCdnRouter = pyYw.LocalCdnRouter
 
 /**
  * @category Event
  */
 export class PackageEvents {
-
     /**
      * @group Immutable Constants
      */
@@ -49,7 +49,6 @@ export class PackageEvents {
  * @category Event
  */
 export class UpdateChecksEvents {
-
     /**
      * @group Immutable Constants
      */
@@ -101,7 +100,6 @@ export class FuturePackage {
  * @category State
  */
 export class CdnState {
-
     /**
      * @group Immutable Constants
      */
