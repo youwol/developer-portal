@@ -7,13 +7,12 @@ import { StepView } from './step.view'
 import { FlowId, ProjectsState } from '../projects.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { LogsTab } from './project-bottom-dockable-tabs.view'
+import { LogsTab } from '../../common'
 
 /**
  * @category View
  */
 export class ProjectView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -41,7 +40,6 @@ export class ProjectView implements VirtualDOM {
      */
     public readonly projectsState: ProjectsState
 
-
     /**
      * @group Immutable Constants
      */
@@ -63,13 +61,14 @@ export class ProjectView implements VirtualDOM {
             ),
             tabs$: new BehaviorSubject([
                 new LogsTab({
-                    projectsState: this.projectsState,
-                    project: this.project,
+                    message$:
+                        this.projectsState.projectEvents[this.project.id]
+                            .messages$,
                 }),
             ]),
             selected$: new BehaviorSubject<string>('logs'),
         })
-        let bottomNav = new DockableTabs.View({
+        const bottomNav = new DockableTabs.View({
             state: bottomNavState,
             styleOptions: { initialPanelSize: '500px' },
         })
@@ -114,7 +113,6 @@ export class ProjectView implements VirtualDOM {
  * @category View
  */
 export class FlowsSelectorView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -174,7 +172,6 @@ export class FlowsSelectorView implements VirtualDOM {
  * @category View
  */
 export class ProjectHeaderView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -232,7 +229,6 @@ export class ProjectHeaderView implements VirtualDOM {
  * @category View
  */
 export class FlowSummaryView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -242,7 +238,6 @@ export class FlowSummaryView implements VirtualDOM {
      * @group States
      */
     public readonly projectsState: ProjectsState
-
 
     /**
      * @group Immutable DOM Constants

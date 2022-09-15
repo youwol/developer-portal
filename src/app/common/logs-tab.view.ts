@@ -1,25 +1,20 @@
 import { DockableTabs } from '@youwol/fv-tabs'
-import { ProjectsState } from '../projects.state'
 import { VirtualDOM } from '@youwol/flux-view'
-import { TerminalView } from '../../common/terminal'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import { TerminalView } from './terminal'
+import { WebSocketResponse$ } from '@youwol/http-clients'
 
 /**
  * @category View
  */
 export class LogsTab extends DockableTabs.Tab {
-    constructor(params: {
-        projectsState: ProjectsState
-        project: pyYw.Project
-    }) {
+    constructor(params: { message$: WebSocketResponse$<unknown> }) {
         super({
             id: 'logs',
             title: 'Logs',
             icon: 'fas fa-volume-up',
             content: () => {
                 return new LogsTabView({
-                    projectsState: params.projectsState,
-                    project: params.project,
+                    message$: params.message$,
                 })
             },
         })
@@ -30,18 +25,6 @@ export class LogsTab extends DockableTabs.Tab {
  * @Category View
  */
 export class LogsTabView implements VirtualDOM {
-
-
-    /**
-     * @group States
-     */
-    public readonly projectsState: ProjectsState
-
-    /**
-     * @group Immutable Constants
-     */
-    public readonly project: pyYw.Project
-
     /**
      * @group Immutable DOM Constants
      */
@@ -60,14 +43,9 @@ export class LogsTabView implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(params: {
-        projectsState: ProjectsState
-        project: pyYw.Project
-    }) {
+    constructor(params: { message$: WebSocketResponse$<unknown> }) {
         Object.assign(this, params)
-        const events =
-            this.projectsState.projectEvents[this.project.id].messages$
 
-        this.children = [new TerminalView(events)]
+        this.children = [new TerminalView(params.message$)]
     }
 }
