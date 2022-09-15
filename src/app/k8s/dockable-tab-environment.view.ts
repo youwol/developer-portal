@@ -5,7 +5,7 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-    LeftNavTab
+    LeftNavTab,
 } from '../common'
 import { K8sState } from './k8s.state'
 import { DashboardView } from './dashboard'
@@ -38,7 +38,6 @@ export class K8sTab extends LeftNavTab<K8sState, K8sTabView> {
  * @category View
  */
 export class K8sTabView implements VirtualDOM {
-
     /**
      * @group States
      */
@@ -72,7 +71,6 @@ export class K8sTabView implements VirtualDOM {
  * @category View
  */
 export class SectionDashboard extends Section {
-
     /**
      * @group States
      */
@@ -99,7 +97,7 @@ export class SectionDashboard extends Section {
                     targetViewId: 'dashboard',
                 }),
                 title: 'Dashboard',
-                icon: 'fa-th-large fv-pointer',
+                icon: 'fas fa-th-large fv-pointer',
             }),
         })
         Object.assign(this, params)

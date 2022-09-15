@@ -99,7 +99,7 @@ export class SectionDashboard extends Section {
                     targetViewId: 'dashboard',
                 }),
                 title: 'Dashboard',
-                icon: 'fa-th-large fv-pointer',
+                icon: 'fas fa-th-large fv-pointer',
             }),
         })
         Object.assign(this, params)
@@ -119,7 +119,7 @@ export class SectionNewProject extends Section {
                     targetViewId: 'new',
                 }),
                 title: 'New project',
-                icon: 'fa-plus-square fv-pointer',
+                icon: 'fas fa-plus-square fv-pointer',
             }),
             content: {
                 class: 'pl-4 flex-grow-1 overflow-auto',
@@ -280,7 +280,7 @@ export class SectionProjectsOpened extends Section {
                     projectsState.openProjects$,
                     (projects) => `Opened projects (${projects.length})`,
                 ),
-                icon: 'fa-folder-open',
+                icon: 'fas fa-folder-open',
             }),
             content: {
                 class: 'pl-4 flex-grow-1 overflow-auto',
@@ -411,7 +411,7 @@ export class SectionAllProjects extends Section {
                     projectsState.projects$,
                     (projects) => `All projects (${projects.length})`,
                 ),
-                icon: 'fa-list-alt',
+                icon: 'fas fa-list-alt',
             }),
             content: new ListProjectsView({ projectsState }),
         })

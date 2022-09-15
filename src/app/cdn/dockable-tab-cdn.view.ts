@@ -5,7 +5,7 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-    LeftNavTab
+    LeftNavTab,
 } from '../common'
 import { CdnState, FuturePackage, ActualPackage } from './cdn.state'
 import { DashboardView } from './dashboard'
@@ -41,7 +41,6 @@ export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {
  * @category View
  */
 export class CdnTabView implements VirtualDOM {
-
     /**
      * @group States
      */
@@ -80,7 +79,6 @@ export class CdnTabView implements VirtualDOM {
  * @category View
  */
 export class SectionDashboard extends Section {
-
     /**
      * @group States
      */
@@ -105,7 +103,7 @@ export class SectionDashboard extends Section {
                     targetViewId: 'dashboard',
                 }),
                 title: 'Dashboard',
-                icon: 'fa-th-large fv-pointer',
+                icon: 'fas fa-th-large fv-pointer',
             }),
         })
         Object.assign(this, params)
@@ -116,7 +114,6 @@ export class SectionDashboard extends Section {
  * @category View
  */
 export class PackageItemView {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -139,7 +136,7 @@ export class PackageItemView {
 
     constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
-        const name = atob(this.packageId)
+        const name = window.atob(this.packageId)
         this.children = [
             {
                 class: leftNavSectionAttr$({
@@ -171,7 +168,6 @@ export class PackageItemView {
  * @category View
  */
 class SectionPackagesOpened extends Section {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -191,7 +187,7 @@ class SectionPackagesOpened extends Section {
                     cdnState.openPackages$,
                     (packages) => `Opened packages (${packages.length})`,
                 ),
-                icon: 'fa-folder-open',
+                icon: 'fas fa-folder-open',
             }),
             content: {
                 class: 'pl-4 flex-grow-1 overflow-auto',
@@ -210,7 +206,6 @@ class SectionPackagesOpened extends Section {
  * @category View
  */
 export class ContentView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -227,7 +222,7 @@ export class ContentView implements VirtualDOM {
     public readonly children
 
     constructor({ cdnState }: { cdnState: CdnState }) {
-        let searchView = {
+        const searchView = {
             class: 'd-flex align-items-center  my-2 w-100 px-2',
             children: [
                 {
@@ -276,7 +271,6 @@ export class ContentView implements VirtualDOM {
  * @category View
  */
 export class CdnPackageItemView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -312,8 +306,9 @@ export class CdnPackageItemView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly onclick = () => {
-        if (this.item instanceof ActualPackage)
+        if (this.item instanceof ActualPackage) {
             this.cdnState.openPackage(this.item.id)
+        }
     }
 
     constructor(params: {
@@ -344,7 +339,6 @@ export class CdnPackageItemView implements VirtualDOM {
  * @category View
  */
 export class SectionAllPackages extends Section {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -368,7 +362,7 @@ export class SectionAllPackages extends Section {
                                 .length
                         })`,
                 ),
-                icon: 'fa-list-alt',
+                icon: 'fas fa-list-alt',
             }),
             content: new ContentView({ cdnState }),
         })
@@ -379,7 +373,6 @@ export class SectionAllPackages extends Section {
  * @category View
  */
 export class SectionUpgrades extends Section {
-
     /**
      * @group States
      */
@@ -404,7 +397,7 @@ export class SectionUpgrades extends Section {
                     targetViewId: 'upgrades',
                 }),
                 title: 'Upgrades',
-                icon: 'fa-download fv-pointer',
+                icon: 'fas fa-download fv-pointer',
             }),
         })
         Object.assign(this, params)
