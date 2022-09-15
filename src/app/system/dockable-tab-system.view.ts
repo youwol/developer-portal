@@ -5,10 +5,11 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-    LeftNavTab
+    LeftNavTab,
 } from '../common'
 import { SystemState } from './system.state'
 import { AdminLogsView } from './logs'
+import { JsEditorView } from './js-editor'
 
 /**
  * @category View
@@ -39,7 +40,6 @@ export class SystemTab extends LeftNavTab<SystemState, SystemTabView> {
  * @category View
  */
 export class SystemTabView implements VirtualDOM {
-
     /**
      * @group States
      */
@@ -65,7 +65,10 @@ export class SystemTabView implements VirtualDOM {
     constructor(params: { systemState: SystemState }) {
         Object.assign(this, params)
 
-        this.children = [new SectionLogs({ systemState: this.systemState })]
+        this.children = [
+            new SectionLogs({ systemState: this.systemState }),
+            new SectionJsEditor({ systemState: this.systemState }),
+        ]
     }
 }
 
@@ -73,7 +76,6 @@ export class SystemTabView implements VirtualDOM {
  * @category View
  */
 export class SectionLogs extends Section {
-
     /**
      * @group States
      */
@@ -101,7 +103,45 @@ export class SectionLogs extends Section {
                     targetViewId: 'logs',
                 }),
                 title: 'Logs',
-                icon: 'fa-volume-up fv-pointer',
+                icon: 'fas fa-volume-up fv-pointer',
+            }),
+        })
+        Object.assign(this, params)
+    }
+}
+
+/**
+ * @category View
+ */
+export class SectionJsEditor extends Section {
+    /**
+     * @group States
+     */
+    public readonly systemState: SystemState
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly onclick = () => {
+        this.systemState.appState.registerScreen({
+            topic: 'System',
+            viewId: 'js-editor',
+            view: new JsEditorView({
+                systemState: this.systemState,
+            }),
+        })
+    }
+    constructor(params: { systemState: SystemState }) {
+        super({
+            header: new SectionHeader({
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.systemState.appState.selectedScreen$,
+                    targetTopic: 'System',
+                    targetViewId: 'js-editor',
+                }),
+                title: 'Js Editor',
+                icon: 'fab fa-js-square',
             }),
         })
         Object.assign(this, params)
