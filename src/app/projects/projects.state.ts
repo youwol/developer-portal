@@ -209,11 +209,6 @@ export class ProjectsState {
     public readonly openProjects$ = new BehaviorSubject<pyYw.Project[]>([])
 
     /**
-     * @group Observables
-     */
-    public readonly creatingProjects$ = new BehaviorSubject<string[]>([])
-
-    /**
      * @group Mutable Variables
      */
     public readonly screensId = {}
@@ -310,29 +305,18 @@ export class ProjectsState {
         })
     }
 
-    createProjectFromTemplate({
+    createProjectFromTemplate$({
         type,
         parameters,
     }: {
         type: string
         parameters: { [_k: string]: string }
     }) {
-        this.creatingProjects$.next([
-            ...this.creatingProjects$.getValue().filter((t) => t != type),
-            type,
-        ])
-        this.projectsClient
-            .createProjectFromTemplate({
-                body: {
-                    type,
-                    parameters,
-                },
-            })
-            .subscribe((resp) => {
-                this.creatingProjects$.next(
-                    this.creatingProjects$.getValue().filter((t) => t != type),
-                )
-                this.openProject(resp as any)
-            })
+        return this.projectsClient.createProjectFromTemplate({
+            body: {
+                type,
+                parameters,
+            },
+        })
     }
 }

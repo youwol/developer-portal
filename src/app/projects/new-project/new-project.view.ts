@@ -1,10 +1,16 @@
 import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
 import { ProjectsState } from '../projects.state'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { BehaviorSubject, from, Observable } from 'rxjs'
+import {
+    filterCtxMessage,
+    PyYouwol as pyYw,
+    HTTPError,
+    dispatchHTTPErrors,
+} from '@youwol/http-clients'
+import { BehaviorSubject, from, Observable, Subject } from 'rxjs'
 import { install } from '@youwol/cdn-client'
-import { delay, map, shareReplay } from 'rxjs/operators'
-import { classesButton } from '../../common'
+import { delay, map, shareReplay, tap } from 'rxjs/operators'
+import { classesButton, LogsTab } from '../../common'
+import { DockableTabs } from '@youwol/fv-tabs'
 
 declare type CodeEditorModule = typeof import('@youwol/fv-code-mirror-editors')
 
@@ -80,6 +86,43 @@ export class NewProjectFromTemplateView implements VirtualDOM {
             path: './config.js',
             content: JSON.stringify(this.projectTemplate.parameters, null, 4),
         })
+        const viewState$ = new BehaviorSubject<DockableTabs.DisplayMode>(
+            'collapsed',
+        )
+
+        const bottomNavState = new DockableTabs.State({
+            disposition: 'bottom',
+            persistTabsView: true,
+            viewState$,
+            tabs$: new BehaviorSubject([
+                new LogsTab({
+                    message$: pyYw.PyYouwolClient.ws.log$.pipe(
+                        filterCtxMessage({
+                            withLabels: ['Label.PROJECT_CREATING'],
+                            withAttributes: {
+                                templateType: this.projectTemplate.type,
+                            },
+                        }),
+                        shareReplay(1),
+                    ),
+                }),
+            ]),
+            selected$: new BehaviorSubject<string>('logs'),
+        })
+
+        const bottomNav = new DockableTabs.View({
+            state: bottomNavState,
+            styleOptions: { initialPanelSize: '500px' },
+        })
+
+        const generateButton = new GenerateButton({
+            projectsState: this.projectsState,
+            projectTemplate: this.projectTemplate,
+            file$,
+        })
+        generateButton.error$.subscribe(() => {
+            viewState$.next('expanded')
+        })
         this.children = [
             {
                 class: 'w-100 h-100 py-2 overflow-auto',
@@ -96,38 +139,10 @@ export class NewProjectFromTemplateView implements VirtualDOM {
                             })
                         },
                     ),
-                    {
-                        class: `${classesButton} mx-auto px-4`,
-                        children: [
-                            {
-                                innerText: 'Generate',
-                            },
-                            {
-                                class: attr$(
-                                    this.projectsState.creatingProjects$,
-                                    (types) =>
-                                        types.includes(
-                                            this.projectTemplate.type,
-                                        )
-                                            ? 'fas fa-spinner fa-spin ml-1'
-                                            : '',
-                                ),
-                            },
-                        ],
-                        style: {
-                            width: 'fit-content',
-                        },
-                        onclick: () => {
-                            this.projectsState.createProjectFromTemplate({
-                                type: params.projectTemplate.type,
-                                parameters: JSON.parse(
-                                    file$.getValue().content,
-                                ),
-                            })
-                        },
-                    },
+                    generateButton,
                 ],
             },
+            bottomNav,
         ]
     }
 }
@@ -209,5 +224,77 @@ export class ProjectTemplateEditor implements VirtualDOM {
             nativeEdtr.refresh()
         })
         this.children = [editor]
+    }
+}
+
+/**
+ * @category View
+ */
+export class GenerateButton {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = `${classesButton} mx-auto px-4`
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly style = {
+        width: 'fit-content',
+    }
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: VirtualDOM[]
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly onclick: (ev: MouseEvent) => void
+
+    /**
+     * @group Observables
+     */
+    public readonly error$ = new Subject<HTTPError>()
+
+    constructor({
+        projectsState,
+        projectTemplate,
+        file$,
+    }: {
+        projectsState: ProjectsState
+        projectTemplate: pyYw.ProjectTemplate
+        file$: BehaviorSubject<{
+            path: string
+            content: string
+        }>
+    }) {
+        const creating$ = new BehaviorSubject(false)
+        this.children = [
+            {
+                innerText: 'Generate',
+            },
+            {
+                class: attr$(creating$, (creating) =>
+                    creating ? 'fas fa-spinner fa-spin ml-1' : '',
+                ),
+            },
+        ]
+        this.onclick = () => {
+            creating$.next(true)
+            projectsState
+                .createProjectFromTemplate$({
+                    type: projectTemplate.type,
+                    parameters: JSON.parse(file$.getValue().content),
+                })
+                .pipe(
+                    tap(() => creating$.next(false)),
+                    dispatchHTTPErrors(this.error$),
+                )
+                .subscribe((resp: pyYw.Project) => {
+                    projectsState.openProject(resp)
+                })
+        }
     }
 }
