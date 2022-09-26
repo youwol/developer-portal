@@ -216,8 +216,13 @@ export class ProjectTemplateEditor implements VirtualDOM {
         }>
     }) {
         Object.assign(this, params)
-        const editor = new params.CodeEditorModule.CodeEditorView({
-            file$: params.file$,
+        const ideState = new params.CodeEditorModule.Common.IdeState({
+            files: [{ path: './index.js', content: '' }],
+            defaultFileSystem: Promise.resolve(new Map<string, string>()),
+        })
+        const editor = new params.CodeEditorModule.Common.CodeEditorView({
+            ideState,
+            path: './index.js',
             language: 'javascript',
         })
         editor.nativeEditor$.pipe(delay(100)).subscribe((nativeEdtr) => {
