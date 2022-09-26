@@ -6,7 +6,6 @@ import { CdnTab, CdnState } from './cdn'
 import { EnvironmentTab, EnvironmentState } from './environment'
 import { VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { K8sTab, K8sState } from './k8s'
 import { LeftNavTab } from './common'
 import { SystemState, SystemTab } from './system'
 
@@ -17,7 +16,6 @@ export type Topic =
     | 'Admin'
     | 'Environment'
     | 'System'
-    | 'K8s'
 
 export interface Screen {
     topic: Topic
@@ -63,11 +61,6 @@ export class AppState {
     /**
      * @group State
      */
-    public readonly k8sState: K8sState
-
-    /**
-     * @group State
-     */
     public readonly leftNavState: DockableTabs.State
 
     /**
@@ -101,7 +94,7 @@ export class AppState {
         this.projectsState = new ProjectsState({ appState: this })
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })
-        this.k8sState = new K8sState({ appState: this })
+
         this.systemState = new SystemState({ appState: this })
         this.leftNavTabs = {
             Environment: new EnvironmentTab({
@@ -111,7 +104,6 @@ export class AppState {
             Updates: undefined,
             CDN: new CdnTab({ cdnState: this.cdnState }),
             Admin: undefined,
-            K8s: new K8sTab({ k8sState: this.k8sState }),
             System: new SystemTab({ systemState: this.systemState }),
         }
         this.leftNavState = new DockableTabs.State({
