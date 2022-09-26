@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from youwol.pipelines.pipeline_typescript_weback_npm import Template, PackageType, Dependencies, \
-    RunTimeDeps, generate_template, DevServer
+    RunTimeDeps, generate_template, DevServer, Bundles, MainModule
 from youwol_utils import parse_json
 
 folder_path = Path(__file__).parent
@@ -19,7 +19,7 @@ template = Template(
     author=pkg_json['author'],
     dependencies=Dependencies(
         runTime=RunTimeDeps(
-            load={
+            externals={
                 'rxjs': '^6.5.5',
                 '@youwol/http-clients': '^1.0.2',
                 '@youwol/cdn-client': '^1.0.2',
@@ -33,18 +33,30 @@ template = Template(
                 '@youwol/installers-youwol': '^0.1.1',
                 'd3': '^5.15.0',
                 'codemirror': '^5.52.0',
-                "d3-dag": "0.8.2",
+                '@youwol/fv-code-mirror-editors': '^0.2.0'
             },
-            differed={
-                '@youwol/fv-code-mirror-editors': '^0.1.1'
-            },
-            includedInBundle=["d3-dag"]
+            includedInBundle={
+                "d3-dag": "0.8.2"
+            }
         ),
-        devTime={}
+        devTime={
+            #  those two prevent failure of typedoc
+            "@types/lz-string": "^1.3.34",
+            "lz-string": "^1.4.4"
+        }
     ),
     userGuide=True,
     devServer=DevServer(
         port=3000
+    ),
+    bundles=Bundles(
+        mainModule=MainModule(
+            entryFile='./app/index.html',
+            loadDependencies=['rxjs', '@youwol/http-clients', '@youwol/cdn-client', '@youwol/flux-view',
+                              '@youwol/fv-group', '@youwol/fv-input', '@youwol/fv-button', '@youwol/fv-tree',
+                              '@youwol/fv-tabs', '@youwol/os-top-banner', '@youwol/installers-youwol', 'd3',
+                              'codemirror']
+        )
     )
 )
 
