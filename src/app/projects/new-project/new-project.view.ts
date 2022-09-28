@@ -81,11 +81,6 @@ export class NewProjectFromTemplateView implements VirtualDOM {
         projectTemplate: pyYw.ProjectTemplate
     }) {
         Object.assign(this, params)
-
-        const file$ = new BehaviorSubject({
-            path: './config.js',
-            content: JSON.stringify(this.projectTemplate.parameters, null, 4),
-        })
         const viewState$ = new BehaviorSubject<DockableTabs.DisplayMode>(
             'collapsed',
         )
@@ -115,14 +110,6 @@ export class NewProjectFromTemplateView implements VirtualDOM {
             styleOptions: { initialPanelSize: '500px' },
         })
 
-        const generateButton = new GenerateButton({
-            projectsState: this.projectsState,
-            projectTemplate: this.projectTemplate,
-            file$,
-        })
-        generateButton.error$.subscribe(() => {
-            viewState$.next('expanded')
-        })
         this.children = [
             {
                 class: 'w-100 h-100 py-2 overflow-auto',
@@ -135,11 +122,11 @@ export class NewProjectFromTemplateView implements VirtualDOM {
                             return new ProjectTemplateEditor({
                                 projectsState: this.projectsState,
                                 CodeEditorModule: CodeEditorModule,
-                                file$,
+                                projectTemplate: this.projectTemplate,
+                                onError: () => viewState$.next('expanded'),
                             })
                         },
                     ),
-                    generateButton,
                 ],
             },
             bottomNav,
@@ -207,20 +194,35 @@ export class ProjectTemplateEditor implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
+    /**
+     * @group Immutable Constants
+     */
+    public readonly projectTemplate: pyYw.ProjectTemplate
+
+    /**
+     * @group State
+     */
+    public readonly projectsState: ProjectsState
+
+    /**
+     * @group Module
+     */
+    public readonly CodeEditorModule: CodeEditorModule
+
     constructor(params: {
         projectsState: ProjectsState
         CodeEditorModule: CodeEditorModule
-        file$: BehaviorSubject<{
-            path: string
-            content: string
-        }>
+        projectTemplate: pyYw.ProjectTemplate
+        onError: () => void
     }) {
         Object.assign(this, params)
-        const ideState = new params.CodeEditorModule.Common.IdeState({
-            files: [{ path: './index.js', content: '' }],
+        const content = JSON.stringify(this.projectTemplate.parameters, null, 4)
+
+        const ideState = new this.CodeEditorModule.Common.IdeState({
+            files: [{ path: './index.js', content }],
             defaultFileSystem: Promise.resolve(new Map<string, string>()),
         })
-        const editor = new params.CodeEditorModule.Common.CodeEditorView({
+        const editor = new this.CodeEditorModule.Common.CodeEditorView({
             ideState,
             path: './index.js',
             language: 'javascript',
@@ -228,7 +230,16 @@ export class ProjectTemplateEditor implements VirtualDOM {
         editor.nativeEditor$.pipe(delay(100)).subscribe((nativeEdtr) => {
             nativeEdtr.refresh()
         })
-        this.children = [editor]
+        const generateButton = new GenerateButton({
+            projectsState: this.projectsState,
+            projectTemplate: this.projectTemplate,
+            file$: ideState.updates$['./index.js'],
+        })
+
+        generateButton.error$.subscribe(() => {
+            params.onError()
+        })
+        this.children = [editor, generateButton]
     }
 }
 
