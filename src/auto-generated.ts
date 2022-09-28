@@ -35,8 +35,7 @@ const externals = {
     "d3": "window['d3_APIv5']",
     "codemirror": "window['CodeMirror_APIv5']",
     "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv02']",
-    "rxjs/operators": "window['rxjs_APIv6']['operators']",
-    "@youwol/http-clients/dist/src/lib/py-youwol": "window['@youwol/http-clients_APIv1']['dist']['src']['lib']['py-youwol']"
+    "rxjs/operators": "window['rxjs_APIv6']['operators']"
 }
 const exportedSymbols = {
     "rxjs": {
