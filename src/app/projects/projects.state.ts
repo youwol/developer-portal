@@ -317,7 +317,6 @@ export class ProjectsState {
     }
 
     newProjectFromTemplate(projectTemplate: pyYw.ProjectTemplate) {
-        console.log('new project', projectTemplate.type)
         this.screensId[projectTemplate.type] = this.appState.registerScreen({
             topic: 'Projects',
             viewId: projectTemplate.type,
