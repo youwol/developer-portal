@@ -2,7 +2,7 @@
 const runTimeDependencies = {
     "externals": {
         "rxjs": "^6.5.5",
-        "@youwol/http-clients": "^1.0.2",
+        "@youwol/http-clients": "^1.0.4",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/fv-group": "^0.2.1",
@@ -11,7 +11,7 @@ const runTimeDependencies = {
         "@youwol/fv-tree": "^0.2.3",
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
-        "@youwol/installers-youwol": "^0.1.1",
+        "@youwol/installers-youwol": "^0.1.3",
         "d3": "^5.15.0",
         "codemirror": "^5.52.0",
         "@youwol/fv-code-mirror-editors": "^0.2.0"
@@ -35,7 +35,8 @@ const externals = {
     "d3": "window['d3_APIv5']",
     "codemirror": "window['CodeMirror_APIv5']",
     "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv02']",
-    "rxjs/operators": "window['rxjs_APIv6']['operators']"
+    "rxjs/operators": "window['rxjs_APIv6']['operators']",
+    "@youwol/http-clients/dist/src/lib/py-youwol": "window['@youwol/http-clients_APIv1']['dist']['src']['lib']['py-youwol']"
 }
 const exportedSymbols = {
     "rxjs": {
