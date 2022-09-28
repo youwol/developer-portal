@@ -1,8 +1,8 @@
 
 const runTimeDependencies = {
-    "load": {
+    "externals": {
         "rxjs": "^6.5.5",
-        "@youwol/http-clients": "^1.0.2",
+        "@youwol/http-clients": "^1.0.4",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/fv-group": "^0.2.1",
@@ -11,15 +11,14 @@ const runTimeDependencies = {
         "@youwol/fv-tree": "^0.2.3",
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
-        "@youwol/installers-youwol": "^0.1.1",
+        "@youwol/installers-youwol": "^0.1.3",
         "d3": "^5.15.0",
         "codemirror": "^5.52.0",
-        "d3-dag": "0.8.2"
+        "@youwol/fv-code-mirror-editors": "^0.2.0"
     },
-    "differed": {},
-    "includedInBundle": [
-        "d3-dag"
-    ]
+    "includedInBundle": {
+        "d3-dag": "0.8.2"
+    }
 }
 const externals = {
     "rxjs": "window['rxjs_APIv6']",
@@ -35,6 +34,7 @@ const externals = {
     "@youwol/installers-youwol": "window['@youwol/installers-youwol_APIv01']",
     "d3": "window['d3_APIv5']",
     "codemirror": "window['CodeMirror_APIv5']",
+    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv02']",
     "rxjs/operators": "window['rxjs_APIv6']['operators']"
 }
 const exportedSymbols = {
@@ -89,12 +89,43 @@ const exportedSymbols = {
     "codemirror": {
         "apiKey": "5",
         "exportedSymbol": "CodeMirror"
+    },
+    "@youwol/fv-code-mirror-editors": {
+        "apiKey": "02",
+        "exportedSymbol": "@youwol/fv-code-mirror-editors"
     }
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const mainEntry : Object = {
+    "entryFile": "./app/index.html",
+    "loadDependencies": [
+        "rxjs",
+        "@youwol/http-clients",
+        "@youwol/cdn-client",
+        "@youwol/flux-view",
+        "@youwol/fv-group",
+        "@youwol/fv-input",
+        "@youwol/fv-button",
+        "@youwol/fv-tree",
+        "@youwol/fv-tabs",
+        "@youwol/os-top-banner",
+        "@youwol/installers-youwol",
+        "d3",
+        "codemirror"
+    ]
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- allow to allow no secondary entries
+const secondaryEntries : Object = {}
+const entries = {
+     '@youwol/developer-portal': './app/index.html',
+    ...Object.values(secondaryEntries).reduce( (acc,e) => ({...acc, [`@youwol/developer-portal/${e.name}`]:e.entryFile}), {})
 }
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.0',
+    version:'0.1.1',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
@@ -104,7 +135,46 @@ export const setup = {
     runTimeDependencies,
     externals,
     exportedSymbols,
+    entries,
     getDependencySymbolExported: (module:string) => {
         return `${exportedSymbols[module].exportedSymbol}_APIv${exportedSymbols[module].apiKey}`
+    },
+
+    installMainModule: ({cdnClient, installParameters}:{cdnClient, installParameters?}) => {
+        const parameters = installParameters || {}
+        const scripts = parameters.scripts || []
+        const modules = [
+            ...(parameters.modules || []),
+            ...mainEntry['loadDependencies'].map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/developer-portal_APIv01`]
+        })
+    },
+    installAuxiliaryModule: ({name, cdnClient, installParameters}:{name: string, cdnClient, installParameters?}) => {
+        const entry = secondaryEntries[name]
+        const parameters = installParameters || {}
+        const scripts = [
+            ...(parameters.scripts || []),
+            `@youwol/developer-portal#0.1.1~dist/@youwol/developer-portal/${entry.name}.js`
+        ]
+        const modules = [
+            ...(parameters.modules || []),
+            ...entry.loadDependencies.map( d => `${d}#${runTimeDependencies.externals[d]}`)
+        ]
+        if(!entry){
+            throw Error(`Can not find the secondary entry '${name}'. Referenced in template.py?`)
+        }
+        return cdnClient.install({
+            ...parameters,
+            modules,
+            scripts,
+        }).then(() => {
+            return window[`@youwol/developer-portal/${entry.name}_APIv01`]
+        })
     }
 }

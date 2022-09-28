@@ -67,6 +67,7 @@ export class ProjectsTabView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             new SectionDashboard({ projectsState: this.projectsState }),
+            new SectionNewProject({ projectsState: this.projectsState }),
             new SectionProjectsOpened({ projectsState: this.projectsState }),
             new SectionAllProjects({ projectsState: this.projectsState }),
         ]
@@ -98,10 +99,44 @@ export class SectionDashboard extends Section {
                     targetViewId: 'dashboard',
                 }),
                 title: 'Dashboard',
-                icon: 'fa-th-large fv-pointer',
+                icon: 'fas fa-th-large fv-pointer',
             }),
         })
         Object.assign(this, params)
+    }
+}
+
+/**
+ * @category View
+ */
+export class SectionNewProject extends Section {
+    constructor({ projectsState }: { projectsState: ProjectsState }) {
+        super({
+            header: new SectionHeader({
+                class: leftNavSectionAttr$({
+                    selectedScreen$: projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: 'new',
+                }),
+                title: 'New project',
+                icon: 'fas fa-plus-square fv-pointer',
+            }),
+            content: {
+                class: 'pl-4 flex-grow-1 overflow-auto',
+                children: children$(
+                    projectsState.appState.environment$,
+                    (environment: pyYw.EnvironmentStatusResponse) => {
+                        return environment.configuration.pipelinesSourceInfo.projectTemplates.map(
+                            (projectTemplate) =>
+                                new ProjectTemplateItemView({
+                                    projectTemplate,
+                                    projectsState,
+                                }),
+                        )
+                    },
+                ),
+            },
+        })
     }
 }
 
@@ -127,6 +162,7 @@ export class ProjectItemView {
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
+
     constructor(params: {
         projectsState: ProjectsState
         project: pyYw.Project
@@ -163,6 +199,64 @@ export class ProjectItemView {
 /**
  * @category View
  */
+export class ProjectTemplateItemView {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = 'fv-pointer'
+    /**
+     * @group State
+     */
+    public readonly projectsState: ProjectsState
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly projectTemplate: pyYw.ProjectTemplate
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: VirtualDOM[]
+    constructor(params: {
+        projectsState: ProjectsState
+        projectTemplate: pyYw.ProjectTemplate
+    }) {
+        Object.assign(this, params)
+
+        this.children = [
+            {
+                class: leftNavSectionAttr$({
+                    selectedScreen$:
+                        params.projectsState.appState.selectedScreen$,
+                    targetTopic: 'Projects',
+                    targetViewId: this.projectTemplate.type,
+                }),
+                children: [
+                    {
+                        class: 'd-flex align-items-center p-1',
+                        children: [
+                            this.projectTemplate.icon,
+                            { class: 'px-2' },
+                            {
+                                innerText: this.projectTemplate.type,
+                            },
+                        ],
+                    },
+                ],
+                onclick: () => {
+                    this.projectsState.newProjectFromTemplate(
+                        this.projectTemplate,
+                    )
+                },
+            },
+        ]
+    }
+}
+
+/**
+ * @category View
+ */
 export class SectionProjectsOpened extends Section {
     /**
      * @group Immutable DOM Constants
@@ -183,7 +277,7 @@ export class SectionProjectsOpened extends Section {
                     projectsState.openProjects$,
                     (projects) => `Opened projects (${projects.length})`,
                 ),
-                icon: 'fa-folder-open',
+                icon: 'fas fa-folder-open',
             }),
             content: {
                 class: 'pl-4 flex-grow-1 overflow-auto',
@@ -314,7 +408,7 @@ export class SectionAllProjects extends Section {
                     projectsState.projects$,
                     (projects) => `All projects (${projects.length})`,
                 ),
-                icon: 'fa-list-alt',
+                icon: 'fas fa-list-alt',
             }),
             content: new ListProjectsView({ projectsState }),
         })

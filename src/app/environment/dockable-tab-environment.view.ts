@@ -5,7 +5,7 @@ import {
     leftTabWidth,
     Section,
     SectionHeader,
-    LeftNavTab
+    LeftNavTab,
 } from '../common'
 import { EnvironmentState } from './environment.state'
 import { DashboardView } from './dashboard'
@@ -109,7 +109,7 @@ export class SectionDashboard extends Section {
                     targetViewId: 'dashboard',
                 }),
                 title: 'Dashboard',
-                icon: 'fa-th-large fv-pointer',
+                icon: 'fas fa-th-large fv-pointer',
             }),
         })
         Object.assign(this, params)
@@ -147,7 +147,7 @@ export class SectionConfigFile extends Section {
                     targetViewId: 'config-file',
                 }),
                 title: 'Config. file',
-                icon: 'fa-file-alt fv-pointer',
+                icon: 'fas fa-file-alt fv-pointer',
             }),
         })
         Object.assign(this, params)
@@ -158,7 +158,6 @@ export class SectionConfigFile extends Section {
  * @category View
  */
 export class DispatchListView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -195,7 +194,6 @@ export class DispatchListView implements VirtualDOM {
  * @category View
  */
 export class DispatchGroupHeader implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -216,7 +214,6 @@ export class DispatchGroupHeader implements VirtualDOM {
  * @category View
  */
 export class DispatchItemView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -273,7 +270,7 @@ export class SectionDispatches extends Section {
                             Object.values(dispatches).flat().length
                         })`,
                 ),
-                icon: 'fa-external-link-alt',
+                icon: 'fas fa-external-link-alt',
             }),
             content: new DispatchListView({ environmentState }),
         })
@@ -362,7 +359,7 @@ export class SectionCommands extends Section {
                             Object.values(env.configuration.commands).length
                         })`,
                 ),
-                icon: 'fa-play',
+                icon: 'fas fa-play',
             }),
             content: new CommandsListView({ environmentState }),
         })

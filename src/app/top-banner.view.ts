@@ -34,7 +34,10 @@ export class UsersSelectView implements VirtualDOM {
             {
                 class: 'fas fa-users',
             },
-            new Select.View({ state: selectState, class: 'mx-2' } as any),
+            new Select.View({ state: selectState, class: 'mx-2' } as {
+                state: Select.State
+                class: string
+            }),
         ]
     }
 }
@@ -59,14 +62,12 @@ class ProfilesSelectView implements VirtualDOM {
         selectState.selectionId$
             .pipe(skip(1), distinctUntilChanged())
             .subscribe((id) => {
-                console.warn('on select')
                 inProgress$.next(true)
                 new pyYw.PyYouwolClient().admin.environment
                     .switchProfile$({
                         body: { active: id },
                     })
                     .subscribe(() => {
-                        console.warn('on return of select')
                         inProgress$.next(false)
                     })
             })
@@ -75,7 +76,10 @@ class ProfilesSelectView implements VirtualDOM {
             {
                 class: 'fas fa-user-cog',
             },
-            new Select.View({ state: selectState, class: 'mx-2' } as any),
+            new Select.View({ state: selectState, class: 'mx-2' } as {
+                state: Select.State
+                class: string
+            }),
         ]
     }
 }
@@ -100,7 +104,6 @@ class ReloadButton implements VirtualDOM {
         this.class = attr$(
             spinning$,
             (isSpinning: boolean) => {
-                console.warn(`spinning : ${isSpinning}`)
                 return isSpinning ? ' fa-spin' : ''
             },
             {
@@ -137,7 +140,7 @@ class ConfigurationPickerView implements VirtualDOM {
             },
             child$(
                 environment$,
-                (env) => new ProfilesSelectView(env as any, loadInProgress$),
+                (env) => new ProfilesSelectView(env, loadInProgress$),
             ),
         ]
     }
@@ -148,23 +151,29 @@ class ConnectionView implements VirtualDOM {
 
     constructor(params: { state: AppState }) {
         this.children = [
-            child$(params.state.environment$, (environment: any) => {
-                return {
-                    class: 'd-flex align-items-center justify-content-center',
-                    children: [
-                        {
-                            class:
-                                'fas fa-wifi px-2 ' +
-                                (environment.remoteGatewayInfo.connected
-                                    ? 'fv-text-success'
-                                    : 'fv-text-error'),
-                        },
-                        {
-                            innerText: environment.remoteGatewayInfo.host,
-                        },
-                    ],
-                }
-            }),
+            child$(
+                params.state.environment$,
+                (environment: pyYw.EnvironmentStatusResponse) => {
+                    // This has to be removed when upgrading http/clients to 1.0.5
+                    // There is a mismatch: it is now (1.0.4) exposed (wrongly) as remoteGateway
+                    const remoteInfo = environment['remoteGatewayInfo']
+                    return {
+                        class: 'd-flex align-items-center justify-content-center',
+                        children: [
+                            {
+                                class:
+                                    'fas fa-wifi px-2 ' +
+                                    (remoteInfo.connected
+                                        ? 'fv-text-success'
+                                        : 'fv-text-error'),
+                            },
+                            {
+                                innerText: remoteInfo.host,
+                            },
+                        ],
+                    }
+                },
+            ),
         ]
     }
 }

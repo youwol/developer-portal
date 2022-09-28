@@ -13,7 +13,6 @@ export const commonClassesLeftSideNav =
  * @category View
  */
 export class Section implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -47,7 +46,6 @@ export class Section implements VirtualDOM {
  * @category View
  */
 export class SectionHeader implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
@@ -74,7 +72,7 @@ export class SectionHeader implements VirtualDOM {
                 class: 'd-flex align-items-center fv-pointer',
                 children: [
                     {
-                        class: `fas ${this.icon} mr-2`,
+                        class: `${this.icon} mr-2`,
                     },
                     {
                         innerText: this.title,
@@ -89,7 +87,6 @@ export class SectionHeader implements VirtualDOM {
  * @category View
  */
 export class DashboardTemplateView<TData, TState> implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -174,7 +171,6 @@ export function leftNavSectionAttr$({
  * @category View
  */
 export class ItemView<TState, TData> implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -222,7 +218,6 @@ export class ItemView<TState, TData> implements VirtualDOM {
  * @category View
  */
 export class CopyClipboardView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -251,7 +246,6 @@ export class CopyClipboardView implements VirtualDOM {
  * @category View
  */
 export class AttributeTitleView {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -284,7 +278,6 @@ export class AttributeTitleView {
  * @category View
  */
 export class AttributeValueView {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -329,8 +322,7 @@ export class AttributeValueView {
 /**
  * @category View
  */
-export class AttributeView implements VirtualDOM{
-
+export class AttributeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
@@ -353,7 +345,6 @@ export class AttributeView implements VirtualDOM{
  * @category View
  */
 export class TableView<TData> implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -373,7 +364,6 @@ export class TableView<TData> implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
-
 
     /**
      * @group Immutable Constants
@@ -430,7 +420,6 @@ export class TableView<TData> implements VirtualDOM {
  * @category View
  */
 export class DashboardTitle {
-
     /**
      * @group Immutable DOM Constants
      */

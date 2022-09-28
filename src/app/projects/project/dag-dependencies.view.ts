@@ -9,7 +9,6 @@ import { ProjectsState } from '../projects.state'
  * @category View
  */
 export class DagDependenciesView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -93,12 +92,13 @@ export class DagDependenciesView implements VirtualDOM {
                             this.mode$,
                         ]).subscribe(
                             ([status, mode]: [
-                                pyYw.GetProjectStatusResponse,
+                                pyYw.ContextMessage<pyYw.ProjectStatus>,
                                 'dag' | 'simpleDag',
                             ]) => {
                                 this.renderDag({
                                     svg,
-                                    dagData: status.workspaceDependencies[mode],
+                                    dagData:
+                                        status.data.workspaceDependencies[mode],
                                 })
                             },
                         ),

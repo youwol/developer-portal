@@ -41,7 +41,6 @@ export class ChartExplorerView implements VirtualDOM {
         'd-flex w-100 h-100 justify-content-around p-3 border '
 
     constructor(data) {
-        console.log('Data', data)
         const state = new ImmutableTree.State<ChartNode>({
             rootNode: new FolderNode({
                 id: data.chart_folder,

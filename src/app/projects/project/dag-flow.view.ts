@@ -10,11 +10,10 @@ import { map } from 'rxjs/operators'
  * @category View
  */
 export class DagFlowView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-75 h-50 mx-auto'
+    public readonly class = 'w-75 flex-grow-1 mx-auto'
 
     /**
      * @group Immutable Constants
@@ -58,6 +57,10 @@ export class DagFlowView implements VirtualDOM {
      * @group Immutable Constants
      */
     static nodeRadius = 20
+    /**
+     * @group Immutable Constants
+     */
+    static toolBoxHeight = 10
 
     /**
      * @group Immutable Constants
@@ -66,7 +69,7 @@ export class DagFlowView implements VirtualDOM {
         group: {
             attributes: {
                 id: (d) => this.flowId + '_' + d.data.id,
-                class: 'fv-hover-xx-lighter fv-pointer',
+                class: 'fv-pointer',
                 transform: ({ x, y }) => `translate(${y}, ${x})`,
             },
             style: {},
@@ -96,7 +99,7 @@ export class DagFlowView implements VirtualDOM {
         },
         thumbnail: {
             attributes: {
-                class: 'thumbnail',
+                class: 'thumbnail fv-hover-xx-lighter',
             },
         },
         circle: {
@@ -114,7 +117,14 @@ export class DagFlowView implements VirtualDOM {
                 transform: `translate(0, -${DagFlowView.nodeRadius + 10})`,
             },
             style: {
+                'font-size': `${DagFlowView.toolBoxHeight}px`,
                 'user-select': 'none',
+            },
+            fontColor: (status) => {
+                if (!status.manifest) {
+                    return 'white'
+                }
+                return status.manifest.succeeded ? 'green' : 'red'
             },
         },
         status: {
@@ -122,14 +132,42 @@ export class DagFlowView implements VirtualDOM {
                 class: 'fv-pointer  dag-flow-node-status',
             },
         },
+        menuActions: {
+            attributes: {
+                class: 'menu-actions  d-none',
+                transform: (d) =>
+                    `translate( -${d.data.hasView ? 5 : 0}, ${
+                        DagFlowView.nodeRadius + 15
+                    })`,
+            },
+        },
         run: {
             attributes: {
-                class: 'fv-pointer dag-flow-node-run d-none fv-hover-xx-darker',
+                class: 'fv-pointer dag-flow-node-run fv-hover-xx-lighter',
+                transform: `translate(0, 0)`,
             },
+            style: {},
             on: {
                 click: (n) => {
                     d3.event.stopPropagation()
                     this.projectsState.runStep(
+                        this.project.id,
+                        this.flowId,
+                        n.data.id,
+                    )
+                },
+            },
+        },
+        settings: {
+            attributes: {
+                class: 'fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
+                transform: `translate(15, 0)`,
+            },
+            style: {},
+            on: {
+                click: (n) => {
+                    d3.event.stopPropagation()
+                    this.projectsState.configureStep(
                         this.project.id,
                         this.flowId,
                         n.data.id,
@@ -169,11 +207,17 @@ export class DagFlowView implements VirtualDOM {
                                 circle: d3Svg.select(
                                     `g#${this.flowId}_${stepId} circle`,
                                 ),
+                                title: d3Svg.select(
+                                    `g#${this.flowId}_${stepId} .dag-flow-node-title`,
+                                ),
                                 text: d3Svg.select(
                                     `g#${this.flowId}_${stepId} .dag-flow-node-status`,
                                 ),
-                                run: d3Svg.select(
-                                    `g#${this.flowId}_${stepId} .dag-flow-node-run`,
+                                settings: d3Svg.select(
+                                    `g#${this.flowId}_${stepId} .dag-flow-node-settings`,
+                                ),
+                                menuActions: d3Svg.select(
+                                    `g#${this.flowId}_${stepId} > g.menu-actions`,
                                 ),
                             })),
                         ),
@@ -190,7 +234,7 @@ export class DagFlowView implements VirtualDOM {
     }
 
     renderDag(svg: SVGElement) {
-        let withDefaultStyleAttributes = (n, data) => {
+        const withDefaultStyleAttributes = (n, data) => {
             Object.entries(data.attributes || {}).forEach(([k, v]) => {
                 n = n.attr(k, v)
             })
@@ -212,7 +256,7 @@ export class DagFlowView implements VirtualDOM {
             // set node size instead of constraining to fit
             .nodeSize((n) => [
                 (n ? 3.6 : 0.25) * DagFlowView.nodeRadius,
-                3 * DagFlowView.nodeRadius,
+                4 * DagFlowView.nodeRadius,
             ])
 
         const { width, height } = layout(dag as any)
@@ -246,7 +290,7 @@ export class DagFlowView implements VirtualDOM {
             this.defaultStyle.group,
         )
 
-        let nodesThumbnail = withDefaultStyleAttributes(
+        const nodesThumbnail = withDefaultStyleAttributes(
             nodes.append('g').attr('class', 'thumbnail'),
             this.defaultStyle.thumbnail,
         )
@@ -254,6 +298,12 @@ export class DagFlowView implements VirtualDOM {
             nodesThumbnail.append('circle'),
             this.defaultStyle.circle,
         )
+
+        withDefaultStyleAttributes(
+            nodes.append('text'),
+            this.defaultStyle.status,
+        )
+
         withDefaultStyleAttributes(
             nodes
                 .append('text')
@@ -261,14 +311,21 @@ export class DagFlowView implements VirtualDOM {
                 .on('click', onclick),
             this.defaultStyle.title,
         )
-        withDefaultStyleAttributes(
-            nodes.append('text'),
-            this.defaultStyle.status,
-        )
 
+        const nodesMenuActions = withDefaultStyleAttributes(
+            nodes.append('g'),
+            this.defaultStyle.menuActions,
+        )
         withDefaultStyleAttributes(
-            nodes.append('text').text('▶'),
+            nodesMenuActions.append('text').text('▶'),
             this.defaultStyle.run,
+        )
+        withDefaultStyleAttributes(
+            nodesMenuActions
+                .filter((d) => d.data.hasView)
+                .append('text')
+                .text('🔧'),
+            this.defaultStyle.settings,
         )
     }
 
@@ -279,13 +336,23 @@ export class DagFlowView implements VirtualDOM {
             status
             groupThumbnail: d3.selection
             circle: d3.selection
+            title: d3.selection
             text: d3.selection
-            run: d3.selection
+            menuActions: d3.selection
+            settings: d3.selection
         },
     ) {
         const isSelected = selected.step && selected.step.id == event.stepId
         const selectedClass = isSelected ? 'fv-xx-lighter' : ''
         const pendingClass = instanceOfStepStatus(event.status) ? '' : 'pending'
+
+        event.menuActions.attr(
+            'class',
+            isSelected
+                ? `${this.defaultStyle.menuActions.attributes.class} d-block`
+                : `${this.defaultStyle.menuActions.attributes.class}`,
+        )
+
         event.circle.attr(
             'class',
             `${this.defaultStyle.circle.attributes.class} ${selectedClass} ${pendingClass}`,
@@ -294,23 +361,29 @@ export class DagFlowView implements VirtualDOM {
             'r',
             selected.step && selected.step.id == event.stepId ? '25px' : '20px',
         )
-        if (instanceOfStepStatus(event.status))
+        event.title.style(
+            'fill',
+            this.defaultStyle.title.fontColor(event.status),
+        )
+
+        if (instanceOfStepStatus(event.status)) {
             event.circle.attr(
                 'fill',
                 DagFlowView.colorsFactory[event.status.status],
             )
+        }
 
         event.groupThumbnail.attr(
             'class',
             `${this.defaultStyle.thumbnail.attributes.class} ${pendingClass}`,
         )
 
-        let factoryPending: Record<pyYw.PipelineStepEventKind, string> = {
-            runStarted: '▶',
+        const factoryPending: Record<pyYw.PipelineStepEventKind, string> = {
+            runStarted: '',
             runDone: '',
             statusCheckStarted: '',
         }
-        let factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
+        const factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
             OK: '✔',
             KO: '❌',
             outdated: '⚠',
@@ -321,25 +394,6 @@ export class DagFlowView implements VirtualDOM {
                 ? factoryDone[event.status.status]
                 : factoryPending[event.status],
         )
-        if (isSelected) {
-            event.run.attr(
-                'class',
-                `${this.defaultStyle.run.attributes.class} d-block`,
-            )
-            event.text.attr(
-                'class',
-                `${this.defaultStyle.status.attributes.class}  d-none`,
-            )
-        } else {
-            event.run.attr(
-                'class',
-                `${this.defaultStyle.run.attributes.class} d-none`,
-            )
-            event.text.attr(
-                'class',
-                `${this.defaultStyle.status.attributes.class}  d-block`,
-            )
-        }
     }
 }
 
@@ -375,7 +429,11 @@ function parseDag(project: pyYw.Project, flowId: string) {
             })
     })
     const data = [...includedSteps].map((stepId: string) => {
-        return { id: stepId, parentIds: parentIds[stepId] }
+        return {
+            id: stepId,
+            parentIds: parentIds[stepId],
+            hasView: project.pipeline.steps.find((s) => s.id == stepId)['view'],
+        }
     })
     return {
         includedSteps,

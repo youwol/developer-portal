@@ -1,12 +1,11 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 import { map, shareReplay } from 'rxjs/operators'
 import { DockableTabs } from '@youwol/fv-tabs'
-import { ProjectsTab, ProjectsState} from './projects'
+import { ProjectsTab, ProjectsState } from './projects'
 import { CdnTab, CdnState } from './cdn'
 import { EnvironmentTab, EnvironmentState } from './environment'
 import { VirtualDOM } from '@youwol/flux-view'
 import { PyYouwol as pyYw } from '@youwol/http-clients'
-import { K8sTab, K8sState } from './k8s'
 import { LeftNavTab } from './common'
 import { SystemState, SystemTab } from './system'
 
@@ -17,7 +16,6 @@ export type Topic =
     | 'Admin'
     | 'Environment'
     | 'System'
-    | 'K8s'
 
 export interface Screen {
     topic: Topic
@@ -63,11 +61,6 @@ export class AppState {
     /**
      * @group State
      */
-    public readonly k8sState: K8sState
-
-    /**
-     * @group State
-     */
     public readonly leftNavState: DockableTabs.State
 
     /**
@@ -101,7 +94,7 @@ export class AppState {
         this.projectsState = new ProjectsState({ appState: this })
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })
-        this.k8sState = new K8sState({ appState: this })
+
         this.systemState = new SystemState({ appState: this })
         this.leftNavTabs = {
             Environment: new EnvironmentTab({
@@ -111,7 +104,6 @@ export class AppState {
             Updates: undefined,
             CDN: new CdnTab({ cdnState: this.cdnState }),
             Admin: undefined,
-            K8s: new K8sTab({ k8sState: this.k8sState }),
             System: new SystemTab({ systemState: this.systemState }),
         }
         this.leftNavState = new DockableTabs.State({
@@ -136,9 +128,9 @@ export class AppState {
         })
     }
 
-    registerScreen(screen: Screen, display: boolean = true) {
-        let screens = this.inMemoryScreens$.getValue()
-        let screenId = `#${screen.topic}-${screen.viewId}`
+    registerScreen(screen: Screen, display = true) {
+        const screens = this.inMemoryScreens$.getValue()
+        const screenId = `#${screen.topic}-${screen.viewId}`
         if (screens[screenId] == undefined) {
             screens[screenId] = screen
             this.inMemoryScreens$.next(screens)
@@ -148,7 +140,7 @@ export class AppState {
     }
 
     removeScreen(screenId: string) {
-        let screens = this.inMemoryScreens$.getValue()
+        const screens = this.inMemoryScreens$.getValue()
         delete screens[screenId]
         this.inMemoryScreens$.next(screens)
         const topic = this.selectedTopic$.getValue()
@@ -157,12 +149,12 @@ export class AppState {
     }
 
     selectScreen(screenId: string) {
-        let screen = this.inMemoryScreens$.getValue()[screenId]
+        const screen = this.inMemoryScreens$.getValue()[screenId]
         this.selectedScreen$.next(screen)
     }
 
     selectDefaultScreen(topic: Topic) {
-        let screen = this.leftNavTabs[topic].defaultScreen()
+        const screen = this.leftNavTabs[topic].defaultScreen()
         this.selectedScreen$.next(screen)
     }
 }

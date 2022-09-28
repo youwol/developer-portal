@@ -3,11 +3,16 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
 import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
-import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
+import {
+    PyYouwol as pyYw,
+    filterCtxMessage,
+    WebSocketResponse$,
+} from '@youwol/http-clients'
+import { NewProjectFromTemplateView } from './new-project'
 
 type ContextMessage = pyYw.ContextMessage
 
-function projectLoadingIsSuccess(result: any): result is pyYw.Project {
+function projectLoadingIsSuccess(result: unknown): result is pyYw.Project {
     return result['failure'] === undefined
 }
 
@@ -37,7 +42,7 @@ export class ProjectEvents {
     /**
      * @group Observables
      */
-    public readonly messages$: Observable<any>
+    public readonly messages$: WebSocketResponse$<unknown>
 
     /**
      * @group Observables
@@ -52,6 +57,17 @@ export class ProjectEvents {
         step: pyYw.PipelineStep | undefined
     }>
 
+    /**
+     * @group Observables
+     */
+    public readonly configureStep$: Subject<{
+        flowId: string
+        step: pyYw.PipelineStep | undefined
+    }> = new Subject()
+
+    /**
+     * @group Observables
+     */
     public readonly step$: {
         [k: string]: {
             status$: ReplaySubject<
@@ -64,8 +80,7 @@ export class ProjectEvents {
     /**
      * @group Observables
      */
-    public readonly projectStatusResponse$ =
-        new ReplaySubject<pyYw.ProjectStatus>(1)
+    public readonly projectStatusResponse$: WebSocketResponse$<pyYw.ProjectStatus>
 
     constructor(public readonly project: pyYw.Project) {
         this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
@@ -123,7 +138,7 @@ export class ProjectEvents {
 
         this.projectStatusResponse$ = this.projectsClient.webSocket
             .projectStatus$()
-            .pipe(shareReplay(1)) as any
+            .pipe(shareReplay(1))
 
         this.projectsClient
             .getProjectStatus$({ projectId: project.id })
@@ -239,6 +254,15 @@ export class ProjectsState {
         this.projectsClient.runStep$({ projectId, flowId, stepId }).subscribe()
     }
 
+    configureStep(projectId, flowId, stepId) {
+        const events = this.projectEvents[projectId]
+        const step = events.project.pipeline.steps.find((s) => s.id == stepId)
+        this.projectEvents[projectId].configureStep$.next({
+            flowId: flowId,
+            step,
+        })
+    }
+
     openProject(project: pyYw.Project) {
         if (!this.projectEvents[project.id]) {
             this.projectEvents[project.id] = new ProjectEvents(project)
@@ -290,5 +314,31 @@ export class ProjectsState {
                 .subscribe()
         }
         events.selectedStep$.next({ flowId, step })
+    }
+
+    newProjectFromTemplate(projectTemplate: pyYw.ProjectTemplate) {
+        this.screensId[projectTemplate.type] = this.appState.registerScreen({
+            topic: 'Projects',
+            viewId: projectTemplate.type,
+            view: new NewProjectFromTemplateView({
+                projectsState: this,
+                projectTemplate,
+            }),
+        })
+    }
+
+    createProjectFromTemplate$({
+        type,
+        parameters,
+    }: {
+        type: string
+        parameters: { [_k: string]: string }
+    }) {
+        return this.projectsClient.createProjectFromTemplate$({
+            body: {
+                type,
+                parameters,
+            },
+        })
     }
 }

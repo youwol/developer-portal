@@ -1,19 +1,19 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { mergeMap } from 'rxjs/operators'
+import { filter, mergeMap } from 'rxjs/operators'
 import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { ArtifactsView } from './artifacts.view'
 import { DagFlowView } from './dag-flow.view'
-import { StepView } from './step.view'
+import { LastRunStepView, popupModal, StepModal } from './step.view'
 import { FlowId, ProjectsState } from '../projects.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { LogsTab } from './project-bottom-dockable-tabs.view'
+import { LogsTab } from '../../common'
+import { Modal } from '@youwol/fv-group'
 
 /**
  * @category View
  */
 export class ProjectView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -41,7 +41,6 @@ export class ProjectView implements VirtualDOM {
      */
     public readonly projectsState: ProjectsState
 
-
     /**
      * @group Immutable Constants
      */
@@ -63,13 +62,14 @@ export class ProjectView implements VirtualDOM {
             ),
             tabs$: new BehaviorSubject([
                 new LogsTab({
-                    projectsState: this.projectsState,
-                    project: this.project,
+                    message$:
+                        this.projectsState.projectEvents[this.project.id]
+                            .messages$,
                 }),
             ]),
             selected$: new BehaviorSubject<string>('logs'),
         })
-        let bottomNav = new DockableTabs.View({
+        const bottomNav = new DockableTabs.View({
             state: bottomNavState,
             styleOptions: { initialPanelSize: '500px' },
         })
@@ -91,7 +91,7 @@ export class ProjectView implements VirtualDOM {
                                     (selection) => {
                                         return selection.step == undefined
                                             ? new FlowSummaryView(params)
-                                            : new StepView({
+                                            : new LastRunStepView({
                                                   projectsState:
                                                       this.projectsState,
                                                   project: this.project,
@@ -107,6 +107,20 @@ export class ProjectView implements VirtualDOM {
             },
             bottomNav,
         ]
+        events.configureStep$
+            .pipe(filter(({ step }) => step != undefined))
+            .subscribe(({ flowId, step }) => {
+                popupModal(
+                    (modalState: Modal.State) =>
+                        new StepModal({
+                            modalState,
+                            projectsState: this.projectsState,
+                            project: this.project,
+                            flowId,
+                            step,
+                        }),
+                )
+            })
     }
 }
 
@@ -114,7 +128,6 @@ export class ProjectView implements VirtualDOM {
  * @category View
  */
 export class FlowsSelectorView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -174,11 +187,10 @@ export class FlowsSelectorView implements VirtualDOM {
  * @category View
  */
 export class ProjectHeaderView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100'
+    public readonly class = 'w-100 d-flex flex-column'
 
     /**
      * @group States
@@ -232,17 +244,15 @@ export class ProjectHeaderView implements VirtualDOM {
  * @category View
  */
 export class FlowSummaryView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-50'
+    public readonly class = 'w-50 h-50'
 
     /**
      * @group States
      */
     public readonly projectsState: ProjectsState
-
 
     /**
      * @group Immutable DOM Constants
