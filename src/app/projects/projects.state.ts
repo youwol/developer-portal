@@ -57,6 +57,17 @@ export class ProjectEvents {
         step: pyYw.PipelineStep | undefined
     }>
 
+    /**
+     * @group Observables
+     */
+    public readonly configureStep$: Subject<{
+        flowId: string
+        step: pyYw.PipelineStep | undefined
+    }> = new Subject()
+
+    /**
+     * @group Observables
+     */
     public readonly step$: {
         [k: string]: {
             status$: ReplaySubject<
@@ -241,6 +252,15 @@ export class ProjectsState {
 
     runStep(projectId, flowId, stepId) {
         this.projectsClient.runStep$({ projectId, flowId, stepId }).subscribe()
+    }
+
+    configureStep(projectId, flowId, stepId) {
+        const events = this.projectEvents[projectId]
+        const step = events.project.pipeline.steps.find((s) => s.id == stepId)
+        this.projectEvents[projectId].configureStep$.next({
+            flowId: flowId,
+            step,
+        })
     }
 
     openProject(project: pyYw.Project) {

@@ -106,6 +106,20 @@ export class ProjectView implements VirtualDOM {
             },
             bottomNav,
         ]
+        events.configureStep$
+            .pipe(filter(({ step }) => step != undefined))
+            .subscribe(({ flowId, step }) => {
+                popupModal(
+                    (modalState: Modal.State) =>
+                        new StepModal({
+                            modalState,
+                            projectsState: this.projectsState,
+                            project: this.project,
+                            flowId,
+                            step,
+                        }),
+                )
+            })
     }
 }
 
