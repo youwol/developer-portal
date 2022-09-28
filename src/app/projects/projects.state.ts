@@ -335,7 +335,7 @@ export class ProjectsState {
         type: string
         parameters: { [_k: string]: string }
     }) {
-        return this.projectsClient.createProjectFromTemplate({
+        return this.projectsClient.createProjectFromTemplate$({
             body: {
                 type,
                 parameters,

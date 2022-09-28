@@ -126,9 +126,7 @@ export class SectionNewProject extends Section {
                 children: children$(
                     projectsState.appState.environment$,
                     (environment: pyYw.EnvironmentStatusResponse) => {
-                        return environment.configuration[
-                            'projectTemplates'
-                        ].map(
+                        return environment.configuration.pipelinesSourceInfo.projectTemplates.map(
                             (projectTemplate) =>
                                 new ProjectTemplateItemView({
                                     projectTemplate,
