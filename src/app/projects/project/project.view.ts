@@ -1,13 +1,14 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { mergeMap } from 'rxjs/operators'
+import { filter, mergeMap } from 'rxjs/operators'
 import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
 import { ArtifactsView } from './artifacts.view'
 import { DagFlowView } from './dag-flow.view'
-import { StepView } from './step.view'
+import { LastRunStepView, popupModal, StepModal } from './step.view'
 import { FlowId, ProjectsState } from '../projects.state'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { LogsTab } from '../../common'
+import { Modal } from '@youwol/fv-group'
 
 /**
  * @category View
@@ -90,7 +91,7 @@ export class ProjectView implements VirtualDOM {
                                     (selection) => {
                                         return selection.step == undefined
                                             ? new FlowSummaryView(params)
-                                            : new StepView({
+                                            : new LastRunStepView({
                                                   projectsState:
                                                       this.projectsState,
                                                   project: this.project,
@@ -189,7 +190,7 @@ export class ProjectHeaderView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-100'
+    public readonly class = 'w-100 d-flex flex-column'
 
     /**
      * @group States
@@ -246,7 +247,7 @@ export class FlowSummaryView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'w-50'
+    public readonly class = 'w-50 h-50'
 
     /**
      * @group States
