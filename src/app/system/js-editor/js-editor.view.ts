@@ -48,7 +48,6 @@ export class JsEditorView implements VirtualDOM {
                             lib: `@youwol/grapes-coding-playgrounds/js-playground_APIv01`,
                         },
                     }).then((w) => {
-                        console.log('done!!')
                         w['lib'].renderElement(elem)
                     })
                 },

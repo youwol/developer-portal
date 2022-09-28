@@ -9,7 +9,7 @@ import { catchError, mergeMap, withLatestFrom } from 'rxjs/operators'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { TerminalView } from '../../common/terminal'
 
-function fetchCodeMirror$(): Observable<any> {
+function fetchCodeMirror$(): Observable<Window> {
     return from(
         install({
             modules: ['codemirror'],
@@ -82,7 +82,7 @@ export class CommandView implements VirtualDOM {
             ]),
             selected$: new BehaviorSubject<string>('logs'),
         })
-        let bottomNav = new DockableTabs.View({
+        const bottomNav = new DockableTabs.View({
             state: bottomNavState,
             styleOptions: { initialPanelSize: '500px' },
         })
@@ -272,7 +272,7 @@ export class PlayButtonView implements VirtualDOM {
     public readonly onclick = (ev) => {
         this.click$.next(ev)
     }
-    constructor(params: {}) {
+    constructor(params) {
         Object.assign(this, params)
         this.children = [{ class: 'fas fa-play px-2' }]
     }
@@ -313,7 +313,7 @@ export class BodyView implements VirtualDOM {
      */
     public readonly body$ = new BehaviorSubject<string>('{}')
 
-    constructor(params: {}) {
+    constructor(params) {
         Object.assign(this, params)
 
         this.children = [
@@ -435,9 +435,6 @@ export class LogsTabView implements VirtualDOM {
     }) {
         Object.assign(this, params)
         const events = this.environmentState.commandsEvent[this.command.name]
-        events.log$.subscribe((log) => {
-            console.log('LOG', log)
-        })
         this.children = [new TerminalView(events.log$)]
     }
 }

@@ -224,7 +224,6 @@ export class ProjectTemplateItemView {
     }) {
         Object.assign(this, params)
 
-        console.log('projectTemplate', this.projectTemplate)
         this.children = [
             {
                 class: leftNavSectionAttr$({
