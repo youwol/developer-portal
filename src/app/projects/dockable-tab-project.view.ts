@@ -1,5 +1,5 @@
 import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
 import {
@@ -125,7 +125,9 @@ export class SectionNewProject extends Section {
                 class: 'pl-4 flex-grow-1 overflow-auto',
                 children: children$(
                     projectsState.appState.environment$,
-                    (environment: pyYw.EnvironmentStatusResponse) => {
+                    (
+                        environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
+                    ) => {
                         return environment.configuration.pipelinesSourceInfo.projectTemplates.map(
                             (projectTemplate) =>
                                 new ProjectTemplateItemView({
@@ -156,7 +158,7 @@ export class ProjectItemView {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable DOM Constants
@@ -165,7 +167,7 @@ export class ProjectItemView {
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
         this.children = [
@@ -212,7 +214,7 @@ export class ProjectTemplateItemView {
     /**
      * @group Immutable Constants
      */
-    public readonly projectTemplate: pyYw.ProjectTemplate
+    public readonly projectTemplate: pyYw.Routers.Environment.ProjectTemplate
 
     /**
      * @group Immutable DOM Constants
@@ -220,7 +222,7 @@ export class ProjectTemplateItemView {
     public readonly children: VirtualDOM[]
     constructor(params: {
         projectsState: ProjectsState
-        projectTemplate: pyYw.ProjectTemplate
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate
     }) {
         Object.assign(this, params)
 
@@ -283,7 +285,7 @@ export class SectionProjectsOpened extends Section {
                 class: 'pl-4 flex-grow-1 overflow-auto',
                 children: children$(
                     projectsState.openProjects$,
-                    (projects: pyYw.Project[]) => {
+                    (projects: pyYw.Routers.Projects.Project[]) => {
                         return projects.map(
                             (project) =>
                                 new ProjectItemView({ project, projectsState }),
@@ -339,7 +341,10 @@ export class ListProjectsView implements VirtualDOM {
             ],
         }
         Object.assign(this, params)
-        const searchTerm = (term: string, project: pyYw.Project) => {
+        const searchTerm = (
+            term: string,
+            project: pyYw.Routers.Projects.Project,
+        ) => {
             return (
                 project.name.includes(term) ||
                 project.version.includes(term) ||
@@ -361,7 +366,7 @@ export class ListProjectsView implements VirtualDOM {
                             return projects.filter((p) => searchTerm(search, p))
                         }),
                     ),
-                    (projects: pyYw.Project[]) => {
+                    (projects: pyYw.Routers.Projects.Project[]) => {
                         return projects.map((project) => ({
                             class: 'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center',
                             children: [

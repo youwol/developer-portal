@@ -1,5 +1,6 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { EnvironmentState } from '../environment.state'
 import { AttributeView, DashboardTitle } from '../../common'
 import { mergeMap } from 'rxjs/operators'
@@ -60,7 +61,6 @@ export class DashboardView implements VirtualDOM {
  * @category View
  */
 export class EnvSummaryView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -76,14 +76,16 @@ export class EnvSummaryView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly environment: pyYw.EnvironmentStatusResponse
+    public readonly environment: pyYw.Routers.Environment.EnvironmentStatusResponse
 
     /**
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
 
-    constructor(params: { environment: pyYw.EnvironmentStatusResponse }) {
+    constructor(params: {
+        environment: pyYw.Routers.Environment.EnvironmentStatusResponse
+    }) {
         Object.assign(this, params)
         this.children = [
             new PathsView({
@@ -97,7 +99,6 @@ export class EnvSummaryView implements VirtualDOM {
  * @category View
  */
 export class PathsView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -106,14 +107,14 @@ export class PathsView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly pathsBook: pyYw.PathsBook
+    public readonly pathsBook: pyYw.Routers.Environment.PathsBook
 
     /**
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
 
-    constructor(params: { pathsBook: pyYw.PathsBook }) {
+    constructor(params: { pathsBook: pyYw.Routers.Environment.PathsBook }) {
         Object.assign(this, params)
         this.children = [
             new DashboardTitle({ title: 'Paths' }),

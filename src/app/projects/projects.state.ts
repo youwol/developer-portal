@@ -3,16 +3,15 @@ import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
 import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
-import {
-    PyYouwol as pyYw,
-    filterCtxMessage,
-    WebSocketResponse$,
-} from '@youwol/http-clients'
+import { filterCtxMessage, WebSocketResponse$ } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { NewProjectFromTemplateView } from './new-project'
 
 type ContextMessage = pyYw.ContextMessage
 
-function projectLoadingIsSuccess(result: unknown): result is pyYw.Project {
+function projectLoadingIsSuccess(
+    result: unknown,
+): result is pyYw.Routers.Projects.Project {
     return result['failure'] === undefined
 }
 
@@ -20,7 +19,7 @@ export type FlowId = string
 
 export function instanceOfStepStatus(
     data: unknown,
-): data is pyYw.PipelineStepStatusResponse {
+): data is pyYw.Routers.Projects.PipelineStepStatusResponse {
     return [
         'projectId',
         'flowId',
@@ -54,7 +53,7 @@ export class ProjectEvents {
      */
     public readonly selectedStep$: BehaviorSubject<{
         flowId: string
-        step: pyYw.PipelineStep | undefined
+        step: pyYw.Routers.Projects.PipelineStep | undefined
     }>
 
     /**
@@ -62,7 +61,7 @@ export class ProjectEvents {
      */
     public readonly configureStep$: Subject<{
         flowId: string
-        step: pyYw.PipelineStep | undefined
+        step: pyYw.Routers.Projects.PipelineStep | undefined
     }> = new Subject()
 
     /**
@@ -71,7 +70,8 @@ export class ProjectEvents {
     public readonly step$: {
         [k: string]: {
             status$: ReplaySubject<
-                pyYw.PipelineStepEventKind | pyYw.PipelineStepStatusResponse
+                | pyYw.Routers.Projects.PipelineStepEventKind
+                | pyYw.Routers.Projects.PipelineStepStatusResponse
             >
             log$: Subject<ContextMessage>
         }
@@ -80,9 +80,9 @@ export class ProjectEvents {
     /**
      * @group Observables
      */
-    public readonly projectStatusResponse$: WebSocketResponse$<pyYw.ProjectStatus>
+    public readonly projectStatusResponse$: WebSocketResponse$<pyYw.Routers.Projects.ProjectStatus>
 
-    constructor(public readonly project: pyYw.Project) {
+    constructor(public readonly project: pyYw.Routers.Projects.Project) {
         this.messages$ = pyYw.PyYouwolClient.ws.log$.pipe(
             filterCtxMessage({
                 withAttributes: { projectId: this.project.id },
@@ -92,7 +92,7 @@ export class ProjectEvents {
 
         this.selectedStep$ = new BehaviorSubject<{
             flowId: string
-            step: pyYw.PipelineStep | undefined
+            step: pyYw.Routers.Projects.PipelineStep | undefined
         }>({
             flowId: this.project.pipeline.flows[0].name,
             step: undefined,
@@ -106,12 +106,12 @@ export class ProjectEvents {
             .pipe(
                 map((message) => message.data),
                 filter(
-                    (data: pyYw.PipelineStepEvent) =>
+                    (data: pyYw.Routers.Projects.PipelineStepEvent) =>
                         data.event == 'runStarted' ||
                         data.event == 'statusCheckStarted',
                 ),
             )
-            .subscribe((data: pyYw.PipelineStepEvent) => {
+            .subscribe((data: pyYw.Routers.Projects.PipelineStepEvent) => {
                 this.getStep$(data.flowId, data.stepId).status$.next(data.event)
             })
         this.messages$
@@ -209,18 +209,20 @@ export class ProjectsState {
      * @group Observables
      */
     public readonly projectsLoading$: Observable<
-        (pyYw.Project | pyYw.Failure)[]
+        (pyYw.Routers.Projects.Project | pyYw.Routers.Projects.Failure)[]
     >
 
     /**
      * @group Observables
      */
-    public readonly projects$: Observable<pyYw.Project[]>
+    public readonly projects$: Observable<pyYw.Routers.Projects.Project[]>
 
     /**
      * @group Observables
      */
-    public readonly openProjects$ = new BehaviorSubject<pyYw.Project[]>([])
+    public readonly openProjects$ = new BehaviorSubject<
+        pyYw.Routers.Projects.Project[]
+    >([])
 
     /**
      * @group Mutable Variables
@@ -239,7 +241,7 @@ export class ProjectsState {
             map((results) =>
                 results.filter((result) => projectLoadingIsSuccess(result)),
             ),
-            map((results) => results as pyYw.Project[]),
+            map((results) => results as pyYw.Routers.Projects.Project[]),
             shareReplay(1),
         )
 
@@ -263,7 +265,7 @@ export class ProjectsState {
         })
     }
 
-    openProject(project: pyYw.Project) {
+    openProject(project: pyYw.Routers.Projects.Project) {
         if (!this.projectEvents[project.id]) {
             this.projectEvents[project.id] = new ProjectEvents(project)
         }
@@ -316,7 +318,9 @@ export class ProjectsState {
         events.selectedStep$.next({ flowId, step })
     }
 
-    newProjectFromTemplate(projectTemplate: pyYw.ProjectTemplate) {
+    newProjectFromTemplate(
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate,
+    ) {
         this.screensId[projectTemplate.type] = this.appState.registerScreen({
             topic: 'Projects',
             viewId: projectTemplate.type,

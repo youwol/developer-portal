@@ -9,7 +9,7 @@ import {
 } from '../common'
 import { EnvironmentState } from './environment.state'
 import { DashboardView } from './dashboard'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { ConfigFileView } from './config-file'
 
 /**
@@ -171,7 +171,9 @@ export class DispatchListView implements VirtualDOM {
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
         this.children = children$(
             environmentState.customDispatches$,
-            (dispatches: { [k: string]: pyYw.CustomDispatch[] }) => {
+            (dispatches: {
+                [k: string]: pyYw.Routers.Environment.CustomDispatch[]
+            }) => {
                 return Object.entries(dispatches).map(([type, items]) => {
                     return {
                         children: [
@@ -223,13 +225,13 @@ export class DispatchItemView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly dispatch: pyYw.CustomDispatch
+    public readonly dispatch: pyYw.Routers.Environment.CustomDispatch
 
     /**
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
-    constructor(params: { dispatch: pyYw.CustomDispatch }) {
+    constructor(params: { dispatch: pyYw.Routers.Environment.CustomDispatch }) {
         Object.assign(this, params)
         this.children = [
             {
@@ -320,12 +322,12 @@ export class CommandView implements VirtualDOM {
      * @group States
      */
     public readonly environmentState: EnvironmentState
-    public readonly command: pyYw.Command
+    public readonly command: pyYw.Routers.Environment.Command
     public readonly onclick = () => {
         this.environmentState.openCommand(this.command)
     }
     constructor(params: {
-        command: pyYw.Command
+        command: pyYw.Routers.Environment.Command
         environmentState: EnvironmentState
     }) {
         Object.assign(this, params)

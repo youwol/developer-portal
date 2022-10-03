@@ -1,6 +1,6 @@
 import { VirtualDOM } from '@youwol/flux-view'
 
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 
 import { DataView } from '../../common/terminal'
 
@@ -8,7 +8,6 @@ import { DataView } from '../../common/terminal'
  * @category View
  */
 export class ManifestView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -19,7 +18,7 @@ export class ManifestView implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(manifest: pyYw.Manifest) {
+    constructor(manifest: pyYw.Routers.Projects.Manifest) {
         this.children = [
             {
                 tag: 'h3',
@@ -63,7 +62,7 @@ export class ManifestView implements VirtualDOM {
                                 style: {
                                     fontFamily: 'monospace',
                                     fontSize: 'x-small',
-                                    whiteSpace: 'pre'
+                                    whiteSpace: 'pre',
                                 },
                                 children: Array.isArray(manifest.cmdOutputs)
                                     ? manifest.cmdOutputs.map((output) => {

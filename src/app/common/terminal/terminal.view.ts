@@ -9,14 +9,12 @@ import {
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
 import { AttributesView, labelMethodIcons, LogView } from './log.view'
-
-type ContextMessage = any
+import { ContextMessage } from '@youwol/local-youwol-client'
 
 /**
  * @category View
  */
 export class NodeHeaderView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -103,7 +101,6 @@ type Status = 'processing' | 'error' | 'success'
  * @category View
  */
 export class NodeView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -265,14 +262,16 @@ export class TerminalState {
     /**
      * @group Observables
      */
-    public readonly customViews$ = new BehaviorSubject<{ name: string; view: VirtualDOM }[]>([
-        { name: 'TERMINAL', view: undefined },
-    ])
+    public readonly customViews$ = new BehaviorSubject<
+        { name: string; view: VirtualDOM }[]
+    >([{ name: 'TERMINAL', view: undefined }])
 
     /**
      * @group Observables
      */
-    public readonly selectedView$ = new BehaviorSubject<string | 'TERMINAL'>('TERMINAL')
+    public readonly selectedView$ = new BehaviorSubject<string | 'TERMINAL'>(
+        'TERMINAL',
+    )
 
     /**
      * @group Observables
@@ -303,7 +302,6 @@ export class TerminalView implements VirtualDOM {
      * @group Mutable Variables
      */
     private contentElement: HTMLDivElement
-
 
     /**
      * @group Immutable DOM Constants

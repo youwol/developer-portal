@@ -5,7 +5,7 @@ import { ProjectsTab, ProjectsState } from './projects'
 import { CdnTab, CdnState } from './cdn'
 import { EnvironmentTab, EnvironmentState } from './environment'
 import { VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { LeftNavTab } from './common'
 import { SystemState, SystemTab } from './system'
 
@@ -36,7 +36,7 @@ export class AppState {
     /**
      * @group Observables
      */
-    public readonly environment$: Observable<pyYw.EnvironmentStatusResponse>
+    public readonly environment$: Observable<pyYw.Routers.Environment.EnvironmentStatusResponse>
 
     /**
      * @group State

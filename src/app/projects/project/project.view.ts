@@ -1,6 +1,7 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { filter, mergeMap } from 'rxjs/operators'
-import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { ArtifactsView } from './artifacts.view'
 import { DagFlowView } from './dag-flow.view'
 import { LastRunStepView, popupModal, StepModal } from './step.view'
@@ -44,11 +45,11 @@ export class ProjectView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
         this.id = this.project.id
@@ -141,7 +142,7 @@ export class FlowsSelectorView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable DOM Constants
@@ -155,7 +156,7 @@ export class FlowsSelectorView implements VirtualDOM {
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
         this.selectedFlow$ =
@@ -200,7 +201,7 @@ export class ProjectHeaderView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable DOM Constants
@@ -208,7 +209,7 @@ export class ProjectHeaderView implements VirtualDOM {
     public readonly children: VirtualDOM[]
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
         this.children = [
@@ -262,11 +263,11 @@ export class FlowSummaryView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
         const selectedStep$ =

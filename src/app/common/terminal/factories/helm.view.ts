@@ -2,7 +2,7 @@ import { child$, VirtualDOM } from '@youwol/flux-view'
 import { ImmutableTree } from '@youwol/fv-tree'
 import { Subject } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 
 class ChartNode extends ImmutableTree.Node {
     name: string

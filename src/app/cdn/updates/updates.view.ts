@@ -11,11 +11,11 @@ import { Switch } from '@youwol/fv-button'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
 import { AppState } from '../../app-state'
-import { PyYouwol as pyYw, filterCtxMessage } from '@youwol/http-clients'
+import { filterCtxMessage } from '@youwol/http-primitives'
 import { TerminalView } from '../../common/terminal'
 import { CdnState } from '../cdn.state'
 import { DockableTabs } from '@youwol/fv-tabs'
-
+import * as pyYw from '@youwol/local-youwol-client'
 /**
  * @category View
  */
@@ -38,7 +38,6 @@ export class LogsTab extends DockableTabs.Tab {
  * @category View
  */
 export class LogsTabView implements VirtualDOM {
-
     /**
      * @group State
      */
@@ -47,7 +46,7 @@ export class LogsTabView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable DOM Constants
@@ -78,7 +77,6 @@ export class LogsTabView implements VirtualDOM {
  * @category View
  */
 export class UpdatesView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -122,7 +120,7 @@ export class UpdatesView implements VirtualDOM {
             ]),
             selected$: new BehaviorSubject<string>('logs'),
         })
-        let bottomNav = new DockableTabs.View({
+        const bottomNav = new DockableTabs.View({
             state: bottomNavState,
             styleOptions: { initialPanelSize: '500px' },
         })
@@ -155,16 +153,16 @@ export class UpdatesView implements VirtualDOM {
  * @category View
  */
 export class TableView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
-    public readonly orders: Record<pyYw.UpdateStatus, number> = {
-        remoteAhead: 0,
-        localAhead: 1,
-        mismatch: 2,
-        upToDate: 3,
-    }
+    public readonly orders: Record<pyYw.Routers.LocalCdn.UpdateStatus, number> =
+        {
+            remoteAhead: 0,
+            localAhead: 1,
+            mismatch: 2,
+            upToDate: 3,
+        }
 
     /**
      * @group Immutable DOM Constants
@@ -215,14 +213,15 @@ export class TableView implements VirtualDOM {
                     this.cdnState.updatesEvents.updateChecksResponse$.pipe(
                         map((d) => [d.data]),
                     ),
-                    (d: pyYw.CheckUpdateResponse) =>
+                    (d: pyYw.Routers.LocalCdn.CheckUpdateResponse) =>
                         new RowView({
                             cdnState: this.cdnState,
                             firstResponse: d,
                         }),
                     {
-                        orderingIndex: (data: pyYw.CheckUpdateResponse) =>
-                            this.orders[data.status],
+                        orderingIndex: (
+                            data: pyYw.Routers.LocalCdn.CheckUpdateResponse,
+                        ) => this.orders[data.status],
                     },
                 ),
             },
@@ -248,13 +247,12 @@ export class TableView implements VirtualDOM {
     }
 }
 
-type StatusType = pyYw.UpdateStatus | 'pending' | 'error'
+type StatusType = pyYw.Routers.LocalCdn.UpdateStatus | 'pending' | 'error'
 
 /**
  * @category View
  */
 export class RowView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -269,7 +267,7 @@ export class RowView implements VirtualDOM {
         elem: HTMLElement$ & HTMLDivElement,
     ) => void
 
-    public readonly firstResponse: pyYw.CheckUpdateResponse
+    public readonly firstResponse: pyYw.Routers.LocalCdn.CheckUpdateResponse
     public readonly cdnState: CdnState
     public readonly name: string
     public readonly remoteVersion: string
@@ -281,7 +279,7 @@ export class RowView implements VirtualDOM {
 
     constructor(params: {
         cdnState: CdnState
-        firstResponse: pyYw.CheckUpdateResponse
+        firstResponse: pyYw.Routers.LocalCdn.CheckUpdateResponse
     }) {
         Object.assign(this, params)
 
@@ -418,12 +416,10 @@ export class RowView implements VirtualDOM {
     }
 }
 
-
 /**
  * @category View
  */
 export class SimpleCellView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -449,7 +445,6 @@ export class SimpleCellView implements VirtualDOM {
  * @category View
  */
 export class StatusCellView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
@@ -473,7 +468,6 @@ export class StatusCellView implements VirtualDOM {
         pending: 'fas fa-spinner fa-spin',
         error: 'fas fa-times fv-text-error',
     }
-
 
     /**
      * @group Immutable DOM Constants
@@ -506,7 +500,6 @@ export class StatusCellView implements VirtualDOM {
  * @category View
  */
 class SpinnerView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -547,7 +540,6 @@ class SpinnerView implements VirtualDOM {
  * @category View
  */
 export class DownloadBtnView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */

@@ -1,14 +1,13 @@
 import { children$, VirtualDOM } from '@youwol/flux-view'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { AttributeView } from './utils-view'
 
 /**
  * @category View
  */
 export class FilesBrowserView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */

@@ -1,7 +1,7 @@
 import { DockableTabs } from '@youwol/fv-tabs'
 import { VirtualDOM } from '@youwol/flux-view'
 import { TerminalView } from './terminal'
-import { WebSocketResponse$ } from '@youwol/http-clients'
+import { WebSocketResponse$ } from '@youwol/http-primitives'
 
 /**
  * @category View

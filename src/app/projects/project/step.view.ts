@@ -2,7 +2,8 @@ import { child$, HTMLElement$, render, VirtualDOM } from '@youwol/flux-view'
 import * as fluxView from '@youwol/flux-view'
 import * as rxjs from 'rxjs'
 import * as cdnClient from '@youwol/cdn-client'
-import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { ArtifactsView } from './artifacts.view'
 import { ManifestView } from './manifest.view'
 import { RunOutputsView } from './run-outputs.view'
@@ -33,7 +34,7 @@ export class StepModal implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable Constants
@@ -43,7 +44,7 @@ export class StepModal implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly step: pyYw.PipelineStep
+    public readonly step: pyYw.Routers.Projects.PipelineStep
 
     /**
      *
@@ -54,8 +55,8 @@ export class StepModal implements VirtualDOM {
     constructor(params: {
         modalState: Modal.State
         projectsState: ProjectsState
-        project: pyYw.Project
-        step: pyYw.PipelineStep
+        project: pyYw.Routers.Projects.Project
+        step: pyYw.Routers.Projects.PipelineStep
         flowId: string
     }) {
         Object.assign(this, params)
@@ -135,7 +136,7 @@ export class LastRunStepView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group Immutable Constants
@@ -145,7 +146,7 @@ export class LastRunStepView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly step: pyYw.PipelineStep
+    public readonly step: pyYw.Routers.Projects.PipelineStep
 
     /**
      * @group Immutable DOM Constants
@@ -154,8 +155,8 @@ export class LastRunStepView implements VirtualDOM {
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
-        step: pyYw.PipelineStep
+        project: pyYw.Routers.Projects.Project
+        step: pyYw.Routers.Projects.PipelineStep
         flowId: string
     }) {
         Object.assign(this, params)
@@ -167,7 +168,7 @@ export class LastRunStepView implements VirtualDOM {
         this.children = [
             child$(
                 stepStream$.status$,
-                (data: pyYw.PipelineStepStatusResponse) => {
+                (data: pyYw.Routers.Projects.PipelineStepStatusResponse) => {
                     return {
                         class: 'flex-grow-1 d-flex w-100',
                         children: [

@@ -1,5 +1,5 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { DataView } from './data.view'
 import { ChartExplorerView } from './factories/helm.view'
 import { TerminalState } from './terminal.view'
@@ -28,7 +28,6 @@ const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
  * @category View
  */
 export class LogView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -43,7 +42,6 @@ export class LogView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly children: VirtualDOM[]
-
 
     /**
      * @group State
@@ -111,7 +109,6 @@ export class LogView implements VirtualDOM {
  * @category View
  */
 export class MethodLabelView {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -146,7 +143,6 @@ export class MethodLabelView {
  * @category View
  */
 export class AttributesView {
-
     /**
      * @group Immutable DOM Constants
      */

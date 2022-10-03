@@ -5,9 +5,10 @@ import {
     AttributesView,
     LogView,
     MethodLabelView,
-    TerminalState
+    TerminalState,
 } from '../../common/terminal'
-import { PyYouwol as pyYw, raiseHTTPErrors } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
 import { classesButton } from '../../common'
 import { SystemState } from '../system.state'
@@ -32,7 +33,6 @@ function getChildren(contextId: string) {
  * @category Data-structure
  */
 export class LogNode extends ImmutableTree.Node {
-
     /**
      * @group Immutable Constants
      */
@@ -92,7 +92,6 @@ export class LogNode extends ImmutableTree.Node {
  * @category View
  */
 export class AdminLogsView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
@@ -116,7 +115,9 @@ export class AdminLogsView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly logs$ = new ReplaySubject<pyYw.LogsResponse>(1)
+    public readonly logs$ = new ReplaySubject<pyYw.Routers.System.LogsResponse>(
+        1,
+    )
 
     /**
      * @group Observables
@@ -167,7 +168,7 @@ export class AdminLogsView implements VirtualDOM {
             .queryRootLogs$({ fromTimestamp: Date.now(), maxCount: 1000 })
             .pipe(raiseHTTPErrors())
             .subscribe((logs) => {
-                this.logs$.next(logs as any)
+                this.logs$.next(logs)
                 this.fetchingLogs$.next(false)
             })
     }
@@ -183,7 +184,6 @@ export class AdminLogsView implements VirtualDOM {
  * @category View
  */
 export class TreeView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
@@ -197,7 +197,7 @@ export class TreeView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly log: pyYw.LogResponse
+    public readonly log: pyYw.Routers.System.LogResponse
 
     /**
      * @group States
@@ -210,7 +210,7 @@ export class TreeView implements VirtualDOM {
     public readonly children: VirtualDOM[]
 
     constructor(params: {
-        log: pyYw.LogResponse
+        log: pyYw.Routers.System.LogResponse
         terminalState: TerminalState
     }) {
         Object.assign(this, params)
@@ -237,7 +237,6 @@ export class TreeView implements VirtualDOM {
  * @category View
  */
 export class LogsView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
@@ -268,24 +267,26 @@ export class LogsView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly logs$: Observable<pyYw.LogsResponse>
+    public readonly logs$: Observable<pyYw.Routers.System.LogsResponse>
 
     constructor(params: {
         systemState: SystemState
-        logs$: Observable<pyYw.LogsResponse>
+        logs$: Observable<pyYw.Routers.System.LogsResponse>
     }) {
         Object.assign(this, params)
         this.children = [
             {
                 class: 'w-100 h-100 overflow-auto',
-                children: children$(this.logs$, (response: pyYw.LogsResponse) =>
-                    response.logs.map(
-                        (log) =>
-                            new TreeView({
-                                log,
-                                terminalState: this.terminalState,
-                            }),
-                    ),
+                children: children$(
+                    this.logs$,
+                    (response: pyYw.Routers.System.LogsResponse) =>
+                        response.logs.map(
+                            (log) =>
+                                new TreeView({
+                                    log,
+                                    terminalState: this.terminalState,
+                                }),
+                        ),
                 ),
             },
         ]
@@ -296,12 +297,10 @@ export class LogsView implements VirtualDOM {
  * @category View
  */
 export class NodeView implements VirtualDOM {
-
     /**
      * @group Immutable Constants
      */
     static ClassSelector = 'node-view'
-
 
     /**
      * @group Immutable DOM Constants

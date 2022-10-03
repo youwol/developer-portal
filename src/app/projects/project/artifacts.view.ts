@@ -1,12 +1,11 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { Select } from '@youwol/fv-input'
-
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 
 import { FilesBrowserView } from '../../common'
 
 export class ArtifactItem extends Select.ItemData {
-    constructor(public readonly artifact: pyYw.Artifact) {
+    constructor(public readonly artifact: pyYw.Routers.Projects.Artifact) {
         super(artifact.id, artifact.id)
     }
 }
@@ -15,7 +14,6 @@ export class ArtifactItem extends Select.ItemData {
  * @category View
  */
 export class ArtifactsView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -26,7 +24,7 @@ export class ArtifactsView implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(artifacts: pyYw.Artifact[]) {
+    constructor(artifacts: pyYw.Routers.Projects.Artifact[]) {
         if (artifacts.length == 0) {
             this.children = [
                 {
@@ -65,7 +63,6 @@ export class ArtifactsView implements VirtualDOM {
  * @category View
  */
 class ArtifactView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -76,7 +73,7 @@ class ArtifactView implements VirtualDOM {
      */
     public readonly children: VirtualDOM[]
 
-    constructor(artifact: pyYw.Artifact) {
+    constructor(artifact: pyYw.Routers.Projects.Artifact) {
         this.children = [
             this.linksView(artifact.links),
             new FilesBrowserView({
@@ -86,7 +83,7 @@ class ArtifactView implements VirtualDOM {
         ]
     }
 
-    linksView(links: pyYw.Link[]) {
+    linksView(links: pyYw.Routers.Projects.Link[]) {
         return {
             class: 'd-flex align-items-center',
             children: links.map((link) => {

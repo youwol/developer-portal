@@ -12,7 +12,7 @@ import { DashboardView } from './dashboard'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
 
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { UpdatesView } from './updates'
 
 /**
@@ -295,7 +295,7 @@ export class CdnPackageItemView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    static icons: Record<pyYw.DownloadEventType, string> = {
+    static icons: Record<pyYw.Routers.System.DownloadEventType, string> = {
         enqueued: 'fa-hourglass-start fv-text-disabled',
         started: 'fa-cloud-download-alt fv-blink  fv-text-focus',
         succeeded: 'fa-check fv-text-success',

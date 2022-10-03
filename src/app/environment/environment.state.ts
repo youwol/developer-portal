@@ -1,10 +1,10 @@
 import { AppState } from '../app-state'
 import {
-    PyYouwol as pyYw,
     raiseHTTPErrors,
     send$,
     WebSocketResponse$,
-} from '@youwol/http-clients'
+} from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { Observable } from 'rxjs'
 import { map, mergeMap, shareReplay } from 'rxjs/operators'
 import { CommandView } from './command'
@@ -15,13 +15,12 @@ export type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
  * @category Event
  */
 export class CommandEvents {
-
     /**
      * @group Observables
      */
     log$: WebSocketResponse$<unknown>
 
-    constructor(public readonly command: pyYw.Command) {
+    constructor(public readonly command: pyYw.Routers.Environment.Command) {
         this.log$ =
             new pyYw.PyYouwolClient().admin.customCommands.webSocket.log$({})
     }
@@ -43,7 +42,7 @@ export class EnvironmentState {
     /**
      * @group Observables
      */
-    public readonly environment$: Observable<pyYw.EnvironmentStatusResponse>
+    public readonly environment$: Observable<pyYw.Routers.Environment.EnvironmentStatusResponse>
 
     /**
      * @group State
@@ -59,7 +58,7 @@ export class EnvironmentState {
      * @group Observables
      */
     public readonly customDispatches$: Observable<{
-        [k: string]: pyYw.CustomDispatch[]
+        [k: string]: pyYw.Routers.Environment.CustomDispatch[]
     }>
 
     constructor(params: { appState: AppState }) {
@@ -73,7 +72,7 @@ export class EnvironmentState {
         )
     }
 
-    openCommand(command: pyYw.Command) {
+    openCommand(command: pyYw.Routers.Environment.Command) {
         if (!this.commandsEvent[command.name]) {
             this.commandsEvent[command.name] = new CommandEvents(command)
         }

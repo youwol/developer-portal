@@ -2,7 +2,7 @@ import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import * as d3 from 'd3'
 import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
 import { BehaviorSubject, combineLatest } from 'rxjs'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { ProjectsState } from '../projects.state'
 
 /**
@@ -22,7 +22,7 @@ export class DagDependenciesView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @group States
@@ -42,7 +42,7 @@ export class DagDependenciesView implements VirtualDOM {
     connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
 
     constructor(params: {
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
         projectsState: ProjectsState
     }) {
         Object.assign(this, params)
@@ -92,7 +92,7 @@ export class DagDependenciesView implements VirtualDOM {
                             this.mode$,
                         ]).subscribe(
                             ([status, mode]: [
-                                pyYw.ContextMessage<pyYw.ProjectStatus>,
+                                pyYw.ContextMessage<pyYw.Routers.Projects.ProjectStatus>,
                                 'dag' | 'simpleDag',
                             ]) => {
                                 this.renderDag({
@@ -113,7 +113,7 @@ export class DagDependenciesView implements VirtualDOM {
         dagData,
     }: {
         svg: SVGElement
-        dagData: pyYw.ChildToParentConnections[]
+        dagData: pyYw.Routers.Projects.ChildToParentConnections[]
     }) {
         const dag = dagStratify()(dagData)
         const nodeRadius = 20

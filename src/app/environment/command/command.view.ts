@@ -1,6 +1,6 @@
 import { EnvironmentState, Method } from '../environment.state'
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { AttributeView, DashboardTitle } from '../../common'
 import { BehaviorSubject, from, Observable, of, Subject } from 'rxjs'
 import { ObjectJs } from '@youwol/fv-tree'
@@ -49,11 +49,11 @@ export class CommandView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly command: pyYw.Command
+    public readonly command: pyYw.Routers.Environment.Command
 
     constructor(params: {
         environmentState: EnvironmentState
-        command: pyYw.Command
+        command: pyYw.Routers.Environment.Command
     }) {
         Object.assign(this, params)
         let method: Method = 'GET'
@@ -143,7 +143,7 @@ export class ExecuteView implements VirtualDOM {
 
     constructor(params: {
         environmentState: EnvironmentState
-        command: pyYw.Command
+        command: pyYw.Routers.Environment.Command
         method: Method
         url: string
     }) {
@@ -385,7 +385,7 @@ export class OutputView implements VirtualDOM {
 export class LogsTab extends DockableTabs.Tab {
     constructor(params: {
         environmentState: EnvironmentState
-        command: pyYw.Command
+        command: pyYw.Routers.Environment.Command
     }) {
         super({
             id: 'logs',
@@ -412,7 +412,7 @@ export class LogsTabView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly command: pyYw.Command
+    public readonly command: pyYw.Routers.Environment.Command
     /**
      * @group Immutable DOM Constants
      */
@@ -431,7 +431,7 @@ export class LogsTabView implements VirtualDOM {
 
     constructor(params: {
         environmentState: EnvironmentState
-        command: pyYw.Command
+        command: pyYw.Routers.Environment.Command
     }) {
         Object.assign(this, params)
         const events = this.environmentState.commandsEvent[this.command.name]

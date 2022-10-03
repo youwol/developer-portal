@@ -1,15 +1,12 @@
 import { AppState } from '../app-state'
 import { BehaviorSubject, combineLatest, merge, Observable, of } from 'rxjs'
 
-import {
-    filterCtxMessage,
-    PyYouwol as pyYw,
-    WebSocketResponse$,
-} from '@youwol/http-clients'
+import { filterCtxMessage, WebSocketResponse$ } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { map, scan, shareReplay } from 'rxjs/operators'
 import { PackageView } from './package'
 
-type LocalCdnRouter = pyYw.LocalCdnRouter
+type LocalCdnRouter = pyYw.Routers.LocalCdn.LocalCdnRouter
 
 /**
  * @category Event
@@ -28,7 +25,7 @@ export class PackageEvents {
     /**
      * @group Observables
      */
-    public readonly info$: Observable<pyYw.CdnPackage>
+    public readonly info$: Observable<pyYw.Routers.LocalCdn.CdnPackage>
 
     constructor(params: { packageId: string; client: LocalCdnRouter }) {
         Object.assign(this, params)
@@ -63,13 +60,13 @@ export class UpdateChecksEvents {
      * update response on particular package
      * @group Observables
      */
-    public readonly updateChecksResponse$: WebSocketResponse$<pyYw.CheckUpdateResponse>
+    public readonly updateChecksResponse$: WebSocketResponse$<pyYw.Routers.LocalCdn.CheckUpdateResponse>
 
     /**
      * update response on all packages
      * @group Observables
      */
-    public readonly updatesChecksResponse$: WebSocketResponse$<pyYw.CheckUpdatesResponse>
+    public readonly updatesChecksResponse$: WebSocketResponse$<pyYw.Routers.LocalCdn.CheckUpdatesResponse>
 
     constructor(params: { client: LocalCdnRouter }) {
         Object.assign(this, params)
@@ -92,7 +89,7 @@ export class FuturePackage {
     constructor(
         public readonly id: string,
         public readonly name,
-        public readonly event: pyYw.DownloadEventType,
+        public readonly event: pyYw.Routers.System.DownloadEventType,
     ) {}
 }
 
@@ -123,7 +120,7 @@ export class CdnState {
     /**
      * @group Observables
      */
-    public readonly status$: Observable<pyYw.CdnStatusResponse>
+    public readonly status$: Observable<pyYw.Routers.LocalCdn.CdnStatusResponse>
 
     /**
      * @group Observables
@@ -133,27 +130,27 @@ export class CdnState {
     /**
      * @group Observables
      */
-    public readonly downloadedPackages$: Observable<pyYw.DownloadedPackageResponse>
+    public readonly downloadedPackages$: Observable<pyYw.Routers.LocalCdn.DownloadedPackageResponse>
 
     /**
      * @group Observables
      */
     public readonly accDownloadedPackages$: Observable<
-        pyYw.DownloadedPackageResponse[]
+        pyYw.Routers.LocalCdn.DownloadedPackageResponse[]
     >
 
     /**
      * @group Observables
      */
     public readonly accDownloadEvent$: Observable<{
-        [k: string]: pyYw.DownloadEvent
+        [k: string]: pyYw.Routers.System.DownloadEvent
     }>
 
     /**
      * @group Observables
      */
     public readonly downloadQueue$ = new BehaviorSubject<
-        pyYw.DownloadPackageBody[]
+        pyYw.Routers.LocalCdn.DownloadPackageBody[]
     >([])
 
     /**
@@ -194,7 +191,9 @@ export class CdnState {
             this.downloadedPackages$,
         ).pipe(
             scan((acc, e) => {
-                if (e['packages']) return []
+                if (e['packages']) {
+                    return []
+                }
                 return [...acc, e]
             }, []),
             shareReplay(1),
@@ -207,9 +206,9 @@ export class CdnState {
         ]).pipe(
             map(
                 ([status, packages, downloadEvents]: [
-                    pyYw.CdnStatusResponse,
-                    pyYw.DownloadedPackageResponse[],
-                    pyYw.DownloadEvent[],
+                    pyYw.Routers.LocalCdn.CdnStatusResponse,
+                    pyYw.Routers.LocalCdn.DownloadedPackageResponse[],
+                    pyYw.Routers.System.DownloadEvent[],
                 ]) => {
                     const starters = status.packages.map(
                         ({ id, name, versions }) =>
@@ -224,7 +223,7 @@ export class CdnState {
                     }
                     const downloaded = packages
                         .map(({ packageName, versions }) => ({
-                            id: btoa(packageName),
+                            id: window.btoa(packageName),
                             name: packageName,
                             versions,
                         }))
@@ -237,7 +236,7 @@ export class CdnState {
                     const fromEvents = Object.values(downloadEvents)
                         .map(({ rawId, type }) => ({
                             id: rawId,
-                            name: atob(rawId),
+                            name: window.atob(rawId),
                             type,
                         }))
                         .filter(filterOutAlreadyHere)

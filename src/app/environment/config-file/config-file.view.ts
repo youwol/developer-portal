@@ -1,11 +1,11 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
-import { raiseHTTPErrors } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { EnvironmentState } from '../environment.state'
 import { mergeMap, shareReplay } from 'rxjs/operators'
 import { combineLatest, from, Observable } from 'rxjs'
 import { install } from '@youwol/cdn-client'
 
-function fetchCodeMirror$(): Observable<any> {
+function fetchCodeMirror$(): Observable<Window> {
     return from(
         install({
             modules: ['codemirror'],

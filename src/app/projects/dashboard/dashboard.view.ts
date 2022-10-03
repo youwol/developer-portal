@@ -1,5 +1,5 @@
 import { VirtualDOM } from '@youwol/flux-view'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 import { ProjectsState } from '../projects.state'
 import { DashboardTemplateView } from '../../common'
 
@@ -7,7 +7,7 @@ import { DashboardTemplateView } from '../../common'
  * @category View
  */
 export class DashboardView extends DashboardTemplateView<
-    pyYw.Project,
+    pyYw.Routers.Projects.Project,
     ProjectsState
 > {
     constructor(params: { projectsState: ProjectsState }) {
@@ -29,7 +29,6 @@ export class DashboardView extends DashboardTemplateView<
  * @category View
  */
 export class ProjectSnippetView {
-
     /**
      * @category Immutable DOM Constants
      */
@@ -48,7 +47,7 @@ export class ProjectSnippetView {
     /**
      * @category Immutable Constants
      */
-    public readonly project: pyYw.Project
+    public readonly project: pyYw.Routers.Projects.Project
 
     /**
      * @category Immutable DOM Constants
@@ -57,7 +56,7 @@ export class ProjectSnippetView {
 
     constructor(params: {
         projectsState: ProjectsState
-        project: pyYw.Project
+        project: pyYw.Routers.Projects.Project
     }) {
         Object.assign(this, params)
 

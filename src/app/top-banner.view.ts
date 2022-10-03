@@ -4,13 +4,15 @@ import { TopBannerView } from '@youwol/os-top-banner'
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
 import { distinctUntilChanged, mergeMap, skip } from 'rxjs/operators'
 import { AppState } from './app-state'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 
 export class UsersSelectView implements VirtualDOM {
     public readonly class = 'd-flex align-items-center'
     public readonly children: VirtualDOM[]
 
-    constructor(environment: pyYw.EnvironmentStatusResponse) {
+    constructor(
+        environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
+    ) {
         const items = environment.users.map(
             (user) => new Select.ItemData(user, user),
         )
@@ -47,7 +49,7 @@ class ProfilesSelectView implements VirtualDOM {
     public readonly children: VirtualDOM[]
 
     constructor(
-        environment: pyYw.EnvironmentStatusResponse,
+        environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
         inProgress$: Subject<boolean>,
     ) {
         const items = environment.configuration.availableProfiles.map(
@@ -126,7 +128,7 @@ class ConfigurationPickerView implements VirtualDOM {
     public readonly children: VirtualDOM[]
 
     constructor(
-        environment$: Observable<pyYw.EnvironmentStatusResponse>,
+        environment$: Observable<pyYw.Routers.Environment.EnvironmentStatusResponse>,
         loadInProgress$: Subject<boolean>,
     ) {
         this.children = [
@@ -153,7 +155,9 @@ class ConnectionView implements VirtualDOM {
         this.children = [
             child$(
                 params.state.environment$,
-                (environment: pyYw.EnvironmentStatusResponse) => {
+                (
+                    environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
+                ) => {
                     // This has to be removed when upgrading http/clients to 1.0.5
                     // There is a mismatch: it is now (1.0.4) exposed (wrongly) as remoteGateway
                     const remoteInfo = environment['remoteGatewayInfo']

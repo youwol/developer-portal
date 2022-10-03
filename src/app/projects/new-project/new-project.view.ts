@@ -2,10 +2,10 @@ import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
 import { ProjectsState } from '../projects.state'
 import {
     filterCtxMessage,
-    PyYouwol as pyYw,
     HTTPError,
     dispatchHTTPErrors,
-} from '@youwol/http-clients'
+} from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, from, Observable, Subject } from 'rxjs'
 import { install } from '@youwol/cdn-client'
 import { delay, map, shareReplay, tap } from 'rxjs/operators'
@@ -74,11 +74,11 @@ export class NewProjectFromTemplateView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly projectTemplate: pyYw.ProjectTemplate
+    public readonly projectTemplate: pyYw.Routers.Environment.ProjectTemplate
 
     constructor(params: {
         projectsState: ProjectsState
-        projectTemplate: pyYw.ProjectTemplate
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate
     }) {
         Object.assign(this, params)
         const viewState$ = new BehaviorSubject<DockableTabs.DisplayMode>(
@@ -158,11 +158,11 @@ export class ProjectTemplateHeaderView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly projectTemplate: pyYw.ProjectTemplate
+    public readonly projectTemplate: pyYw.Routers.Environment.ProjectTemplate
 
     constructor(params: {
         projectsState: ProjectsState
-        projectTemplate: pyYw.ProjectTemplate
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate
     }) {
         Object.assign(this, params)
         this.children = [
@@ -197,7 +197,7 @@ export class ProjectTemplateEditor implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly projectTemplate: pyYw.ProjectTemplate
+    public readonly projectTemplate: pyYw.Routers.Environment.ProjectTemplate
 
     /**
      * @group State
@@ -212,7 +212,7 @@ export class ProjectTemplateEditor implements VirtualDOM {
     constructor(params: {
         projectsState: ProjectsState
         CodeEditorModule: CodeEditorModule
-        projectTemplate: pyYw.ProjectTemplate
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate
         onError: () => void
     }) {
         Object.assign(this, params)
@@ -280,7 +280,7 @@ export class GenerateButton {
         file$,
     }: {
         projectsState: ProjectsState
-        projectTemplate: pyYw.ProjectTemplate
+        projectTemplate: pyYw.Routers.Environment.ProjectTemplate
         file$: BehaviorSubject<{
             path: string
             content: string
@@ -308,7 +308,7 @@ export class GenerateButton {
                     tap(() => creating$.next(false)),
                     dispatchHTTPErrors(this.error$),
                 )
-                .subscribe((resp: pyYw.Project) => {
+                .subscribe((resp: pyYw.Routers.Projects.Project) => {
                     projectsState.openProject(resp)
                 })
         }

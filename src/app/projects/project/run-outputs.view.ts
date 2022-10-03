@@ -1,18 +1,16 @@
 import { childrenAppendOnly$, VirtualDOM } from '@youwol/flux-view'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
-import { PyYouwol as pyYw } from '@youwol/http-clients'
+import * as pyYw from '@youwol/local-youwol-client'
 
 /**
  * @category View
  */
 export class RunOutputsView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
     public readonly class = ''
-
 
     /**
      * @group Immutable DOM Constants
@@ -25,7 +23,7 @@ export class RunOutputsView implements VirtualDOM {
                 style: {
                     fontFamily: 'monospace',
                     fontSize: 'x-small',
-                    whiteSpace:'pre'
+                    whiteSpace: 'pre',
                 },
                 children: childrenAppendOnly$(
                     messages$.pipe(map((m) => [m])),

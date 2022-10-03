@@ -2,18 +2,15 @@ import { child$, VirtualDOM } from '@youwol/flux-view'
 import { CdnState } from '../cdn.state'
 import { basic } from '@youwol/installers-youwol'
 
-import {
-    PyYouwol as pyYw,
-    AssetsBackend,
-    raiseHTTPErrors,
-} from '@youwol/http-clients'
+import { AssetsBackend } from '@youwol/http-clients'
+import { raiseHTTPErrors } from '@youwol/http-primitives'
+import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject } from 'rxjs'
 
 /**
  * @category View
  */
 export class PackageView implements VirtualDOM {
-
     /**
      * @group States
      */
@@ -38,7 +35,7 @@ export class PackageView implements VirtualDOM {
         this.children = [
             {
                 class: 'border-bottom mx-auto mb-2',
-                innerText: atob(this.packageId),
+                innerText: window.atob(this.packageId),
                 style: {
                     fontSize: '25px',
                     width: 'fit-content',
@@ -54,7 +51,7 @@ export class PackageView implements VirtualDOM {
             ),
             child$(
                 new AssetsBackend.AssetsClient()
-                    .getAsset$({ assetId: btoa(this.packageId) })
+                    .getAsset$({ assetId: window.btoa(this.packageId) })
                     .pipe(raiseHTTPErrors()),
                 (asset) => {
                     return {
@@ -79,7 +76,6 @@ export class PackageView implements VirtualDOM {
  * @category View
  */
 export class VersionsView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */
@@ -105,15 +101,17 @@ export class VersionsView implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly package: pyYw.CdnPackage
-
+    public readonly package: pyYw.Routers.LocalCdn.CdnPackage
 
     /**
      * @group Observables
      */
     public readonly selectedVersion$ = new BehaviorSubject<string>(undefined)
 
-    constructor(params: { cdnState: CdnState; package: pyYw.CdnPackage }) {
+    constructor(params: {
+        cdnState: CdnState
+        package: pyYw.Routers.LocalCdn.CdnPackage
+    }) {
         Object.assign(this, params)
 
         this.children = [
@@ -134,7 +132,7 @@ export class VersionsView implements VirtualDOM {
         ]
     }
 
-    packageDetails(pack: pyYw.CdnPackage): VirtualDOM {
+    packageDetails(pack: pyYw.Routers.LocalCdn.CdnPackage): VirtualDOM {
         return {
             class: 'overflow-auto',
             style: {
@@ -176,7 +174,9 @@ export class VersionsView implements VirtualDOM {
                         {
                             tag: 'tbody',
                             children: pack.versions.map(
-                                (packVersion: pyYw.CdnVersion) => {
+                                (
+                                    packVersion: pyYw.Routers.LocalCdn.CdnVersion,
+                                ) => {
                                     return {
                                         tag: 'tr',
                                         class: 'fv-hover-bg-background-alt fv-pointer',
