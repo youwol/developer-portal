@@ -125,7 +125,7 @@ const entries = {
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.1',
+    version:'0.1.2-wip',
     shortDescription:"",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
@@ -160,7 +160,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/developer-portal#0.1.1~dist/@youwol/developer-portal/${entry.name}.js`
+            `@youwol/developer-portal#0.1.2-wip~dist/@youwol/developer-portal/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
