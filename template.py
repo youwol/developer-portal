@@ -21,7 +21,9 @@ template = Template(
         runTime=RunTimeDeps(
             externals={
                 'rxjs': '^6.5.5',
-                '@youwol/http-clients': '^1.0.4',
+                '@youwol/http-clients': '^2.0.1',
+                '@youwol/http-primitives': '^0.1.1',
+                '@youwol/local-youwol-client': '^0.1.2',
                 '@youwol/cdn-client': '^1.0.2',
                 '@youwol/flux-view': '^1.0.3',
                 '@youwol/fv-group': '^0.2.1',
@@ -55,7 +57,7 @@ template = Template(
             loadDependencies=['rxjs', '@youwol/http-clients', '@youwol/cdn-client', '@youwol/flux-view',
                               '@youwol/fv-group', '@youwol/fv-input', '@youwol/fv-button', '@youwol/fv-tree',
                               '@youwol/fv-tabs', '@youwol/os-top-banner', '@youwol/installers-youwol', 'd3',
-                              'codemirror']
+                              'codemirror', '@youwol/local-youwol-client', '@youwol/http-primitives']
         )
     )
 )
