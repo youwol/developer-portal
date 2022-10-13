@@ -128,7 +128,7 @@ export class SectionNewProject extends Section {
                     (
                         environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
                     ) => {
-                        return environment.configuration.pipelinesSourceInfo.projectTemplates.map(
+                        return environment.configuration.projects.templates.map(
                             (projectTemplate) =>
                                 new ProjectTemplateItemView({
                                     projectTemplate,
