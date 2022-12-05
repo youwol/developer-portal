@@ -3,8 +3,8 @@ const runTimeDependencies = {
     "externals": {
         "rxjs": "^6.5.5",
         "@youwol/http-clients": "^2.0.1",
-        "@youwol/http-primitives": "^0.1.1",
-        "@youwol/local-youwol-client": "^0.1.2",
+        "@youwol/http-primitives": "^0.1.2",
+        "@youwol/local-youwol-client": "^0.1.3",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/fv-group": "^0.2.1",
