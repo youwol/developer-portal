@@ -1,90 +1,8 @@
 import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
-import { Select } from '@youwol/fv-input'
 import { TopBannerView } from '@youwol/os-top-banner'
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
-import { distinctUntilChanged, mergeMap, skip } from 'rxjs/operators'
 import { AppState } from './app-state'
 import * as pyYw from '@youwol/local-youwol-client'
-
-export class UsersSelectView implements VirtualDOM {
-    public readonly class = 'd-flex align-items-center'
-    public readonly children: VirtualDOM[]
-
-    constructor(
-        environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
-    ) {
-        const items = environment.users.map(
-            (user) => new Select.ItemData(user, user),
-        )
-
-        const selected$ = new BehaviorSubject(environment.userInfo.email)
-
-        const selectState = new Select.State(items, selected$)
-        selectState.selectionId$
-            .pipe(
-                skip(1),
-                distinctUntilChanged(),
-                mergeMap((id) => {
-                    return new pyYw.PyYouwolClient().admin.environment.login$({
-                        body: { email: id },
-                    })
-                }),
-            )
-            .subscribe()
-
-        this.children = [
-            {
-                class: 'fas fa-users',
-            },
-            new Select.View({ state: selectState, class: 'mx-2' } as {
-                state: Select.State
-                class: string
-            }),
-        ]
-    }
-}
-
-class ProfilesSelectView implements VirtualDOM {
-    public readonly class = 'd-flex align-items-center'
-    public readonly children: VirtualDOM[]
-
-    constructor(
-        environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
-        inProgress$: Subject<boolean>,
-    ) {
-        const items = environment.configuration.availableProfiles.map(
-            (profile) => new Select.ItemData(profile, profile),
-        )
-
-        const selectedProfile$ = new BehaviorSubject(
-            environment.configuration.activeProfile,
-        )
-
-        const selectState = new Select.State(items, selectedProfile$)
-        selectState.selectionId$
-            .pipe(skip(1), distinctUntilChanged())
-            .subscribe((id) => {
-                inProgress$.next(true)
-                new pyYw.PyYouwolClient().admin.environment
-                    .switchProfile$({
-                        body: { active: id },
-                    })
-                    .subscribe(() => {
-                        inProgress$.next(false)
-                    })
-            })
-
-        this.children = [
-            {
-                class: 'fas fa-user-cog',
-            },
-            new Select.View({ state: selectState, class: 'mx-2' } as {
-                state: Select.State
-                class: string
-            }),
-        ]
-    }
-}
 
 class ReloadButton implements VirtualDOM {
     class: Stream$<boolean, string>
@@ -140,10 +58,6 @@ class ConfigurationPickerView implements VirtualDOM {
                 ),
                 style: { 'font-size': 'large' },
             },
-            child$(
-                environment$,
-                (env) => new ProfilesSelectView(env, loadInProgress$),
-            ),
         ]
     }
 }
@@ -196,10 +110,6 @@ export class DevPortalTopBannerView extends TopBannerView {
                     new ConfigurationPickerView(
                         params.state.environment$,
                         loadInProgress$,
-                    ),
-                    child$(
-                        params.state.environment$,
-                        (env) => new UsersSelectView(env),
                     ),
                 ],
             },
