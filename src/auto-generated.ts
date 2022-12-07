@@ -140,7 +140,7 @@ export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
     version:'0.1.4-wip',
-    shortDescription:"",
+    shortDescription:"Developer portal",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
     sourceGithub:'https://github.com/youwol/developer-portal',
