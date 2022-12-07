@@ -1,6 +1,12 @@
 import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import * as d3 from 'd3'
-import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
+import {
+    Dag,
+    dagStratify,
+    decrossOpt,
+    layeringLongestPath,
+    sugiyama,
+} from 'd3-dag'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import * as pyYw from '@youwol/local-youwol-client'
 import { ProjectsState } from '../projects.state'
@@ -125,7 +131,8 @@ export class DagDependenciesView implements VirtualDOM {
                 3 * nodeRadius,
             ]) // set node size instead of constraining to fit
 
-        const { width, height } = layout(dag as any)
+        // see https://github.com/erikbrinkman/d3-dag#typescript-notes for Dag<never, never>
+        const { width, height } = layout(dag as Dag<never, never>)
         const svgSelection = d3.select(svg)
 
         svgSelection.selectAll('*').remove()

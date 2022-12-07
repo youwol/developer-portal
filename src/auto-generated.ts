@@ -3,8 +3,8 @@ const runTimeDependencies = {
     "externals": {
         "rxjs": "^6.5.5",
         "@youwol/http-clients": "^2.0.1",
-        "@youwol/http-primitives": "^0.1.1",
-        "@youwol/local-youwol-client": "^0.1.2",
+        "@youwol/http-primitives": "^0.1.2",
+        "@youwol/local-youwol-client": "^0.1.3",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/fv-group": "^0.2.1",
@@ -14,7 +14,7 @@ const runTimeDependencies = {
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
         "@youwol/installers-youwol": "^0.1.3",
-        "d3": "^5.15.0",
+        "d3": "^7.7.0",
         "codemirror": "^5.52.0",
         "@youwol/fv-code-mirror-editors": "^0.2.0"
     },
@@ -36,7 +36,7 @@ const externals = {
     "@youwol/fv-tabs": "window['@youwol/fv-tabs_APIv02']",
     "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv01']",
     "@youwol/installers-youwol": "window['@youwol/installers-youwol_APIv01']",
-    "d3": "window['d3_APIv5']",
+    "d3": "window['d3_APIv7']",
     "codemirror": "window['CodeMirror_APIv5']",
     "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv02']",
     "rxjs/operators": "window['rxjs_APIv6']['operators']"
@@ -95,7 +95,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/installers-youwol"
     },
     "d3": {
-        "apiKey": "5",
+        "apiKey": "7",
         "exportedSymbol": "d3"
     },
     "codemirror": {
@@ -139,8 +139,8 @@ const entries = {
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.2-wip',
-    shortDescription:"",
+    version:'0.1.4-wip',
+    shortDescription:"Developer portal",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
     sourceGithub:'https://github.com/youwol/developer-portal',
@@ -174,7 +174,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/developer-portal#0.1.2-wip~dist/@youwol/developer-portal/${entry.name}.js`
+            `@youwol/developer-portal#0.1.4-wip~dist/@youwol/developer-portal/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),

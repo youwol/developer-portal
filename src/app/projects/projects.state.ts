@@ -244,8 +244,6 @@ export class ProjectsState {
             map((results) => results as pyYw.Routers.Projects.Project[]),
             shareReplay(1),
         )
-
-        this.projectsClient.status$().subscribe()
     }
 
     selectDashboard() {

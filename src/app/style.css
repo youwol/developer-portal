@@ -19,7 +19,7 @@
     display: none;
 }
 
-.dag-flow-node-title{
+.dag-flow-node-title {
     font-size: 8px;
     font-weight: bold;
     font-family: sans-serif;
@@ -28,30 +28,30 @@
     fill: white;
 }
 
-.dag-flow-node-status{
+.dag-flow-node-status {
     font-size: 16px;
     text-anchor: middle;
     user-select: none;
     transform: translateY(5px);
     pointer-events: auto;
 }
-.dag-flow-node-run{
+.dag-flow-node-run {
     font-size: 10px;
     text-anchor: middle;
     user-select: none;
     pointer-events: auto;
 }
-.dag-flow-node-settings{
+.dag-flow-node-settings {
     font-size: 10px;
     text-anchor: middle;
     user-select: none;
     pointer-events: auto;
 }
 
-.dag-flow-link{
+.dag-flow-link {
     fill: none;
     stroke-width: 3px;
-    stroke: white
+    stroke: white;
 }
 
 g.pending {

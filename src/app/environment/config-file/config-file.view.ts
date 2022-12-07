@@ -1,7 +1,7 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { child$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { EnvironmentState } from '../environment.state'
-import { mergeMap, shareReplay } from 'rxjs/operators'
+import { filter, mergeMap, shareReplay } from 'rxjs/operators'
 import { combineLatest, from, Observable } from 'rxjs'
 import { install } from '@youwol/cdn-client'
 
@@ -68,12 +68,31 @@ export class ConfigFileView implements VirtualDOM {
                 ([content]) => {
                     return {
                         class: 'h-100 w-100',
-                        connectedCallback: (htmlElement: HTMLDivElement) => {
+                        connectedCallback: (
+                            htmlElement: HTMLDivElement & HTMLElement$,
+                        ) => {
                             const config = {
                                 ...this.codeMirrorConfiguration,
                                 value: content,
                             }
-                            window['CodeMirror'](htmlElement, config)
+                            const editor = window['CodeMirror'](
+                                htmlElement,
+                                config,
+                            )
+                            const sub =
+                                this.environmentState.appState.selectedScreen$
+                                    .pipe(
+                                        filter(({ topic, viewId }) => {
+                                            return (
+                                                topic == 'Environment' &&
+                                                viewId == 'config-file'
+                                            )
+                                        }),
+                                    )
+                                    .subscribe(() => {
+                                        editor.refresh()
+                                    })
+                            htmlElement.ownSubscriptions(sub)
                         },
                     }
                 },

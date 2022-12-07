@@ -48,7 +48,7 @@ export class ArtifactsView implements VirtualDOM {
                     new Select.View({
                         state: select,
                         class: 'mx-2 px-1',
-                    } as any),
+                    } as { state: Select.State }),
                 ],
             },
             child$(

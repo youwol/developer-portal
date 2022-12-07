@@ -6,7 +6,6 @@ import { VirtualDOM } from '@youwol/flux-view'
  * @category View
  */
 export class LeftNavTab<TTabState, TTabView> extends DockableTabs.Tab {
-
     /**
      * @group States
      */

@@ -1,7 +1,7 @@
 {
     "name": "@youwol/developer-portal",
-    "description": "",
-    "version": "0.1.2-wip",
+    "description": "Developer portal",
+    "version": "0.1.4-wip",
     "author": "",
     "homepage": "https://github.com/youwol/developer-portal#README.md",
     "main": "dist/index.html",
@@ -10,7 +10,7 @@
         "clean": "del-cli dist",
         "auto-gen": "python template.py",
         "build": "yarn build:dev",
-        "pre-build": "yarn clean && yarn auto-gen",
+        "pre-build": "yarn clean",
         "build:dev": "yarn pre-build && webpack --mode development",
         "build:prod": "yarn pre-build && webpack --mode production",
         "lint-check": "yarn lint-prettier-check && yarn lint-eslint-check",
@@ -25,7 +25,7 @@
     "devDependencies": {
         "@types/lz-string": "^1.3.34",
         "lz-string": "^1.4.4",
-        "@types/node": "18.0.6",
+        "@types/node": "^18.11.9",
         "typescript": "^4.7.4",
         "ts-lib": "^0.0.5",
         "ts-node": "^10.9.1",
@@ -43,8 +43,9 @@
         "webpack-bundle-analyzer": "^4.5.0",
         "@types/webpack": "^5.28.0",
         "del-cli": "^5.0.0",
-        "@youwol/prettier-config": "^0.0.1",
-        "@youwol/eslint-config": "^0.0.1",
+        "@youwol/prettier-config": "^0.0.2",
+        "@youwol/eslint-config": "^0.0.2",
+        "@youwol/tsconfig": "^0.0.2",
         "prettier": "^2.7.1",
         "prettier-plugin-properties": "^0.2.0",
         "@typescript-eslint/eslint-plugin": "^5.33.1",
@@ -56,10 +57,10 @@
         "eslint-plugin-jest": "^26.8.4",
         "eslint-plugin-tsdoc": "^0.2.16",
         "eslint-plugin-unused-imports": "^2.0.0",
-        "css-loader": "5.2.0",
+        "css-loader": "^6.7.2",
         "file-loader": "6.2.0",
         "html-webpack-plugin": "5.2.0",
-        "mini-css-extract-plugin": "1.3.9",
+        "mini-css-extract-plugin": "^2.7.0",
         "source-map-loader": "2.0.1",
         "webpack-dev-server": "^4.7.1"
     },
@@ -72,8 +73,8 @@
     "dependencies": {
         "rxjs": "^6.5.5",
         "@youwol/http-clients": "^2.0.1",
-        "@youwol/http-primitives": "^0.1.1",
-        "@youwol/local-youwol-client": "^0.1.2",
+        "@youwol/http-primitives": "^0.1.2",
+        "@youwol/local-youwol-client": "^0.1.3",
         "@youwol/cdn-client": "^1.0.2",
         "@youwol/flux-view": "^1.0.3",
         "@youwol/fv-group": "^0.2.1",
@@ -83,7 +84,7 @@
         "@youwol/fv-tabs": "^0.2.1",
         "@youwol/os-top-banner": "^0.1.1",
         "@youwol/installers-youwol": "^0.1.3",
-        "d3": "^5.15.0",
+        "d3": "^7.7.0",
         "codemirror": "^5.52.0",
         "@youwol/fv-code-mirror-editors": "^0.2.0",
         "d3-dag": "0.8.2"
@@ -92,8 +93,8 @@
         "cdnDependencies": {
             "rxjs": "^6.5.5",
             "@youwol/http-clients": "^2.0.1",
-            "@youwol/http-primitives": "^0.1.1",
-            "@youwol/local-youwol-client": "^0.1.2",
+            "@youwol/http-primitives": "^0.1.2",
+            "@youwol/local-youwol-client": "^0.1.3",
             "@youwol/cdn-client": "^1.0.2",
             "@youwol/flux-view": "^1.0.3",
             "@youwol/fv-group": "^0.2.1",
@@ -103,7 +104,7 @@
             "@youwol/fv-tabs": "^0.2.1",
             "@youwol/os-top-banner": "^0.1.1",
             "@youwol/installers-youwol": "^0.1.3",
-            "d3": "^5.15.0",
+            "d3": "^7.7.0",
             "codemirror": "^5.52.0"
         }
     }

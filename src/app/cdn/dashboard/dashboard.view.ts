@@ -35,7 +35,6 @@ export class DashboardView extends DashboardTemplateView<
  * @category View
  */
 export class PackageSnippetView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */

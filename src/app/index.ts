@@ -3,7 +3,6 @@
  *
  * @module Application
  */
-export * from './on-load'
 export * from './app-state'
 export * from './app-view'
 
