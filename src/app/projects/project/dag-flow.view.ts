@@ -1,6 +1,6 @@
 import { HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import * as d3 from 'd3'
-import { dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
+import { Dag, dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
 import { combineLatest, merge } from 'rxjs'
 import * as pyYw from '@youwol/local-youwol-client'
 import { instanceOfStepStatus, ProjectsState } from '../projects.state'
@@ -259,7 +259,8 @@ export class DagFlowView implements VirtualDOM {
                 4 * DagFlowView.nodeRadius,
             ])
 
-        const { width, height } = layout(dag as any)
+        // see https://github.com/erikbrinkman/d3-dag#typescript-notes for Dag<never, never>
+        const { width, height } = layout(dag as Dag<never, never>)
         const svgSelection = d3
             .select(svg)
             .on('click', () =>

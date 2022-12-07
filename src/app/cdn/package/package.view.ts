@@ -6,6 +6,7 @@ import { AssetsBackend } from '@youwol/http-clients'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject } from 'rxjs'
+import { AssetLightDescription } from '@youwol/os-core'
 
 /**
  * @category View
@@ -62,7 +63,7 @@ export class PackageView implements VirtualDOM {
                                 asset: {
                                     ...asset,
                                     rawId: this.packageId,
-                                } as any,
+                                } as AssetLightDescription,
                             }),
                         ],
                     }
