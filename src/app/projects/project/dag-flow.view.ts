@@ -74,13 +74,13 @@ export class DagFlowView implements VirtualDOM {
             },
             style: {},
             on: {
-                click: (n) => {
+                click: (n, { data }) => {
                     this.projectsState.selectStep(
                         this.project.id,
                         this.flowId,
-                        n.data.id,
+                        data.id,
                     )
-                    d3.event.stopPropagation()
+                    n.stopPropagation()
                 },
             },
         },
@@ -148,12 +148,12 @@ export class DagFlowView implements VirtualDOM {
             },
             style: {},
             on: {
-                click: (n) => {
-                    d3.event.stopPropagation()
+                click: (n, { data }) => {
+                    n.stopPropagation()
                     this.projectsState.runStep(
                         this.project.id,
                         this.flowId,
-                        n.data.id,
+                        data.id,
                     )
                 },
             },
@@ -165,12 +165,12 @@ export class DagFlowView implements VirtualDOM {
             },
             style: {},
             on: {
-                click: (n) => {
-                    d3.event.stopPropagation()
+                click: (n, { data }) => {
+                    n.stopPropagation()
                     this.projectsState.configureStep(
                         this.project.id,
                         this.flowId,
-                        n.data.id,
+                        data.id,
                     )
                 },
             },
