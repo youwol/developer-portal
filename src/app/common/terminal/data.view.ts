@@ -6,7 +6,6 @@ import { of } from 'rxjs'
  * @category Data structure
  */
 export class LogDataNode extends ImmutableTree.Node {
-
     /**
      * @group Immutable Constants
      */
@@ -47,7 +46,6 @@ export class LogDataNode extends ImmutableTree.Node {
  * @category View
  */
 export class DataView implements VirtualDOM {
-
     /**
      * @group Immutable DOM Constants
      */

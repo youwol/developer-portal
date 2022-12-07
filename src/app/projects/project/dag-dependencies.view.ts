@@ -1,6 +1,12 @@
 import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import * as d3 from 'd3'
-import { Dag, dagStratify, decrossOpt, layeringLongestPath, sugiyama } from 'd3-dag'
+import {
+    Dag,
+    dagStratify,
+    decrossOpt,
+    layeringLongestPath,
+    sugiyama,
+} from 'd3-dag'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import * as pyYw from '@youwol/local-youwol-client'
 import { ProjectsState } from '../projects.state'
