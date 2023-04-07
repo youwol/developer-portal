@@ -270,7 +270,9 @@ export class ProjectsState {
 
         const openProjects = this.openProjects$.getValue()
 
-        if (!openProjects.includes(project)) {
+        if (
+            !openProjects.some((openProject) => openProject.id === project.id)
+        ) {
             this.openProjects$.next([...openProjects, project])
         }
 
