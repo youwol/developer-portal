@@ -11,7 +11,7 @@ This library is part of the hybrid cloud/local ecosystem
 
 [Online user-guide](https://l.youwol.com/doc/@youwol/developer-portal)
 
-[Developers documentation](https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal)
+[Developers documentation](https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal&tab=doc)
 
 [Package on npm](https://www.npmjs.com/package/@youwol/developer-portal)
 
@@ -66,7 +66,7 @@ the Py-YouWol configuration needs to be updated to include a `WebpackDevServerSw
 `FlowSwitcherMiddleware`. For example:
 
 ```python
-from youwol.environment import *
+from youwol.app.environment import *
 from youwol.pipelines.pipeline_typescript_weback_npm import WebpackDevServerSwitch
 
 Configuration(
@@ -75,7 +75,7 @@ Configuration(
             FlowSwitcherMiddleware(
                 name = 'front-end dev-servers',
                 oneOf = [
-                    WebpackDevServerSwitch(packageName="@youwol/todo-app-ts", port=3000),
+                    WebpackDevServerSwitch(packageName="@youwol/developer-portal", port=3000),
                 ]
             )
         ]
@@ -87,7 +87,7 @@ Additional information on the `Configuration` class can be found in the "Configu
 [Py-YouWol guide](https://l.youwol.com/doc/py-youwol).
 
 Once Py-YouWol is running with the updated configuration,
-the application can be accessed from [here](http://localhost:2000/applications/@youwol/todo-app-ts/latest)
+the application can be accessed from [here](http://localhost:2000/applications/@youwol/developer-portal/latest)
 (providing py-youwol running using the default port `2000`).
 
 ---

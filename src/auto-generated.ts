@@ -138,9 +138,9 @@ const entries = {
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.4-wip',
+    version:'0.1.5-wip',
     shortDescription:"Developer portal",
-    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal',
+    developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
     sourceGithub:'https://github.com/youwol/developer-portal',
     userGuide:'https://l.youwol.com/doc/@youwol/developer-portal',
@@ -155,7 +155,7 @@ export const setup = {
     },
 
     installMainModule: ({cdnClient, installParameters}:{
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const parameters = installParameters || {}
@@ -174,7 +174,7 @@ export const setup = {
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
         name: string,
-        cdnClient:{install:(unknown) => Promise<Window>},
+        cdnClient:{install:(unknown) => Promise<WindowOrWorkerGlobalScope>},
         installParameters?
     }) => {
         const entry = secondaryEntries[name]
@@ -184,7 +184,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/developer-portal#0.1.4-wip~dist/@youwol/developer-portal/${entry.name}.js`
+            `@youwol/developer-portal#0.1.5-wip~dist/@youwol/developer-portal/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
