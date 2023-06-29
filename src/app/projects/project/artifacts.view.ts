@@ -96,7 +96,7 @@ class ArtifactView implements VirtualDOM {
                         {
                             target: '_blank',
                             tag: 'a',
-                            href: `/admin/system/file/${link.url}`,
+                            href: `${link.url}`,
                             innerText: link.name,
                         },
                     ],
