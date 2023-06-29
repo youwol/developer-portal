@@ -173,7 +173,7 @@ export class LastRunStepView implements VirtualDOM {
                         class: 'flex-grow-1 d-flex w-100',
                         children: [
                             {
-                                class: ' d-flex flex-column w-50',
+                                class: ' d-flex flex-column w-50 overflow-auto',
                                 children: [
                                     new RunOutputsView(stepStream$.log$),
                                     data.manifest
