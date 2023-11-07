@@ -31,7 +31,7 @@ template = Template(
                 '@youwol/fv-tree': '^0.2.3',
                 '@youwol/fv-tabs': '^0.2.1',
                 '@youwol/os-top-banner': '^0.1.1',
-                '@youwol/installers-youwol': '^0.1.3',
+                '@youwol/os-widgets': '^0.1.1',
                 'd3': '^7.7.0',
                 'codemirror': '^5.52.0',
                 '@youwol/fv-code-mirror-editors': '^0.2.0'
