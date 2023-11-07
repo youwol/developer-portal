@@ -5,7 +5,7 @@ import { filter, mergeMap, shareReplay } from 'rxjs/operators'
 import { combineLatest, from, Observable } from 'rxjs'
 import { install } from '@youwol/cdn-client'
 
-function fetchCodeMirror$(): Observable<Window> {
+function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
     return from(
         install({
             modules: ['codemirror'],

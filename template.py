@@ -23,7 +23,7 @@ template = Template(
                 '@youwol/http-clients': '^2.0.1',
                 '@youwol/http-primitives': '^0.1.2',
                 '@youwol/local-youwol-client': '^0.1.3',
-                '@youwol/cdn-client': '^1.0.2',
+                '@youwol/cdn-client': '^2.1.2',
                 '@youwol/flux-view': '^1.0.3',
                 '@youwol/fv-group': '^0.2.1',
                 '@youwol/fv-input': '^0.2.1',

@@ -9,7 +9,7 @@ import { catchError, mergeMap, withLatestFrom } from 'rxjs/operators'
 import { DockableTabs } from '@youwol/fv-tabs'
 import { TerminalView } from '../../common/terminal'
 
-function fetchCodeMirror$(): Observable<Window> {
+function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
     return from(
         install({
             modules: ['codemirror'],
