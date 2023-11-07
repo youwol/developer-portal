@@ -34,7 +34,7 @@ template = Template(
                 '@youwol/os-widgets': '^0.1.1',
                 'd3': '^7.7.0',
                 'codemirror': '^5.52.0',
-                '@youwol/fv-code-mirror-editors': '^0.2.0'
+                '@youwol/fv-code-mirror-editors': '^0.3.1'
             },
             includedInBundle={
                 "d3-dag": "0.8.2"
