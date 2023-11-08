@@ -135,10 +135,12 @@ export class AdminLogsView implements VirtualDOM {
                         class: `${classesButton} mx-auto px-4`,
                         children: [
                             {
-                                class: attr$(this.fetchingLogs$, (isFetching) =>
-                                    isFetching
-                                        ? 'fas fa-spinner fa-spin'
-                                        : 'fas fa-sync',
+                                class: attr$(
+                                    this.fetchingLogs$,
+                                    (isFetching) =>
+                                        isFetching
+                                            ? 'fas fa-spinner fa-spin'
+                                            : 'fas fa-sync',
                                 ),
                             },
                         ],
