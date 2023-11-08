@@ -1,11 +1,11 @@
 import { child$, VirtualDOM } from '@youwol/flux-view'
 import { CdnState } from '../cdn.state'
-import { basic } from '@youwol/installers-youwol'
+import { webpmPackageInfoWidget } from '@youwol/os-widgets'
 
 import { AssetsBackend } from '@youwol/http-clients'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, from } from 'rxjs'
 import { AssetLightDescription } from '@youwol/os-core'
 
 /**
@@ -54,17 +54,19 @@ export class PackageView implements VirtualDOM {
                 new AssetsBackend.AssetsClient()
                     .getAsset$({ assetId: window.btoa(this.packageId) })
                     .pipe(raiseHTTPErrors()),
-                (asset) => {
+                (assetResponse) => {
+                    const asset = {
+                        ...assetResponse,
+                        rawId: this.packageId,
+                    } as AssetLightDescription
                     return {
                         class: 'flex-grow-1',
                         style: { minHeight: '0px' },
                         children: [
-                            new basic.PackageInfoView({
-                                asset: {
-                                    ...asset,
-                                    rawId: this.packageId,
-                                } as AssetLightDescription,
-                            }),
+                            child$(
+                                from(webpmPackageInfoWidget({ asset })),
+                                (widget) => widget,
+                            ),
                         ],
                     }
                 },
