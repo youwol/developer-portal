@@ -139,13 +139,13 @@ const entries = {
 export const setup = {
     name:'@youwol/developer-portal',
         assetId:'QHlvdXdvbC9kZXZlbG9wZXItcG9ydGFs',
-    version:'0.1.7-wip',
+    version:'0.2.0-wip',
     shortDescription:"Developer portal",
     developerDocumentation:'https://platform.youwol.com/applications/@youwol/cdn-explorer/latest?package=@youwol/developer-portal&tab=doc',
     npmPackage:'https://www.npmjs.com/package/@youwol/developer-portal',
     sourceGithub:'https://github.com/youwol/developer-portal',
     userGuide:'https://l.youwol.com/doc/@youwol/developer-portal',
-    apiVersion:'01',
+    apiVersion:'02',
     runTimeDependencies,
     externals,
     exportedSymbols,
@@ -170,7 +170,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/developer-portal_APIv01`]
+            return window[`@youwol/developer-portal_APIv02`]
         })
     },
     installAuxiliaryModule: ({name, cdnClient, installParameters}:{
@@ -185,7 +185,7 @@ export const setup = {
         const parameters = installParameters || {}
         const scripts = [
             ...(parameters.scripts || []),
-            `@youwol/developer-portal#0.1.7-wip~dist/@youwol/developer-portal/${entry.name}.js`
+            `@youwol/developer-portal#0.2.0-wip~dist/@youwol/developer-portal/${entry.name}.js`
         ]
         const modules = [
             ...(parameters.modules || []),
@@ -196,7 +196,7 @@ export const setup = {
             modules,
             scripts,
         }).then(() => {
-            return window[`@youwol/developer-portal/${entry.name}_APIv01`]
+            return window[`@youwol/developer-portal/${entry.name}_APIv02`]
         })
     },
     getCdnDependencies(name?: string){
