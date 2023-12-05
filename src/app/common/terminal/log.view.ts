@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { DataView } from './data.view'
 import { ChartExplorerView } from './factories/helm.view'
@@ -20,14 +20,19 @@ export const labelLogIcons = {
     'Label.DONE': 'fas fa-flag',
 }
 
-const viewsFactory: Record<KnownViews, (d) => VirtualDOM> = {
+const viewsFactory: Record<KnownViews, (d) => VirtualDOM<'div'>> = {
     HelmPackage: (data) => new ChartExplorerView(data),
 }
 
 /**
  * @category View
  */
-export class LogView implements VirtualDOM {
+export class LogView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -41,7 +46,7 @@ export class LogView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group State
@@ -59,7 +64,7 @@ export class LogView implements VirtualDOM {
     }) {
         Object.assign(this, params)
 
-        let customView: VirtualDOM
+        let customView: AnyVirtualDOM
         if (this.message.level == 'DATA') {
             const views = Object.keys(viewsFactory)
                 .filter((key) =>
@@ -72,6 +77,7 @@ export class LogView implements VirtualDOM {
 
             if (views.length > 0) {
                 customView = {
+                    tag: 'div',
                     innerText: views[0].name,
                     class: 'fv-bg-secondary border rounded fv-hover-xx-lighter p-1',
                     onclick: () => {
@@ -87,16 +93,19 @@ export class LogView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex flex-align-center px-2',
                 children: this.message.labels
                     .filter((label) => labelLogIcons[label])
                     .map((label) => {
                         return {
+                            tag: 'div',
                             class: labelLogIcons[label] + ' mx-1',
                         }
                     }),
             },
             {
+                tag: 'div',
                 innerText: this.message.text,
             },
             customView,
@@ -112,26 +121,34 @@ export class MethodLabelView {
     /**
      * @group Immutable DOM Constants
      */
+    public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'd-flex align-items-center mr-3'
 
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(message: pyYw.ContextMessage) {
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex flex-align-center px-2',
                 children: message.labels
                     .filter((label) => labelMethodIcons[label])
                     .map((label) => {
                         return {
+                            tag: 'div',
                             class: labelMethodIcons[label] + ' mx-1',
                         }
                     }),
             },
             {
+                tag: 'div',
                 class: 'mr-3',
                 innerText: message.text,
             },
@@ -142,7 +159,7 @@ export class MethodLabelView {
 /**
  * @category View
  */
-export class AttributesView {
+export class AttributesView implements VirtualDOM<'table'> {
     /**
      * @group Immutable DOM Constants
      */
@@ -156,7 +173,7 @@ export class AttributesView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
@@ -179,12 +196,12 @@ export class AttributesView {
                 }),
             },
             {
-                tag: 'tr',
+                tag: 'tr' as const,
                 children: Object.values(attributes).map((value) => {
                     return {
                         tag: 'td',
                         class: 'px-2',
-                        innerText: value,
+                        innerText: `${value}`,
                     }
                 }),
             },

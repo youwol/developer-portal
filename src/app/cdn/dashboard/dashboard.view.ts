@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { map } from 'rxjs/operators'
 import { CdnState, ActualPackage } from '../cdn.state'
 import { DashboardTemplateView } from '../../common'
@@ -34,11 +34,15 @@ export class DashboardView extends DashboardTemplateView<
 /**
  * @category View
  */
-export class PackageSnippetView implements VirtualDOM {
+export class PackageSnippetView implements VirtualDOM<'div'> {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly tag = 'div'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -56,16 +60,19 @@ export class PackageSnippetView implements VirtualDOM {
     public readonly onclick = () => {
         this.cdnState.openPackage(this.package.id)
     }
+
     constructor(params: { cdnState: CdnState; package: ActualPackage }) {
         Object.assign(this, params)
         this.children = [
             { tag: 'h4', innerText: this.package.name },
             {
+                tag: 'div',
                 innerText: `latest version: ${
                     this.package.versions.slice(-1)[0]
                 }`,
             },
             {
+                tag: 'div',
                 innerText: `${this.package.versions.length} versions`,
             },
         ]

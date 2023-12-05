@@ -1,5 +1,9 @@
-import * as cdnClient from '@youwol/cdn-client'
+import * as cdnClient from '@youwol/webpm-client'
+// checkThis
+// import * as cdnClient from '@youwol/webpm-client'
+
 import { setup } from '../auto-generated'
+
 export {}
 require('./style.css')
 

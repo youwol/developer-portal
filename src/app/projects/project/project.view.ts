@@ -1,4 +1,4 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { filter, mergeMap } from 'rxjs/operators'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
@@ -6,15 +6,19 @@ import { ArtifactsView } from './artifacts.view'
 import { DagFlowView } from './dag-flow.view'
 import { LastRunStepView, popupModal, StepModal } from './step.view'
 import { FlowId, ProjectsState } from '../projects.state'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { LogsTab } from '../../common'
-import { Modal } from '@youwol/fv-group'
+import { Modal } from '@youwol/rx-group-views'
 
 /**
  * @category View
  */
-export class ProjectView implements VirtualDOM {
+export class ProjectView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -24,7 +28,7 @@ export class ProjectView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
 
     /**
@@ -35,7 +39,7 @@ export class ProjectView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -77,33 +81,65 @@ export class ProjectView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100 py-2 overflow-auto',
                 style: { minHeight: '0px' },
                 children: [
                     new ProjectHeaderView(params),
-                    child$(events.selectedStep$, ({ flowId, step }) => {
-                        return {
-                            class: 'd-flex flex-grow-1 w-100',
-                            children: [
-                                child$(
-                                    this.projectsState.projectEvents[
-                                        this.project.id
-                                    ].selectedStep$,
-                                    (selection) => {
-                                        return selection.step == undefined
-                                            ? new FlowSummaryView(params)
-                                            : new LastRunStepView({
-                                                  projectsState:
-                                                      this.projectsState,
-                                                  project: this.project,
-                                                  flowId,
-                                                  step,
-                                              })
+                    {
+                        source$: events.selectedStep$,
+                        vdomMap: ({ flowId, step }): VirtualDOM<'div'> => {
+                            return {
+                                tag: 'div',
+                                class: 'd-flex flex-grow-1 w-100',
+                                children: [
+                                    {
+                                        source$:
+                                            this.projectsState.projectEvents[
+                                                this.project.id
+                                            ].selectedStep$,
+                                        vdomMap: (selection: {
+                                            flowId: string
+                                            step: pyYw.Routers.Projects.PipelineStep
+                                        }): AnyVirtualDOM => {
+                                            return selection.step == undefined
+                                                ? new FlowSummaryView(params)
+                                                : new LastRunStepView({
+                                                      projectsState:
+                                                          this.projectsState,
+                                                      project: this.project,
+                                                      flowId,
+                                                      step,
+                                                  })
+                                        },
                                     },
-                                ),
-                            ],
-                        }
-                    }),
+                                ],
+                            }
+                        },
+                    },
+                    // child$(events.selectedStep$, ({ flowId, step }) => {
+                    //     return {
+                    //         class: 'd-flex flex-grow-1 w-100',
+                    //         children: [
+                    //             child$(
+                    //                 this.projectsState.projectEvents[
+                    //                     this.project.id
+                    //                 ].selectedStep$,
+                    //                 (selection) => {
+                    //                     return selection.step == undefined
+                    //                         ? new FlowSummaryView(params)
+                    //                         : new LastRunStepView({
+                    //                               projectsState:
+                    //                                   this.projectsState,
+                    //                               project: this.project,
+                    //                               flowId,
+                    //                               step,
+                    //                           })
+                    //                 },
+                    //             ),
+                    //         ],
+                    //     }
+                    // }),
                 ],
             },
             bottomNav,
@@ -126,9 +162,14 @@ export class ProjectView implements VirtualDOM {
 }
 
 /**
- * @category View
+ * @cateChildrenLike
  */
-export class FlowsSelectorView implements VirtualDOM {
+
+export class FlowsSelectorView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -147,7 +188,7 @@ export class FlowsSelectorView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Observables
@@ -167,27 +208,38 @@ export class FlowsSelectorView implements VirtualDOM {
         })
     }
 
-    labelView(targetFlowId: string): VirtualDOM {
-        return child$(this.selectedFlow$, (selectedFlowId) => {
-            const defaultClasses = 'p-2 border rounded fv-pointer'
-            return {
-                class:
-                    selectedFlowId == targetFlowId
-                        ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
-                        : `${defaultClasses} fv-hover-bg-background-alt`,
-                innerText: targetFlowId,
-                onclick: () => {
-                    this.projectsState.selectFlow(this.project.id, targetFlowId)
-                },
-            }
-        })
+    labelView(targetFlowId: string) {
+        return {
+            source$: this.selectedFlow$,
+            vdomMap: (selectedFlowId: string): VirtualDOM<'div'> => {
+                const defaultClasses = 'p-2 border rounded fv-pointer'
+                return {
+                    tag: 'div',
+                    class:
+                        selectedFlowId == targetFlowId
+                            ? `${defaultClasses} fv-bg-secondary fv-hover-xx-lighter`
+                            : `${defaultClasses} fv-hover-bg-background-alt`,
+                    innerText: `${targetFlowId}`,
+                    onclick: () => {
+                        this.projectsState.selectFlow(
+                            this.project.id,
+                            targetFlowId,
+                        )
+                    },
+                }
+            },
+        }
     }
 }
 
 /**
  * @category View
  */
-export class ProjectHeaderView implements VirtualDOM {
+export class ProjectHeaderView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -206,7 +258,8 @@ export class ProjectHeaderView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
+
     constructor(params: {
         projectsState: ProjectsState
         project: pyYw.Routers.Projects.Project
@@ -214,6 +267,7 @@ export class ProjectHeaderView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex justify-content-around align-items-center p-1 mx-auto border-bottom',
                 style: { width: 'fit-content' },
                 children: [
@@ -228,15 +282,17 @@ export class ProjectHeaderView implements VirtualDOM {
                     new FlowsSelectorView(params),
                 ],
             },
-            child$(
-                this.projectsState.projectEvents[this.project.id].selectedFlow$,
-                (flowId) =>
+            {
+                source$:
+                    this.projectsState.projectEvents[this.project.id]
+                        .selectedFlow$,
+                vdomMap: (flowId: string) =>
                     new DagFlowView({
                         projectsState: this.projectsState,
                         project: this.project,
                         flowId: flowId,
                     }),
-            ),
+            },
         ]
     }
 }
@@ -244,7 +300,11 @@ export class ProjectHeaderView implements VirtualDOM {
 /**
  * @category View
  */
-export class FlowSummaryView implements VirtualDOM {
+export class FlowSummaryView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -258,7 +318,7 @@ export class FlowSummaryView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -279,8 +339,8 @@ export class FlowSummaryView implements VirtualDOM {
                 class: 'text-center',
                 innerText: 'Flow summary',
             },
-            child$(
-                selectedStep$.pipe(
+            {
+                source$: selectedStep$.pipe(
                     mergeMap(({ flowId }) => {
                         return this.projectsState.projectsClient.getArtifacts$({
                             projectId: this.project.id,
@@ -289,10 +349,24 @@ export class FlowSummaryView implements VirtualDOM {
                     }),
                     raiseHTTPErrors(),
                 ),
-                ({ artifacts }) => {
+                vdomMap: ({ artifacts }) => {
                     return new ArtifactsView(artifacts)
                 },
-            ),
+            },
+            // child$(
+            //     selectedStep$.pipe(
+            //         mergeMap(({ flowId }) => {
+            //             return this.projectsState.projectsClient.getArtifacts$({
+            //                 projectId: this.project.id,
+            //                 flowId,
+            //             })
+            //         }),
+            //         raiseHTTPErrors(),
+            //     ),
+            //     ({ artifacts }) => {
+            //         return new ArtifactsView(artifacts)
+            //     },
+            // ),
         ]
     }
 }

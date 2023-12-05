@@ -1,4 +1,4 @@
-import { attr$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
 import * as d3 from 'd3'
 import {
     Dag,
@@ -14,7 +14,12 @@ import { ProjectsState } from '../projects.state'
 /**
  * @category View
  */
-export class DagDependenciesView implements VirtualDOM {
+export class DagDependenciesView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -23,7 +28,7 @@ export class DagDependenciesView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -45,7 +50,7 @@ export class DagDependenciesView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
+    connectedCallback: (elem: RxHTMLElement<'div'>) => void
 
     constructor(params: {
         project: pyYw.Routers.Projects.Project
@@ -53,25 +58,26 @@ export class DagDependenciesView implements VirtualDOM {
     }) {
         Object.assign(this, params)
         const class$ = (mode: 'dag' | 'simpleDag') => {
-            return attr$(
-                this.mode$,
-                (m): string => (m == mode ? 'fv-bg-secondary' : ''),
-                {
-                    wrapper: (d) =>
-                        `${d} border rounded p-1 mx-2 fv-hover-xx-lighter fv-pointer`,
-                },
-            )
+            return {
+                source$: this.mode$,
+                vdomMap: (m): string => (m == mode ? 'fv-bg-secondary' : ''),
+                wrapper: (d) =>
+                    `${d} border rounded p-1 mx-2 fv-hover-xx-lighter fv-pointer`,
+            }
         }
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex align-items-center mx-auto',
                 children: [
                     {
+                        tag: 'div',
                         class: class$('simpleDag'),
                         innerText: 'Simple Dag',
                         onclick: () => this.mode$.next('simpleDag'),
                     },
                     {
+                        tag: 'div',
                         class: class$('dag'),
                         innerText: 'Full Dag',
                         onclick: () => this.mode$.next('dag'),
@@ -79,11 +85,12 @@ export class DagDependenciesView implements VirtualDOM {
                 ],
             },
             {
+                tag: 'div',
                 class: 'flex-grow-1 w-100',
                 style: {
                     minHeight: '0px',
                 },
-                connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => {
+                connectedCallback: (elem: RxHTMLElement<'div'>) => {
                     const svg = document.createElementNS(
                         'http://www.w3.org/2000/svg',
                         'svg',

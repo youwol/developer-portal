@@ -1,93 +1,93 @@
 
 const runTimeDependencies = {
     "externals": {
-        "rxjs": "^6.5.5",
-        "@youwol/http-clients": "^2.0.1",
-        "@youwol/http-primitives": "^0.1.2",
-        "@youwol/local-youwol-client": "^0.1.3",
-        "@youwol/cdn-client": "^2.1.2",
-        "@youwol/flux-view": "^1.0.3",
-        "@youwol/fv-group": "^0.2.1",
-        "@youwol/fv-input": "^0.2.1",
-        "@youwol/fv-button": "^0.1.1",
-        "@youwol/fv-tree": "^0.2.3",
-        "@youwol/fv-tabs": "^0.2.1",
-        "@youwol/os-top-banner": "^0.1.1",
+        "rxjs": "^7.5.6",
+        "@youwol/http-clients": "^3.0.0",
+        "@youwol/http-primitives": "^0.2.0",
+        "@youwol/local-youwol-client": "^0.2.0",
+        "@youwol/webpm-client": "^3.0.0",
+        "@youwol/rx-vdom": "^1.0.1",
+        "@youwol/rx-group-views": "^0.3.0",
+        "@youwol/rx-input-views": "^0.3.0",
+        "@youwol/rx-button-views": "^0.2.0",
+        "@youwol/rx-tree-views": "^0.3.0",
+        "@youwol/rx-tab-views": "^0.3.0",
+        "@youwol/os-top-banner": "^0.2.0",
         "@youwol/os-widgets": "^0.1.1",
         "d3": "^7.7.0",
         "codemirror": "^5.52.0",
-        "@youwol/fv-code-mirror-editors": "^0.3.1"
+        "@youwol/rx-code-mirror-editors": "^0.4.1"
     },
     "includedInBundle": {
         "d3-dag": "0.8.2"
     }
 }
 const externals = {
-    "rxjs": "window['rxjs_APIv6']",
-    "@youwol/http-clients": "window['@youwol/http-clients_APIv2']",
-    "@youwol/http-primitives": "window['@youwol/http-primitives_APIv01']",
-    "@youwol/local-youwol-client": "window['@youwol/local-youwol-client_APIv01']",
-    "@youwol/cdn-client": "window['@youwol/cdn-client_APIv2']",
-    "@youwol/flux-view": "window['@youwol/flux-view_APIv1']",
-    "@youwol/fv-group": "window['@youwol/fv-group_APIv02']",
-    "@youwol/fv-input": "window['@youwol/fv-input_APIv02']",
-    "@youwol/fv-button": "window['@youwol/fv-button_APIv01']",
-    "@youwol/fv-tree": "window['@youwol/fv-tree_APIv02']",
-    "@youwol/fv-tabs": "window['@youwol/fv-tabs_APIv02']",
-    "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv01']",
+    "rxjs": "window['rxjs_APIv7']",
+    "@youwol/http-clients": "window['@youwol/http-clients_APIv3']",
+    "@youwol/http-primitives": "window['@youwol/http-primitives_APIv02']",
+    "@youwol/local-youwol-client": "window['@youwol/local-youwol-client_APIv02']",
+    "@youwol/webpm-client": "window['@youwol/webpm-client_APIv3']",
+    "@youwol/rx-vdom": "window['@youwol/rx-vdom_APIv1']",
+    "@youwol/rx-group-views": "window['@youwol/rx-group-views_APIv03']",
+    "@youwol/rx-input-views": "window['@youwol/rx-input-views_APIv03']",
+    "@youwol/rx-button-views": "window['@youwol/rx-button-views_APIv02']",
+    "@youwol/rx-tree-views": "window['@youwol/rx-tree-views_APIv03']",
+    "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
+    "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv02']",
     "@youwol/os-widgets": "window['@youwol/os-widgets_APIv01']",
     "d3": "window['d3_APIv7']",
     "codemirror": "window['CodeMirror_APIv5']",
-    "@youwol/fv-code-mirror-editors": "window['@youwol/fv-code-mirror-editors_APIv03']",
-    "rxjs/operators": "window['rxjs_APIv6']['operators']"
+    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv04']",
+    "rxjs/operators": "window['rxjs_APIv7']['operators']"
 }
 const exportedSymbols = {
     "rxjs": {
-        "apiKey": "6",
+        "apiKey": "7",
         "exportedSymbol": "rxjs"
     },
     "@youwol/http-clients": {
-        "apiKey": "2",
+        "apiKey": "3",
         "exportedSymbol": "@youwol/http-clients"
     },
     "@youwol/http-primitives": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/http-primitives"
     },
     "@youwol/local-youwol-client": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/local-youwol-client"
     },
-    "@youwol/cdn-client": {
-        "apiKey": "2",
-        "exportedSymbol": "@youwol/cdn-client"
+    "@youwol/webpm-client": {
+        "apiKey": "3",
+        "exportedSymbol": "@youwol/webpm-client"
     },
-    "@youwol/flux-view": {
+    "@youwol/rx-vdom": {
         "apiKey": "1",
-        "exportedSymbol": "@youwol/flux-view"
+        "exportedSymbol": "@youwol/rx-vdom"
     },
-    "@youwol/fv-group": {
+    "@youwol/rx-group-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-group-views"
+    },
+    "@youwol/rx-input-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-input-views"
+    },
+    "@youwol/rx-button-views": {
         "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-group"
+        "exportedSymbol": "@youwol/rx-button-views"
     },
-    "@youwol/fv-input": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-input"
+    "@youwol/rx-tree-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tree-views"
     },
-    "@youwol/fv-button": {
-        "apiKey": "01",
-        "exportedSymbol": "@youwol/fv-button"
-    },
-    "@youwol/fv-tree": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-tree"
-    },
-    "@youwol/fv-tabs": {
-        "apiKey": "02",
-        "exportedSymbol": "@youwol/fv-tabs"
+    "@youwol/rx-tab-views": {
+        "apiKey": "03",
+        "exportedSymbol": "@youwol/rx-tab-views"
     },
     "@youwol/os-top-banner": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/os-top-banner"
     },
     "@youwol/os-widgets": {
@@ -102,9 +102,9 @@ const exportedSymbols = {
         "apiKey": "5",
         "exportedSymbol": "CodeMirror"
     },
-    "@youwol/fv-code-mirror-editors": {
-        "apiKey": "03",
-        "exportedSymbol": "@youwol/fv-code-mirror-editors"
+    "@youwol/rx-code-mirror-editors": {
+        "apiKey": "04",
+        "exportedSymbol": "@youwol/rx-code-mirror-editors"
     }
 }
 
@@ -115,18 +115,18 @@ const mainEntry : {entryFile: string,loadDependencies:string[]} = {
         "@youwol/http-clients",
         "@youwol/http-primitives",
         "@youwol/local-youwol-client",
-        "@youwol/cdn-client",
-        "@youwol/flux-view",
-        "@youwol/fv-group",
-        "@youwol/fv-input",
-        "@youwol/fv-button",
-        "@youwol/fv-tree",
-        "@youwol/fv-tabs",
+        "@youwol/webpm-client",
+        "@youwol/rx-vdom",
+        "@youwol/rx-group-views",
+        "@youwol/rx-input-views",
+        "@youwol/rx-button-views",
+        "@youwol/rx-tree-views",
+        "@youwol/rx-tab-views",
         "@youwol/os-top-banner",
         "@youwol/os-widgets",
         "d3",
         "codemirror",
-        "@youwol/fv-code-mirror-editors"
+        "@youwol/rx-code-mirror-editors"
     ]
 }
 

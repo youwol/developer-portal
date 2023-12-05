@@ -1,6 +1,6 @@
-import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { map } from 'rxjs/operators'
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import {
     AttributesView,
     LogView,
@@ -91,7 +91,12 @@ export class LogNode extends ImmutableTree.Node {
 /**
  * @category View
  */
-export class AdminLogsView implements VirtualDOM {
+export class AdminLogsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable Constants
      */
@@ -105,7 +110,7 @@ export class AdminLogsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -129,19 +134,22 @@ export class AdminLogsView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex align-items-center',
                 children: [
                     {
+                        tag: 'div',
                         class: `${classesButton} mx-auto px-4`,
                         children: [
                             {
-                                class: attr$(
-                                    this.fetchingLogs$,
-                                    (isFetching) =>
+                                tag: 'div',
+                                class: {
+                                    source$: this.fetchingLogs$,
+                                    vdomMap: (isFetching) =>
                                         isFetching
                                             ? 'fas fa-spinner fa-spin'
                                             : 'fas fa-sync',
-                                ),
+                                },
                             },
                         ],
                         style: {
@@ -150,6 +158,7 @@ export class AdminLogsView implements VirtualDOM {
                         onclick: () => this.refresh(),
                     },
                     {
+                        tag: 'div',
                         class: `${classesButton} mx-auto px-4`,
                         innerText: 'clear',
                         onclick: () => this.clear(),
@@ -174,6 +183,7 @@ export class AdminLogsView implements VirtualDOM {
                 this.fetchingLogs$.next(false)
             })
     }
+
     clear() {
         this.fetchingLogs$.next(true)
         new pyYw.PyYouwolClient().admin.system.clearLogs$().subscribe(() => {
@@ -185,7 +195,12 @@ export class AdminLogsView implements VirtualDOM {
 /**
  * @category View
  */
-export class TreeView implements VirtualDOM {
+export class TreeView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable Constants
      */
@@ -209,7 +224,7 @@ export class TreeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         log: pyYw.Routers.System.LogResponse
@@ -238,7 +253,12 @@ export class TreeView implements VirtualDOM {
 /**
  * @category View
  */
-export class LogsView implements VirtualDOM {
+export class LogsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable Constants
      */
@@ -259,7 +279,7 @@ export class LogsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -278,10 +298,12 @@ export class LogsView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100 overflow-auto',
-                children: children$(
-                    this.logs$,
-                    (response: pyYw.Routers.System.LogsResponse) =>
+                children: {
+                    policy: 'replace',
+                    source$: this.logs$,
+                    vdomMap: (response: pyYw.Routers.System.LogsResponse) =>
                         response.logs.map(
                             (log) =>
                                 new TreeView({
@@ -289,7 +311,7 @@ export class LogsView implements VirtualDOM {
                                     terminalState: this.terminalState,
                                 }),
                         ),
-                ),
+                },
             },
         ]
     }
@@ -298,7 +320,12 @@ export class LogsView implements VirtualDOM {
 /**
  * @category View
  */
-export class NodeView implements VirtualDOM {
+export class NodeView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable Constants
      */
@@ -312,11 +339,12 @@ export class NodeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(message: pyYw.ContextMessage) {
         this.children = [
             {
+                tag: 'div',
                 class: message['failed']
                     ? 'fas fa-times fv-text-error mr-2'
                     : 'fas fa-check fv-text-success mr-2',

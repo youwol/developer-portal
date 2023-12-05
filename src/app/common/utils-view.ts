@@ -1,4 +1,9 @@
-import { attr$, children$, Stream$, VirtualDOM } from '@youwol/flux-view'
+import {
+    AnyVirtualDOM,
+    AttributeLike,
+    ChildrenLike,
+    VirtualDOM,
+} from '@youwol/rx-vdom'
 import { Observable } from 'rxjs'
 import { Screen, Topic } from '../app-state'
 
@@ -12,7 +17,12 @@ export const commonClassesLeftSideNav =
 /**
  * @category View
  */
-export class Section implements VirtualDOM {
+export class Section implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -21,20 +31,21 @@ export class Section implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly header: VirtualDOM
+    public readonly header: VirtualDOM<'header'>
 
     /**
      * @group Immutable Constants
      */
-    public readonly content?: VirtualDOM
+    public readonly content?: AnyVirtualDOM
 
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
+
     constructor(params: {
-        header: VirtualDOM
-        content?: VirtualDOM
+        header: VirtualDOM<'header'>
+        content?: AnyVirtualDOM
         [k: string]: unknown
     }) {
         Object.assign(this, params)
@@ -45,11 +56,16 @@ export class Section implements VirtualDOM {
 /**
  * @category View
  */
-export class SectionHeader implements VirtualDOM {
+export class SectionHeader implements VirtualDOM<'header'> {
     /**
      * @group Immutable Constants
      */
-    public readonly title: string | Stream$<unknown, string>
+    public readonly tag = 'header'
+
+    /**
+     * @group Immutable Constants
+     */
+    public readonly title: AttributeLike<string>
 
     /**
      * @group Immutable Constants
@@ -59,22 +75,25 @@ export class SectionHeader implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
-        title: string | Stream$<unknown, string>
+        title: AttributeLike<string>
         icon: string
         [k: string]: unknown
     }) {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex align-items-center fv-pointer',
                 children: [
                     {
+                        tag: 'div',
                         class: `${this.icon} mr-2`,
                     },
                     {
+                        tag: 'div',
                         innerText: this.title,
                     },
                 ],
@@ -86,7 +105,12 @@ export class SectionHeader implements VirtualDOM {
 /**
  * @category View
  */
-export class DashboardTemplateView<TData, TState> implements VirtualDOM {
+export class DashboardTemplateView<TData, TState> implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -108,12 +132,12 @@ export class DashboardTemplateView<TData, TState> implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
      */
-    public readonly cardView: (data: TData, state: TState) => VirtualDOM
+    public readonly cardView: (data: TData, state: TState) => AnyVirtualDOM
 
     /**
      * @group States
@@ -123,22 +147,27 @@ export class DashboardTemplateView<TData, TState> implements VirtualDOM {
     constructor(params: {
         state: TState
         dataSource$: Observable<TData[]>
-        cardView: (data: TData, state: TState) => VirtualDOM
+        cardView: (data: TData, state: TState) => AnyVirtualDOM
     }) {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100 d-flex flex-wrap p-2 overflow-auto  justify-content-around',
-                children: children$(this.dataSource$, (items: TData[]) => {
-                    return items.map(
-                        (item) =>
-                            new ItemView({
-                                state: this.state,
-                                item,
-                                cardView: this.cardView,
-                            }),
-                    )
-                }),
+                children: {
+                    policy: 'replace',
+                    source$: this.dataSource$,
+                    vdomMap: (items: TData[]) => {
+                        return items.map(
+                            (item) =>
+                                new ItemView({
+                                    state: this.state,
+                                    item,
+                                    cardView: this.cardView,
+                                }),
+                        )
+                    },
+                },
             },
         ]
     }
@@ -153,24 +182,27 @@ export function leftNavSectionAttr$({
     targetTopic: Topic
     targetViewId: string
 }) {
-    return attr$(
-        selectedScreen$,
-        (screen): string => {
+    return {
+        source$: selectedScreen$,
+        vdomMap: (screen: { viewId: string; topic: string }): string => {
             return screen.viewId == targetViewId && screen.topic == targetTopic
                 ? 'fv-text-focus'
                 : ''
         },
-        {
-            wrapper: (d) =>
-                `${d} fv-hover-bg-background-alt d-flex align-items-center px-1 rounded`,
-        },
-    )
+        wrapper: (d) =>
+            `${d} fv-hover-bg-background-alt d-flex align-items-center px-1 rounded`,
+    }
 }
 
 /**
  * @category View
  */
-export class ItemView<TState, TData> implements VirtualDOM {
+export class ItemView<TState, TData> implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -197,17 +229,17 @@ export class ItemView<TState, TData> implements VirtualDOM {
     /**
      * @group Immutable Constants
      */
-    public readonly cardView: (data: TData, state: TState) => VirtualDOM
+    public readonly cardView: (data: TData, state: TState) => AnyVirtualDOM
 
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         state: TState
         item: TData
-        cardView: (data: TData, state: TState) => VirtualDOM
+        cardView: (data: TData, state: TState) => AnyVirtualDOM
     }) {
         Object.assign(this, params)
         this.children = [this.cardView(this.item, this.state)]
@@ -217,7 +249,12 @@ export class ItemView<TState, TData> implements VirtualDOM {
 /**
  * @category View
  */
-export class CopyClipboardView implements VirtualDOM {
+export class CopyClipboardView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -245,7 +282,12 @@ export class CopyClipboardView implements VirtualDOM {
 /**
  * @category View
  */
-export class AttributeTitleView {
+export class AttributeTitleView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -265,9 +307,10 @@ export class AttributeTitleView {
      * @group Immutable DOM Constants
      */
     public readonly style = {
-        fontWeight: 'bolder',
-        whiteSpace: 'nowrap',
+        fontWeight: 'bolder' as const,
+        whiteSpace: 'nowrap' as const,
     }
+
     constructor(params: { text: string }) {
         Object.assign(this, params)
         this.innerText = this.text
@@ -277,7 +320,12 @@ export class AttributeTitleView {
 /**
  * @category View
  */
-export class AttributeValueView {
+export class AttributeValueView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -293,7 +341,7 @@ export class AttributeValueView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -305,6 +353,7 @@ export class AttributeValueView {
 
         this.children = [
             {
+                tag: 'div',
                 innerText: this.value,
                 style: {
                     textOverflow: 'ellipsis',
@@ -322,7 +371,12 @@ export class AttributeValueView {
 /**
  * @category View
  */
-export class AttributeView implements VirtualDOM {
+export class AttributeView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -331,7 +385,7 @@ export class AttributeView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor({ text, value }) {
         this.children = [
@@ -344,7 +398,7 @@ export class AttributeView implements VirtualDOM {
 /**
  * @category View
  */
-export class DashboardTitle {
+export class DashboardTitle implements VirtualDOM<'h5'> {
     /**
      * @group Immutable DOM Constants
      */

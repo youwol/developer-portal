@@ -1,14 +1,14 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
 import { SystemState } from '../system.state'
-import { install } from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
 
 const defaultExeSrc = `
 return async ({debug}) => {
-    const CDN = window['@youwol/cdn-client']
-    const FluxView = window['@youwol/flux-view']
-    debug('CDN', CDN)
-    debug('FluxView', FluxView)
-    debug('view', { innerText: 'hello' })
+    const Webpm = window['@youwol/webpm-client']
+    const RxDom = window['@youwol/rx-vdom']
+    debug('Webpm', Webpm)
+    debug('RxDom', RxDom)
+    debug('view', { tag:'div', innerText: 'hello' })
     
     return true
 }
@@ -22,7 +22,12 @@ return async (result, {expect}) => {
 /**
  * @category View
  */
-export class JsEditorView implements VirtualDOM {
+export class JsEditorView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -31,13 +36,14 @@ export class JsEditorView implements VirtualDOM {
     /**
      * @group Observables
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(_params: { systemState: SystemState }) {
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100',
-                connectedCallback: (elem: HTMLDivElement) => {
+                connectedCallback: (elem: RxHTMLElement<'div'>) => {
                     elem.setAttribute('src', defaultExeSrc)
                     elem.setAttribute('src-test', defaultTestSrc)
                     install({

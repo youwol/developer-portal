@@ -1,8 +1,9 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import { Subject } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import * as pyYw from '@youwol/local-youwol-client'
+import { HTTPResponse$ } from '@youwol/http-primitives'
 
 class ChartNode extends ImmutableTree.Node {
     name: string
@@ -12,6 +13,7 @@ class ChartNode extends ImmutableTree.Node {
         this.name = name
     }
 }
+
 class FileNode extends ChartNode {
     constructor({ id, name }) {
         super({ id, name, children: undefined })
@@ -34,8 +36,9 @@ class FolderNode extends ChartNode {
     }
 }
 
-export class ChartExplorerView implements VirtualDOM {
-    public readonly children: VirtualDOM[]
+export class ChartExplorerView implements VirtualDOM<'div'> {
+    public readonly tag = 'div'
+    public readonly children: ChildrenLike
     public readonly selectedFile$ = new Subject<FileNode>()
     public readonly class =
         'd-flex w-100 h-100 justify-content-around p-3 border '
@@ -57,25 +60,30 @@ export class ChartExplorerView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'w-25',
                 children: [view],
             },
             {
+                tag: 'div',
                 class: 'w-75 h-100',
                 children: [
-                    child$(
-                        this.selectedFile$.pipe(
+                    {
+                        source$: this.selectedFile$.pipe(
                             mergeMap((fileNode: FileNode) => {
                                 return new pyYw.PyYouwolClient().admin.system.getFileContent$(
                                     { path: fileNode.id },
                                 )
                             }),
                         ),
-                        (content: string) => {
+                        vdomMap: (content: HTTPResponse$<string>) => {
                             return {
+                                tag: 'div',
                                 class: 'flex-grow-1 w-100 h-100 py-1',
-                                style: { 'font-size': 'small' },
-                                connectedCallback: (elem: HTMLDivElement) => {
+                                style: { fontSize: 'small' },
+                                connectedCallback: (
+                                    elem: RxHTMLElement<'div'>,
+                                ) => {
                                     const config = {
                                         value: content,
                                         mode: 'yaml',
@@ -90,7 +98,7 @@ export class ChartExplorerView implements VirtualDOM {
                                 },
                             }
                         },
-                    ),
+                    },
                 ],
             },
         ]
@@ -104,28 +112,38 @@ function headerView(node: ChartNode, selectedFile$: Subject<FileNode>) {
     return helmFolderView(node)
 }
 
-function helmFolderView(node: FileNode) {
+function helmFolderView(node: FileNode): VirtualDOM<'div'> {
     return {
+        tag: 'div',
         class: 'd-flex align-items-center',
         children: [
             {
+                tag: 'div',
                 class: 'fas fa-folder px-2',
             },
             {
+                tag: 'div',
                 innerText: node.name,
             },
         ],
     }
 }
-function helmFileView(node: FileNode, selectedFile$: Subject<FileNode>) {
+
+function helmFileView(
+    node: FileNode,
+    selectedFile$: Subject<FileNode>,
+): VirtualDOM<'div'> {
     return {
+        tag: 'div',
         class: 'fv-hover-bg-background-alt fv-pointer d-flex align-items-center ',
         onclick: () => selectedFile$.next(node),
         children: [
             {
+                tag: 'div',
                 class: 'fas fa-file px-2',
             },
             {
+                tag: 'div',
                 innerText: node.name,
             },
         ],

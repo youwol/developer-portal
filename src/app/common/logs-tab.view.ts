@@ -1,5 +1,5 @@
-import { DockableTabs } from '@youwol/fv-tabs'
-import { VirtualDOM } from '@youwol/flux-view'
+import { DockableTabs } from '@youwol/rx-tab-views'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { TerminalView } from './terminal'
 import { WebSocketResponse$ } from '@youwol/http-primitives'
 
@@ -24,7 +24,12 @@ export class LogsTab extends DockableTabs.Tab {
 /**
  * @Category View
  */
-export class LogsTabView implements VirtualDOM {
+export class LogsTabView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -41,7 +46,7 @@ export class LogsTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { message$: WebSocketResponse$<unknown> }) {
         Object.assign(this, params)

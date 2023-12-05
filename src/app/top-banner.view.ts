@@ -1,11 +1,16 @@
-import { attr$, child$, Stream$, VirtualDOM } from '@youwol/flux-view'
+import { AttributeLike, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { TopBannerView } from '@youwol/os-top-banner'
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
 import { AppState } from './app-state'
 import * as pyYw from '@youwol/local-youwol-client'
 
-class ReloadButton implements VirtualDOM {
-    class: Stream$<boolean, string>
+class ReloadButton implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
+    class: AttributeLike<string>
     onclick: () => void
 
     constructor(private loadInProgress$: Subject<boolean>) {
@@ -21,17 +26,15 @@ class ReloadButton implements VirtualDOM {
                 )
             }
         })
-        this.class = attr$(
-            spinning$,
-            (isSpinning: boolean) => {
+        this.class = {
+            source$: spinning$,
+            vdomMap: (isSpinning: boolean) => {
                 return isSpinning ? ' fa-spin' : ''
             },
-            {
-                untilFirst: 'fa-spin',
-                wrapper: (v: string) =>
-                    `${v} fv-button fas fa-sync mx-1 fv-pointer fv-hover-text-secondary`,
-            },
-        )
+            untilFirst: 'fa-spin',
+            wrapper: (v: string) =>
+                `${v} fv-button fas fa-sync mx-1 fv-pointer fv-hover-text-secondary`,
+        }
         this.onclick = () => {
             this.loadInProgress$.next(true)
             new pyYw.PyYouwolClient().admin.environment
@@ -41,9 +44,13 @@ class ReloadButton implements VirtualDOM {
     }
 }
 
-class ConfigurationPickerView implements VirtualDOM {
+class ConfigurationPickerView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     public readonly class = 'mx-5 d-flex align-items-center'
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(
         environment$: Observable<pyYw.Routers.Environment.EnvironmentStatusResponse>,
@@ -52,33 +59,46 @@ class ConfigurationPickerView implements VirtualDOM {
         this.children = [
             new ReloadButton(loadInProgress$),
             {
+                tag: 'div',
                 class: 'd-flex align-items-center mr-4 ml-2',
-                innerText: attr$(environment$, (env) =>
-                    env.configuration.pathsBook.config.split('/').slice(-1),
-                ),
-                style: { 'font-size': 'large' },
+                innerText: {
+                    source$: environment$,
+                    vdomMap: (
+                        env: pyYw.Routers.Environment.EnvironmentStatusResponse,
+                    ) =>
+                        `${env.configuration.pathsBook.config
+                            .split('/')
+                            .slice(-1)}`,
+                },
+                style: { fontSize: 'large' },
             },
         ]
     }
 }
 
-class ConnectionView implements VirtualDOM {
-    public readonly children: VirtualDOM[]
+class ConnectionView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+    public readonly children: ChildrenLike
 
     constructor(params: { state: AppState }) {
         this.children = [
-            child$(
-                params.state.environment$,
-                (
+            {
+                source$: params.state.environment$,
+                vdomMap: (
                     environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
                 ) => {
                     // This has to be removed when upgrading http/clients to 1.0.5
                     // There is a mismatch: it is now (1.0.4) exposed (wrongly) as remoteGateway
                     const remoteInfo = environment['remoteGatewayInfo']
                     return {
+                        tag: 'div',
                         class: 'd-flex align-items-center justify-content-center',
                         children: [
                             {
+                                tag: 'div',
                                 class:
                                     'fas fa-wifi px-2 ' +
                                     (remoteInfo.connected
@@ -86,12 +106,13 @@ class ConnectionView implements VirtualDOM {
                                         : 'fv-text-error'),
                             },
                             {
-                                innerText: remoteInfo.host,
+                                tag: 'div',
+                                innerText: `${remoteInfo.host}`,
                             },
                         ],
                     }
                 },
-            ),
+            },
         ]
     }
 }
@@ -104,6 +125,7 @@ export class DevPortalTopBannerView extends TopBannerView {
         const loadInProgress$ = new BehaviorSubject(false)
         super({
             innerView: {
+                tag: 'div',
                 class: 'd-flex align-items-center justify-content-around flex-grow-1 flex-wrap',
                 children: [
                     new ConnectionView({ state: params.state }),

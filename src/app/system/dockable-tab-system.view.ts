@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import {
     commonClassesLeftSideNav,
     leftNavSectionAttr$,
@@ -39,7 +39,12 @@ export class SystemTab extends LeftNavTab<SystemState, SystemTabView> {
 /**
  * @category View
  */
-export class SystemTabView implements VirtualDOM {
+export class SystemTabView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group States
      */
@@ -60,7 +65,7 @@ export class SystemTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { systemState: SystemState }) {
         Object.assign(this, params)
@@ -93,6 +98,7 @@ export class SectionLogs extends Section {
             }),
         })
     }
+
     constructor(params: { systemState: SystemState }) {
         super({
             header: new SectionHeader({
@@ -131,6 +137,7 @@ export class SectionJsEditor extends Section {
             }),
         })
     }
+
     constructor(params: { systemState: SystemState }) {
         super({
             header: new SectionHeader({

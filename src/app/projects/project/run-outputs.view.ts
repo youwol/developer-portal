@@ -1,4 +1,4 @@
-import { childrenAppendOnly$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { Observable } from 'rxjs'
 import { map } from 'rxjs/operators'
 import * as pyYw from '@youwol/local-youwol-client'
@@ -6,7 +6,12 @@ import * as pyYw from '@youwol/local-youwol-client'
 /**
  * @category View
  */
-export class RunOutputsView implements VirtualDOM {
+export class RunOutputsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -15,24 +20,27 @@ export class RunOutputsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(messages$: Observable<pyYw.ContextMessage>) {
         this.children = [
             {
+                tag: 'div',
                 style: {
-                    fontFamily: 'monospace',
+                    fontFamily: 'monospace' as const,
                     fontSize: 'x-small',
                     whiteSpace: 'pre',
                 },
-                children: childrenAppendOnly$(
-                    messages$.pipe(map((m) => [m])),
-                    (message) => {
+                children: {
+                    policy: 'append',
+                    source$: messages$.pipe(map((m) => [m])),
+                    vdomMap: (message: pyYw.ContextMessage<unknown>) => {
                         return {
-                            innerText: message.text,
+                            tag: 'div',
+                            innerText: `${message.text}`,
                         }
                     },
-                ),
+                },
             },
         ]
     }

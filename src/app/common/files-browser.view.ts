@@ -1,4 +1,4 @@
-import { children$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { BehaviorSubject, Observable } from 'rxjs'
 import { mergeMap } from 'rxjs/operators'
 import * as pyYw from '@youwol/local-youwol-client'
@@ -7,7 +7,12 @@ import { AttributeView } from './utils-view'
 /**
  * @category View
  */
-export class FilesBrowserView implements VirtualDOM {
+export class FilesBrowserView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -21,7 +26,7 @@ export class FilesBrowserView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -58,14 +63,19 @@ export class FilesBrowserView implements VirtualDOM {
             originLocationView(this.startingFolder, this.originFolderIndex),
             folderNavigationView(this.folderSelected$, this.originFolderIndex),
             {
+                tag: 'div',
                 class: 'my-4',
-                children: children$(this.items$, ({ files, folders }) => {
-                    const filesVDom = files.map((name) => fileView(name))
-                    const foldersVDom = folders.map((name) =>
-                        folderView(this.folderSelected$, name),
-                    )
-                    return [...foldersVDom, ...filesVDom]
-                }),
+                children: {
+                    policy: 'replace',
+                    source$: this.items$,
+                    vdomMap: ({ files, folders }) => {
+                        const filesVDom = files.map((name) => fileView(name))
+                        const foldersVDom = folders.map((name) =>
+                            folderView(this.folderSelected$, name),
+                        )
+                        return [...foldersVDom, ...filesVDom]
+                    },
+                },
             },
         ]
     }
@@ -74,11 +84,12 @@ export class FilesBrowserView implements VirtualDOM {
 function originLocationView(
     startingFolder: string,
     originFolderIndex: number,
-): VirtualDOM {
+): VirtualDOM<'div'> {
     if (originFolderIndex == 0) {
-        return {}
+        return { tag: 'div' }
     }
     return {
+        tag: 'div',
         class: 'my-2',
         children: [
             new AttributeView({
@@ -95,25 +106,32 @@ function originLocationView(
 function folderNavigationView(
     folderSelected$: BehaviorSubject<string>,
     originFolderIndex: number,
-) {
+): VirtualDOM<'div'> {
     return {
+        tag: 'div',
         class: 'd-flex',
-        children: children$(folderSelected$, (paths: string) =>
-            paths
-                .split('/')
-                .slice(originFolderIndex)
-                .map((element) => pathElementView(folderSelected$, element)),
-        ),
+        children: {
+            policy: 'replace',
+            source$: folderSelected$,
+            vdomMap: (paths: string) =>
+                paths
+                    .split('/')
+                    .slice(originFolderIndex)
+                    .map((element) =>
+                        pathElementView(folderSelected$, element),
+                    ),
+        },
     }
 }
 
 function pathElementView(
     folderSelected$: BehaviorSubject<string>,
     element: string,
-): VirtualDOM {
+): VirtualDOM<'div'> {
     const index = folderSelected$.getValue().split('/').indexOf(element)
 
     return {
+        tag: 'div',
         class: 'px-2 fv-pointer fv-hover-bg-background-alt border rounded',
         innerText: element,
         onclick: () =>
@@ -127,19 +145,24 @@ function pathElementView(
     }
 }
 
-function fileView(name: string): VirtualDOM {
+function fileView(name: string): VirtualDOM<'div'> {
     return {
+        tag: 'div',
         class: 'd-flex  align-items-center fv-text-disabled',
-        style: { 'user-select': 'none' },
-        children: [{ class: 'fas fa-file px-2' }, { innerText: name }],
+        style: { userSelect: 'none' },
+        children: [
+            { tag: 'div', class: 'fas fa-file px-2' },
+            { tag: 'div', innerText: name },
+        ],
     }
 }
 
 function folderView(
     folderSelected$: BehaviorSubject<string>,
     name: string,
-): VirtualDOM {
+): VirtualDOM<'div'> {
     return {
+        tag: 'div',
         class: 'fv-pointer d-flex align-items-center fv-hover-bg-background-alt',
         style: {
             userSelect: 'none',
@@ -148,9 +171,11 @@ function folderView(
             folderSelected$.next(`${folderSelected$.getValue()}/${name}`),
         children: [
             {
+                tag: 'div',
                 class: 'fas fa-folder px-2',
             },
             {
+                tag: 'div',
                 innerText: name,
             },
         ],

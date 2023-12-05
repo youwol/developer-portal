@@ -1,13 +1,18 @@
-import { attr$, childrenWithReplace$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { AppState, Screen } from './app-state'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { map } from 'rxjs/operators'
 import { DevPortalTopBannerView } from './top-banner.view'
 
 /**
  * @category View
  */
-export class AppView implements VirtualDOM {
+export class AppView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -22,7 +27,7 @@ export class AppView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor() {
         this.state = new AppState()
@@ -34,6 +39,7 @@ export class AppView implements VirtualDOM {
         this.children = [
             new DevPortalTopBannerView({ state: this.state }),
             {
+                tag: 'div',
                 class: 'flex-grow-1 d-flex',
                 style: {
                     minHeight: '0px',
@@ -48,7 +54,12 @@ export class AppView implements VirtualDOM {
 /**
  * @category View
  */
-export class ContentView implements VirtualDOM {
+export class ContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -69,30 +80,36 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
+        // ChickThis
 
-        const wrapChild$ = (targetScreen: Screen) => ({
-            class: attr$(this.state.selectedScreen$, (screen) =>
-                screen.viewId == targetScreen.viewId &&
-                screen.topic == targetScreen.topic
-                    ? 'h-100 w-100'
-                    : 'd-none',
-            ),
+        const wrapChild$ = (targetScreen: Screen): VirtualDOM<'div'> => ({
+            tag: 'div',
+            class: {
+                source$: this.state.selectedScreen$,
+                vdomMap: (screen: Screen) =>
+                    screen.viewId == targetScreen.viewId &&
+                    screen.topic == targetScreen.topic
+                        ? 'h-100 w-100'
+                        : 'd-none',
+            },
             children: [targetScreen.view],
         })
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100',
                 style: { minHeight: '0px' },
-                children: childrenWithReplace$(
-                    this.state.inMemoryScreens$.pipe(
+                children: {
+                    policy: 'sync',
+                    source$: this.state.inMemoryScreens$.pipe(
                         map((screens) => Object.values(screens)),
                     ),
-                    (s) => wrapChild$(s),
-                ),
+                    vdomMap: (s: Screen) => wrapChild$(s),
+                },
             },
         ]
     }

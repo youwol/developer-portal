@@ -1,21 +1,20 @@
 import {
-    attr$,
-    child$,
-    children$,
-    childrenAppendOnly$,
-    HTMLElement$,
-    Stream$,
+    ChildrenLike,
     VirtualDOM,
-} from '@youwol/flux-view'
-import { Switch } from '@youwol/fv-button'
+    AttributeLike,
+    RxHTMLElement,
+} from '@youwol/rx-vdom'
+
+import { Switch } from '@youwol/rx-button-views'
 import { BehaviorSubject, merge, Observable } from 'rxjs'
 import { filter, map, skip, take, tap } from 'rxjs/operators'
 import { AppState } from '../../app-state'
 import { filterCtxMessage } from '@youwol/http-primitives'
 import { TerminalView } from '../../common/terminal'
 import { CdnState } from '../cdn.state'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import * as pyYw from '@youwol/local-youwol-client'
+
 /**
  * @category View
  */
@@ -37,17 +36,19 @@ export class LogsTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class LogsTabView implements VirtualDOM {
+export class LogsTabView implements VirtualDOM<'div'> {
     /**
      * @group State
      */
     public readonly cdnState: CdnState
-
     /**
      * @group Immutable Constants
      */
     public readonly project: pyYw.Routers.Projects.Project
-
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -63,7 +64,7 @@ export class LogsTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { cdnState: CdnState }) {
         Object.assign(this, params)
@@ -76,7 +77,11 @@ export class LogsTabView implements VirtualDOM {
 /**
  * @category View
  */
-export class UpdatesView implements VirtualDOM {
+export class UpdatesView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -85,7 +90,7 @@ export class UpdatesView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -101,8 +106,9 @@ export class UpdatesView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
+
     constructor(params: { cdnState: CdnState }) {
         Object.assign(this, params)
         this.appState = this.cdnState.appState
@@ -129,20 +135,26 @@ export class UpdatesView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 d-flex justify-content-center flex-column flex-grow-1 overflow-auto',
-                children: children$(this.appState.environment$, () => {
-                    this.cdnState.collectUpdates()
-                    return [
-                        new SpinnerView({ cdnState: this.cdnState }),
-                        new DownloadBtnView({ cdnState: this.cdnState }),
-                        {
-                            class: 'flex-grow-1 mx-auto overflow-auto',
-                            children: [
-                                new TableView({ cdnState: this.cdnState }),
-                            ],
-                        },
-                    ]
-                }),
+                children: {
+                    policy: 'replace',
+                    source$: this.appState.environment$,
+                    vdomMap: () => {
+                        this.cdnState.collectUpdates()
+                        return [
+                            new SpinnerView({ cdnState: this.cdnState }),
+                            new DownloadBtnView({ cdnState: this.cdnState }),
+                            {
+                                tag: 'div',
+                                class: 'flex-grow-1 mx-auto overflow-auto',
+                                children: [
+                                    new TableView({ cdnState: this.cdnState }),
+                                ],
+                            },
+                        ]
+                    },
+                },
             },
             bottomNav,
         ]
@@ -152,7 +164,7 @@ export class UpdatesView implements VirtualDOM {
 /**
  * @category View
  */
-export class TableView implements VirtualDOM {
+export class TableView implements VirtualDOM<'table'> {
     /**
      * @group Immutable Constants
      */
@@ -172,7 +184,7 @@ export class TableView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -182,9 +194,7 @@ export class TableView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly connectedCallback: (
-        elem: HTMLElement$ & HTMLDivElement,
-    ) => void
+    public readonly connectedCallback: (elem: RxHTMLElement<'table'>) => void
 
     constructor(params: { cdnState: CdnState }) {
         Object.assign(this, params)
@@ -209,28 +219,25 @@ export class TableView implements VirtualDOM {
             },
             {
                 tag: 'tbody',
-                children: childrenAppendOnly$(
-                    this.cdnState.updatesEvents.updateChecksResponse$.pipe(
-                        map((d) => [d.data]),
-                    ),
-                    (d: pyYw.Routers.LocalCdn.CheckUpdateResponse) =>
+                children: {
+                    policy: 'append',
+                    source$:
+                        this.cdnState.updatesEvents.updateChecksResponse$.pipe(
+                            map((d) => [d.data]),
+                        ),
+                    vdomMap: (d: pyYw.Routers.LocalCdn.CheckUpdateResponse) =>
                         new RowView({
                             cdnState: this.cdnState,
                             firstResponse: d,
                         }),
-                    {
-                        orderingIndex: (
-                            data: pyYw.Routers.LocalCdn.CheckUpdateResponse,
-                        ) => this.orders[data.status],
-                    },
-                ),
+                },
             },
         ]
-        this.connectedCallback = (elem: HTMLElement$) =>
+        this.connectedCallback = (elem: RxHTMLElement<'table'>) =>
             elem.ownSubscriptions(sub)
     }
 
-    headerRowView() {
+    headerRowView(): VirtualDOM<'tr'> {
         return {
             tag: 'tr',
             style: {
@@ -252,7 +259,7 @@ type StatusType = pyYw.Routers.LocalCdn.UpdateStatus | 'pending' | 'error'
 /**
  * @category View
  */
-export class RowView implements VirtualDOM {
+export class RowView implements VirtualDOM<'tr'> {
     /**
      * @group Immutable DOM Constants
      */
@@ -261,11 +268,9 @@ export class RowView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
-    public readonly connectedCallback: (
-        elem: HTMLElement$ & HTMLDivElement,
-    ) => void
+    public readonly connectedCallback: (elem: RxHTMLElement<'tr'>) => void
 
     public readonly firstResponse: pyYw.Routers.LocalCdn.CheckUpdateResponse
     public readonly cdnState: CdnState
@@ -298,7 +303,7 @@ export class RowView implements VirtualDOM {
             this.withPackageDownloaded(),
             this.withError(),
         ]
-        this.connectedCallback = (elem: HTMLElement$) => {
+        this.connectedCallback = (elem: RxHTMLElement<'tr'>) => {
             elem.ownSubscriptions(...subs)
         }
         this.children = [
@@ -308,17 +313,18 @@ export class RowView implements VirtualDOM {
             ),
             new SimpleCellView(this.remoteVersion),
             new StatusCellView(this.rowInfo$.pipe(map((info) => info.status))),
-            child$(
-                this.rowInfo$.pipe(map((info) => info.toggleVisible)),
-                (visible) => {
+
+            {
+                source$: this.rowInfo$.pipe(map((info) => info.toggleVisible)),
+                vdomMap: (visible) => {
                     return visible
                         ? this.toggleView({
                               name: this.name,
                               version: this.remoteVersion,
                           })
-                        : {}
+                        : { tag: 'div' }
                 },
-            ),
+            },
         ]
     }
 
@@ -391,7 +397,13 @@ export class RowView implements VirtualDOM {
             })
     }
 
-    toggleView({ name, version }: { name: string; version: string }) {
+    toggleView({
+        name,
+        version,
+    }: {
+        name: string
+        version: string
+    }): VirtualDOM<'td'> {
         const included = this.cdnState.downloadQueue$
             .getValue()
             .find((d) => d.packageName == name && d.version == version)
@@ -403,10 +415,11 @@ export class RowView implements VirtualDOM {
         return {
             tag: 'td',
             class: 'p-2',
-            children: [view],
-            connectedCallback: (elem: HTMLElement$) => {
+            children: [view as VirtualDOM<'div'>],
+            connectedCallback: (elem: RxHTMLElement<'td'>) => {
                 elem.ownSubscriptions(
                     // skip(1) to only get the 'onclick' event, brittle
+                    // create new version of fv-button => 0.2.0-wip
                     view.state.value$.pipe(skip(1)).subscribe(() => {
                         this.cdnState.toggleInDownloadQueue(name, version)
                     }),
@@ -419,7 +432,7 @@ export class RowView implements VirtualDOM {
 /**
  * @category View
  */
-export class SimpleCellView implements VirtualDOM {
+export class SimpleCellView implements VirtualDOM<'td'> {
     /**
      * @group Immutable DOM Constants
      */
@@ -429,22 +442,21 @@ export class SimpleCellView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly class = 'px-2'
-
     /**
      * @group Immutable DOM Constants
      */
-    public readonly innerText: string | Stream$<string, string>
+    public readonly innerText: AttributeLike<string>
 
     constructor(text: string | Observable<string>) {
-        this.innerText =
-            typeof text == 'string' ? text : attr$(text, (content) => content)
+        this.innerText = text
+        // attr$(text, (content) => content)
     }
 }
 
 /**
  * @category View
  */
-export class StatusCellView implements VirtualDOM {
+export class StatusCellView implements VirtualDOM<'td'> {
     /**
      * @group Immutable Constants
      */
@@ -482,15 +494,33 @@ export class StatusCellView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(status$: Observable<StatusType>) {
         this.children = [
             {
-                class: attr$(status$, (status) => this.statusIcon[status]),
+                tag: 'div',
+                class: {
+                    source$: status$,
+                    vdomMap: (
+                        status:
+                            | pyYw.Routers.LocalCdn.UpdateStatus
+                            | 'pending'
+                            | 'error',
+                    ) => this.statusIcon[status],
+                },
             },
             {
-                innerText: attr$(status$, (status) => this.statusName[status]),
+                tag: 'div',
+                innerText: {
+                    source$: status$,
+                    vdomMap: (
+                        status:
+                            | pyYw.Routers.LocalCdn.UpdateStatus
+                            | 'pending'
+                            | 'error',
+                    ) => this.statusName[status],
+                },
             },
         ]
     }
@@ -499,7 +529,11 @@ export class StatusCellView implements VirtualDOM {
 /**
  * @category View
  */
-class SpinnerView implements VirtualDOM {
+class SpinnerView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -508,7 +542,7 @@ class SpinnerView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -519,19 +553,20 @@ class SpinnerView implements VirtualDOM {
         Object.assign(this, params)
 
         this.children = [
-            child$(
-                merge(
+            {
+                source$: merge(
                     this.cdnState.updatesEvents.messages$.pipe(take(1)),
                     this.cdnState.updatesEvents.updatesChecksResponse$,
                 ),
-                (d: pyYw.ContextMessage) => {
+                vdomMap: (d: pyYw.ContextMessage) => {
                     return d.labels.includes('CheckUpdatesResponse')
-                        ? {}
+                        ? { tag: 'div' }
                         : {
+                              tag: 'div',
                               classes: 'fas fa-spinner fa-spin',
                           }
                 },
-            ),
+            },
         ]
     }
 }
@@ -539,7 +574,11 @@ class SpinnerView implements VirtualDOM {
 /**
  * @category View
  */
-export class DownloadBtnView implements VirtualDOM {
+export class DownloadBtnView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -548,7 +587,7 @@ export class DownloadBtnView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -559,16 +598,26 @@ export class DownloadBtnView implements VirtualDOM {
         Object.assign(this, params)
 
         this.children = [
-            child$(this.cdnState.updatesEvents.updatesChecksResponse$, () => {
-                return {
-                    class: 'fv-bg-secondary border rounded fv-hover-xx-lighter fv-pointer p-2',
-                    innerText: attr$(
-                        this.cdnState.downloadQueue$,
-                        (values) => `Download (${values.length})`,
-                    ),
-                    onclick: () => this.cdnState.proceedDownloads(),
-                }
-            }),
+            {
+                source$: this.cdnState.updatesEvents.updatesChecksResponse$,
+                vdomMap: () => {
+                    return {
+                        tag: 'div',
+                        class: 'fv-bg-secondary border rounded fv-hover-xx-lighter fv-pointer p-2',
+                        innerText: {
+                            source$: this.cdnState.downloadQueue$,
+                            vdomMap: (
+                                values: pyYw.Routers.LocalCdn.DownloadPackageBody[],
+                            ) => `Download (${values.length})`,
+                        },
+                        //     attr$(
+                        //     this.cdnState.downloadQueue$,
+                        //     (values) => `Download (${values.length})`,
+                        // ),
+                        onclick: () => this.cdnState.proceedDownloads(),
+                    }
+                },
+            },
         ]
     }
 }
