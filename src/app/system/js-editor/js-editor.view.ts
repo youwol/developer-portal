@@ -1,6 +1,7 @@
-import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { SystemState } from '../system.state'
-import { install } from '@youwol/webpm-client'
+import { jsPlaygroundView } from '@youwol/grapes-coding-playgrounds'
+import { from } from 'rxjs'
 
 const defaultExeSrc = `
 return async ({debug}) => {
@@ -43,20 +44,19 @@ export class JsEditorView implements VirtualDOM<'div'> {
             {
                 tag: 'div',
                 class: 'w-100 h-100',
-                connectedCallback: (elem: RxHTMLElement<'div'>) => {
-                    elem.setAttribute('src', defaultExeSrc)
-                    elem.setAttribute('src-test', defaultTestSrc)
-                    install({
-                        scripts: [
-                            '@youwol/grapes-coding-playgrounds#latest~dist/@youwol/grapes-coding-playgrounds/js-playground.js',
-                        ],
-                        aliases: {
-                            lib: `@youwol/grapes-coding-playgrounds/js-playground_APIv01`,
-                        },
-                    }).then((w) => {
-                        w['lib'].renderElement(elem)
-                    })
-                },
+                children: [
+                    {
+                        source$: from(
+                            jsPlaygroundView({
+                                mode: 'split',
+                                src: defaultExeSrc,
+                                srcTest: defaultTestSrc,
+                                returnType: 'vdom',
+                            }),
+                        ),
+                        vdomMap: (view: AnyVirtualDOM) => view,
+                    },
+                ],
             },
         ]
     }
