@@ -26,7 +26,8 @@ webpm_dependencies = {
     '@youwol/os-widgets': '^0.1.1',
     'd3': '^7.7.0',
     'codemirror': '^5.52.0',
-    '@youwol/rx-code-mirror-editors': '^0.4.1'
+    '@youwol/rx-code-mirror-editors': '^0.4.1',
+    '@youwol/grapes-coding-playgrounds': '^0.2.0'
 }
 
 template = Template(
@@ -44,7 +45,9 @@ template = Template(
             }
         ),
         devTime={
-            "lz-string": "^1.4.4"
+            "lz-string": "^1.4.4",
+            #  this is used only for type declarations (from @youwol/grapes-coding-playgrounds)
+            "grapesjs": "0.20.4",
         }
     ),
     userGuide=True,
