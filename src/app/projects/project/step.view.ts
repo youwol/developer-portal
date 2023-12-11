@@ -4,9 +4,9 @@ import {
     RxHTMLElement,
     VirtualDOM,
 } from '@youwol/rx-vdom'
-import * as fluxView from '@youwol/rx-vdom'
-import * as rxjs from 'rxjs'
-import * as cdnClient from '@youwol/webpm-client'
+// import * as fluxView from '@youwol/rx-vdom'
+// import * as rxjs from 'rxjs'
+import * as webpmClient from '@youwol/webpm-client'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { ArtifactsView } from './artifacts.view'
@@ -14,8 +14,8 @@ import { ManifestView } from './manifest.view'
 import { RunOutputsView } from './run-outputs.view'
 import { ProjectsState } from '../projects.state'
 import { Modal } from '@youwol/rx-group-views'
-import { merge } from 'rxjs'
-import { take } from 'rxjs/operators'
+import { from, merge, mergeMap } from 'rxjs'
+import { take, tap } from 'rxjs/operators'
 
 /**
  * @category View
@@ -79,17 +79,20 @@ export class StepModal implements VirtualDOM<'div'> {
                         stepId: this.step.id,
                         flowId: this.flowId,
                     })
-                    .pipe(raiseHTTPErrors()),
+                    .pipe(
+                        raiseHTTPErrors(),
+                        mergeMap((js) => from([js])),
+                        tap((v) => v),
+                    ),
                 vdomMap: (js: string) => {
+                    console.log('js :', typeof js)
                     return new Function(js)()({
                         modalState: this.modalState,
                         project: this.project,
                         flowId: this.flowId,
                         stepId: this.step.id,
                         projectsRouter,
-                        fluxView,
-                        rxjs,
-                        cdnClient,
+                        webpmClient,
                     })
                 },
             },
