@@ -4,8 +4,6 @@ import {
     RxHTMLElement,
     VirtualDOM,
 } from '@youwol/rx-vdom'
-// import * as fluxView from '@youwol/rx-vdom'
-// import * as rxjs from 'rxjs'
 import * as webpmClient from '@youwol/webpm-client'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
@@ -213,36 +211,6 @@ export class LastRunStepView implements VirtualDOM<'div'> {
                     }
                 },
             },
-            // child$(
-            //     stepStream$.status$,
-            //     (data: pyYw.Routers.Projects.PipelineStepStatusResponse) => {
-            //         return {
-            //             tag:'div',
-            //             class: 'flex-grow-1 d-flex w-100',
-            //             children: [
-            //                 {
-            //                     tag:'div',
-            //                     class: ' d-flex flex-column w-50 overflow-auto',
-            //                     children: [
-            //                         new RunOutputsView(stepStream$.log$),
-            //                         data.manifest
-            //                             ? new ManifestView(data.manifest)
-            //                             : undefined,
-            //                     ],
-            //                 },
-            //                 {
-            //                     tag:'div',
-            //                     class: 'w-50',
-            //                     children: [
-            //                         data.artifacts && data.artifacts.length > 0
-            //                             ? new ArtifactsView(data.artifacts)
-            //                             : undefined,
-            //                     ],
-            //                 },
-            //             ],
-            //         }
-            //     },
-            // ),
         ]
     }
 }

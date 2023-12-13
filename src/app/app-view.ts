@@ -84,8 +84,6 @@ export class ContentView implements VirtualDOM<'div'> {
 
     constructor(params: { state: AppState }) {
         Object.assign(this, params)
-        // ChickThis
-
         const wrapChild$ = (targetScreen: Screen): VirtualDOM<'div'> => ({
             tag: 'div',
             class: {

@@ -379,7 +379,6 @@ export class TerminalView implements VirtualDOM<'div'> {
         })
 
         this.children = [
-            //new TerminalHeaderView({ state: this.state }),
             {
                 source$: this.state.expanded$,
                 vdomMap: (expanded) =>

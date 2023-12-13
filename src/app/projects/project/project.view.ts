@@ -117,29 +117,6 @@ export class ProjectView implements VirtualDOM<'div'> {
                             }
                         },
                     },
-                    // child$(events.selectedStep$, ({ flowId, step }) => {
-                    //     return {
-                    //         class: 'd-flex flex-grow-1 w-100',
-                    //         children: [
-                    //             child$(
-                    //                 this.projectsState.projectEvents[
-                    //                     this.project.id
-                    //                 ].selectedStep$,
-                    //                 (selection) => {
-                    //                     return selection.step == undefined
-                    //                         ? new FlowSummaryView(params)
-                    //                         : new LastRunStepView({
-                    //                               projectsState:
-                    //                                   this.projectsState,
-                    //                               project: this.project,
-                    //                               flowId,
-                    //                               step,
-                    //                           })
-                    //                 },
-                    //             ),
-                    //         ],
-                    //     }
-                    // }),
                 ],
             },
             bottomNav,
@@ -353,20 +330,6 @@ export class FlowSummaryView implements VirtualDOM<'div'> {
                     return new ArtifactsView(artifacts)
                 },
             },
-            // child$(
-            //     selectedStep$.pipe(
-            //         mergeMap(({ flowId }) => {
-            //             return this.projectsState.projectsClient.getArtifacts$({
-            //                 projectId: this.project.id,
-            //                 flowId,
-            //             })
-            //         }),
-            //         raiseHTTPErrors(),
-            //     ),
-            //     ({ artifacts }) => {
-            //         return new ArtifactsView(artifacts)
-            //     },
-            // ),
         ]
     }
 }

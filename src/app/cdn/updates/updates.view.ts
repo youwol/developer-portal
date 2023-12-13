@@ -419,7 +419,6 @@ export class RowView implements VirtualDOM<'tr'> {
             connectedCallback: (elem: RxHTMLElement<'td'>) => {
                 elem.ownSubscriptions(
                     // skip(1) to only get the 'onclick' event, brittle
-                    // create new version of fv-button => 0.2.0-wip
                     view.state.value$.pipe(skip(1)).subscribe(() => {
                         this.cdnState.toggleInDownloadQueue(name, version)
                     }),
@@ -449,7 +448,6 @@ export class SimpleCellView implements VirtualDOM<'td'> {
 
     constructor(text: string | Observable<string>) {
         this.innerText = text
-        // attr$(text, (content) => content)
     }
 }
 
@@ -610,10 +608,6 @@ export class DownloadBtnView implements VirtualDOM<'div'> {
                                 values: pyYw.Routers.LocalCdn.DownloadPackageBody[],
                             ) => `Download (${values.length})`,
                         },
-                        //     attr$(
-                        //     this.cdnState.downloadQueue$,
-                        //     (values) => `Download (${values.length})`,
-                        // ),
                         onclick: () => this.cdnState.proceedDownloads(),
                     }
                 },
