@@ -42,7 +42,7 @@ export class JsEditorView implements VirtualDOM {
                     elem.setAttribute('src-test', defaultTestSrc)
                     install({
                         scripts: [
-                            '@youwol/grapes-coding-playgrounds#latest~dist/@youwol/grapes-coding-playgrounds/js-playground.js',
+                            '@youwol/grapes-coding-playgrounds#^0.1.2~dist/@youwol/grapes-coding-playgrounds/js-playground.js',
                         ],
                         aliases: {
                             lib: `@youwol/grapes-coding-playgrounds/js-playground_APIv01`,
