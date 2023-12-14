@@ -6,7 +6,7 @@ const runTimeDependencies = {
         "@youwol/http-primitives": "^0.1.2",
         "@youwol/local-youwol-client": "^0.1.3",
         "@youwol/cdn-client": "^2.1.2",
-        "@youwol/flux-view": "^1.0.3",
+        "@youwol/flux-view": "^1.2.2",
         "@youwol/fv-group": "^0.2.1",
         "@youwol/fv-input": "^0.2.1",
         "@youwol/fv-button": "^0.1.1",
