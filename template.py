@@ -46,6 +46,14 @@ template = Template(
             "lz-string": "^1.4.4"
         }
     ),
+    inPackageJson={
+        # `@youwol/fv-code-mirror-editors` use `"typescript":"^5.2.2"` which resolves to higher version and
+        # incompatibility with the dependency "typescript":"5.2.2" of this project. Resolution is forced
+        # for `@youwol/fv-code-mirror-editors` hereafter.
+        "resolutions": {
+            "@youwol/fv-code-mirror-editors/typescript": "5.2.2"
+        }
+    },
     userGuide=True,
     devServer=DevServer(
         port=3000
