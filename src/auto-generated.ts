@@ -13,7 +13,7 @@ const runTimeDependencies = {
         "@youwol/rx-tree-views": "^0.3.0",
         "@youwol/rx-tab-views": "^0.3.0",
         "@youwol/os-top-banner": "^0.2.0",
-        "@youwol/os-widgets": "^0.1.1",
+        "@youwol/os-widgets": "^0.2.2",
         "d3": "^7.7.0",
         "codemirror": "^5.52.0",
         "@youwol/rx-code-mirror-editors": "^0.4.1",
@@ -36,7 +36,7 @@ const externals = {
     "@youwol/rx-tree-views": "window['@youwol/rx-tree-views_APIv03']",
     "@youwol/rx-tab-views": "window['@youwol/rx-tab-views_APIv03']",
     "@youwol/os-top-banner": "window['@youwol/os-top-banner_APIv02']",
-    "@youwol/os-widgets": "window['@youwol/os-widgets_APIv01']",
+    "@youwol/os-widgets": "window['@youwol/os-widgets_APIv02']",
     "d3": "window['d3_APIv7']",
     "codemirror": "window['CodeMirror_APIv5']",
     "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv04']",
@@ -93,7 +93,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/os-top-banner"
     },
     "@youwol/os-widgets": {
-        "apiKey": "01",
+        "apiKey": "02",
         "exportedSymbol": "@youwol/os-widgets"
     },
     "d3": {

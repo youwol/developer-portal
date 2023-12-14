@@ -1311,15 +1311,6 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@youwol/cdn-client@^2.0.4", "@youwol/cdn-client@^2.1.0":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@youwol/cdn-client/-/cdn-client-2.1.2.tgz#8f026cebf7b77e136dbc00f5e3b0fdd8fa2e2673"
-  integrity sha512-BCsWqwid8e5UGPZZr9ig3wH+YtEHCCF11sK2Pe8pEwaAas+CzuemDf6ZfQLlhxr/o7JjUOsb1IUk3W0JCv7J0A==
-  dependencies:
-    "@youwol/flux-view" "^1.1.0"
-    rxjs "^6.5.5"
-    semver "^7.3.4"
-
 "@youwol/eslint-config@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@youwol/eslint-config/-/eslint-config-1.0.0.tgz#867c06947cc32085d9bac832d4905a36b11442ac"
@@ -1335,30 +1326,6 @@
     eslint-plugin-tsdoc "^0.2.17"
     eslint-plugin-unused-imports "^3.0.0"
 
-"@youwol/flux-view@^1.0.3", "@youwol/flux-view@^1.1.0":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@youwol/flux-view/-/flux-view-1.1.1.tgz#66c41672b913b99ace5ce6e70d05ad6a9daea579"
-  integrity sha512-/EWXYnRRpRI5BMu9IRcwqPJmlf9MZQMS6FaRp3yCzr9RAxhuAbvSZUDN18OJGg3hUvUtRTmQOUWtfQaVypH8Tg==
-  dependencies:
-    "@ungap/custom-elements" "1.2.0"
-    rxjs "^6.5.5"
-
-"@youwol/fv-group@^0.2.3":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-group/-/fv-group-0.2.5.tgz#8ce6013abfd6bd96d67c08096b6c3b6969a5ca34"
-  integrity sha512-L5v2kzynjJmvayiVBIAtBQNV/J5KUppSGlSxuar9rNKtv8ZeVpexcCF/8FDC5+f8NVmRP6O+PJgqvgSZ6o0OAw==
-  dependencies:
-    "@youwol/flux-view" "^1.0.3"
-    rxjs "^6.5.5"
-
-"@youwol/fv-input@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@youwol/fv-input/-/fv-input-0.2.1.tgz#a93bb027b513eb15062c00c93001c31b23851f6c"
-  integrity sha512-JfZlhyjWZ/g1OmrZSCR/T8l77iSz1QFpXMwIH5sPkyy90unEte+0KynUabHKt8uphOhnkUVxkNjy5IDlcxCGFA==
-  dependencies:
-    "@youwol/flux-view" "^1.0.3"
-    rxjs "^6.5.5"
-
 "@youwol/grapes-coding-playgrounds@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@youwol/grapes-coding-playgrounds/-/grapes-coding-playgrounds-0.2.0.tgz#7a4ba94a614391558d70402a2b9b79577a580ff7"
@@ -1373,14 +1340,6 @@
     rxjs "^7.5.6"
     typescript "5.2.2"
 
-"@youwol/http-clients@^2.0.1", "@youwol/http-clients@^2.0.5":
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-2.0.6.tgz#f5176e400ebf6e4d349709dfe12554e6021b6223"
-  integrity sha512-tA05qvFqHDr9Znwtl+4d7UXJ0N1aQnNFKEeChmxWmdDiApONcVHQOCjg0VnhLyvTbMru0mU9DK+M+QBmmQXpIA==
-  dependencies:
-    "@youwol/http-primitives" "^0.1.2"
-    rxjs "^6.5.5"
-
 "@youwol/http-clients@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@youwol/http-clients/-/http-clients-3.0.0.tgz#13c1f72666a1402c45f559cde0117e37d5ced192"
@@ -1388,13 +1347,6 @@
   dependencies:
     "@youwol/http-primitives" "^0.2.0"
     rxjs "^7.5.6"
-
-"@youwol/http-primitives@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@youwol/http-primitives/-/http-primitives-0.1.2.tgz#0ac9e0d660508157dd777fd6c8f83fc4bca9d540"
-  integrity sha512-wtSarBFx1qf/tOvcX9eAj3PsT4LEqI9IbD+mUf2xKvH4XKkrIUaAIdcIX9rg5eFKYVeQAi3RlTyTQyQz14/X+A==
-  dependencies:
-    rxjs "^6.5.5"
 
 "@youwol/http-primitives@^0.2.0":
   version "0.2.0"
@@ -1432,18 +1384,6 @@
     "@youwol/rx-vdom" "^1.0.1"
     rxjs "^7.5.6"
 
-"@youwol/os-core@^0.1.14":
-  version "0.1.15"
-  resolved "https://registry.yarnpkg.com/@youwol/os-core/-/os-core-0.1.15.tgz#6d41b236d6df2fee745dfb50df62e44a9ebe9e12"
-  integrity sha512-ysa7LDZRT9yyM2CCAxFXTIaZTLuv/wvGGJ9fOSXBm8Q88vtJDOPtEnbvHtVKZdPF5tX341cO6krPUWDTtBCpGg==
-  dependencies:
-    "@youwol/cdn-client" "^2.1.0"
-    "@youwol/flux-view" "^1.0.3"
-    "@youwol/http-clients" "^2.0.1"
-    "@youwol/http-primitives" "^0.1.2"
-    rxjs "^6.5.5"
-    uuid "^8.3.2"
-
 "@youwol/os-core@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@youwol/os-core/-/os-core-0.2.0.tgz#d0335f5bd6cae90ea3084f2d7a4401dc40276ce7"
@@ -1464,20 +1404,20 @@
     "@youwol/os-core" "^0.2.0"
     "@youwol/rx-vdom" "^1.0.1"
 
-"@youwol/os-widgets@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@youwol/os-widgets/-/os-widgets-0.1.1.tgz#ca57da48f8317d8631c838e095ec491d27217e99"
-  integrity sha512-wqZw8xjJMLNLL1Bd8bX7K36In5krd6w4gcWdO0Q2umT51B58KnLotOZNsNfISr1ZzW0va2RZru4uF3CVrD8RmA==
+"@youwol/os-widgets@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@youwol/os-widgets/-/os-widgets-0.2.2.tgz#e680e99cd783748e019c764308794749d1d48110"
+  integrity sha512-bz6qJ0AmXftBCfkrRIDN4avW+r3MWKaJxBUNCvGIv209HWRGSh8wRv+fpuKf2289c/oHzgu4DcKtaDE4FX82SQ==
   dependencies:
-    "@youwol/cdn-client" "^2.0.4"
-    "@youwol/flux-view" "^1.0.3"
-    "@youwol/fv-group" "^0.2.3"
-    "@youwol/fv-input" "^0.2.1"
-    "@youwol/http-clients" "^2.0.5"
-    "@youwol/http-primitives" "^0.1.2"
-    "@youwol/os-core" "^0.1.14"
+    "@youwol/http-clients" "^3.0.0"
+    "@youwol/http-primitives" "^0.2.0"
+    "@youwol/os-core" "^0.2.0"
+    "@youwol/rx-group-views" "^0.3.0"
+    "@youwol/rx-input-views" "^0.3.0"
+    "@youwol/rx-vdom" "^1.0.1"
+    "@youwol/webpm-client" "^3.0.0"
     marked "^4.2.3"
-    rxjs "^6.5.5"
+    rxjs "^7.5.6"
 
 "@youwol/prettier-config@1.0.0":
   version "1.0.0"
@@ -5821,13 +5761,6 @@ rw@1:
   resolved "https://registry.yarnpkg.com/rw/-/rw-1.3.3.tgz#3f862dfa91ab766b14885ef4d01124bfda074fb4"
   integrity sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==
 
-rxjs@^6.5.5:
-  version "6.6.7"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
-  integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
-  dependencies:
-    tslib "^1.9.0"
-
 rxjs@^7.5.6:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
@@ -6471,7 +6404,7 @@ tsconfig-paths@^3.14.2:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.8.1:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
