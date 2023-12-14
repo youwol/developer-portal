@@ -1,10 +1,12 @@
-import * as cdnClient from '@youwol/cdn-client'
+import * as webpmClient from '@youwol/webpm-client'
+
 import { setup } from '../auto-generated'
+
 export {}
 require('./style.css')
 
 await setup.installMainModule({
-    cdnClient,
+    cdnClient: webpmClient,
     installParameters: {
         scripts: ['codemirror#5.52.0~mode/python.min.js'],
         css: [

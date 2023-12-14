@@ -1,5 +1,5 @@
-import { VirtualDOM } from '@youwol/flux-view'
-import { ImmutableTree } from '@youwol/fv-tree'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
+import { ImmutableTree } from '@youwol/rx-tree-views'
 import { of } from 'rxjs'
 
 /**
@@ -45,7 +45,12 @@ export class LogDataNode extends ImmutableTree.Node {
 /**
  * @category View
  */
-export class DataView implements VirtualDOM {
+export class DataView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -54,7 +59,7 @@ export class DataView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
@@ -69,15 +74,23 @@ export class DataView implements VirtualDOM {
         const headerView = (
             _state: ImmutableTree.State<LogDataNode>,
             node: LogDataNode,
-        ) => {
-            const title = { innerText: node.name }
+        ): VirtualDOM<'div'> => {
+            const title: VirtualDOM<'div'> = {
+                tag: 'div',
+                innerText: node.name,
+            }
             return node.children
                 ? title
                 : {
+                      tag: 'div',
                       class: 'd-flex align-items-baseline',
                       children: [
                           title,
-                          { tag: 'i', class: 'px-2', innerText: node.data },
+                          {
+                              tag: 'i',
+                              class: 'px-2',
+                              innerText: `${node.data}`,
+                          },
                       ],
                   }
         }

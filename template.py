@@ -10,22 +10,24 @@ folder_path = Path(__file__).parent
 pkg_json = parse_json(folder_path / 'package.json')
 
 webpm_dependencies = {
-    'rxjs': '^6.5.5',
-    '@youwol/http-clients': '^2.0.1',
-    '@youwol/http-primitives': '^0.1.2',
-    '@youwol/local-youwol-client': '^0.1.3',
-    '@youwol/cdn-client': '^2.1.2',
-    '@youwol/flux-view': '^1.0.3',
-    '@youwol/fv-group': '^0.2.1',
-    '@youwol/fv-input': '^0.2.1',
-    '@youwol/fv-button': '^0.1.1',
-    '@youwol/fv-tree': '^0.2.3',
-    '@youwol/fv-tabs': '^0.2.1',
-    '@youwol/os-top-banner': '^0.1.1',
-    '@youwol/os-widgets': '^0.1.1',
+    'rxjs': '^7.5.6',
+    '@youwol/http-clients': '^3.0.0',
+    '@youwol/http-primitives': '^0.2.0',
+    '@youwol/local-youwol-client': '^0.2.0',
+    #
+    '@youwol/webpm-client': '^3.0.0',
+    '@youwol/rx-vdom': '^1.0.1',
+    '@youwol/rx-group-views': '^0.3.0',
+    '@youwol/rx-input-views': '^0.3.0',
+    '@youwol/rx-button-views': '^0.2.0',
+    '@youwol/rx-tree-views': '^0.3.0',
+    '@youwol/rx-tab-views': '^0.3.0',
+    '@youwol/os-top-banner': '^0.2.0',
+    '@youwol/os-widgets': '^0.2.2',
     'd3': '^7.7.0',
     'codemirror': '^5.52.0',
-    '@youwol/fv-code-mirror-editors': '^0.3.1'
+    '@youwol/rx-code-mirror-editors': '^0.4.1',
+    '@youwol/grapes-coding-playgrounds': '^0.2.0'
 }
 
 template = Template(
@@ -43,7 +45,9 @@ template = Template(
             }
         ),
         devTime={
-            "lz-string": "^1.4.4"
+            "lz-string": "^1.4.4",
+            #  this is used only for type declarations (from @youwol/grapes-coding-playgrounds)
+            "grapesjs": "0.20.4",
         }
     ),
     userGuide=True,

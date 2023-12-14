@@ -1,4 +1,3 @@
-import { HTMLElement$, VirtualDOM } from '@youwol/flux-view'
 import * as d3 from 'd3'
 import {
     Dag,
@@ -11,11 +10,16 @@ import { combineLatest, merge } from 'rxjs'
 import * as pyYw from '@youwol/local-youwol-client'
 import { instanceOfStepStatus, ProjectsState } from '../projects.state'
 import { map } from 'rxjs/operators'
+import { RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
 
 /**
  * @category View
  */
-export class DagFlowView implements VirtualDOM {
+export class DagFlowView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -57,7 +61,7 @@ export class DagFlowView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
+    connectedCallback: (elem: RxHTMLElement<'div'>) => void
 
     /**
      * @group Immutable Constants
@@ -190,7 +194,7 @@ export class DagFlowView implements VirtualDOM {
     }) {
         Object.assign(this, params)
         this.dag = parseDag(this.project, this.flowId)
-        this.connectedCallback = (elem: HTMLElement$ & HTMLDivElement) => {
+        this.connectedCallback = (elem: RxHTMLElement<'div'>) => {
             const svg = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'svg',

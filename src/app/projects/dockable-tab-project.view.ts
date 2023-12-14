@@ -1,4 +1,4 @@
-import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -40,7 +40,12 @@ export class ProjectsTab extends LeftNavTab<ProjectsState, ProjectsTabView> {
 /**
  * @category View
  */
-export class ProjectsTabView implements VirtualDOM {
+export class ProjectsTabView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group State
      */
@@ -61,7 +66,7 @@ export class ProjectsTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { projectsState: ProjectsState }) {
         Object.assign(this, params)
@@ -89,6 +94,7 @@ export class SectionDashboard extends Section {
     public readonly onclick = () => {
         this.projectsState.selectDashboard()
     }
+
     constructor(params: { projectsState: ProjectsState }) {
         super({
             header: new SectionHeader({
@@ -122,10 +128,12 @@ export class SectionNewProject extends Section {
                 icon: 'fas fa-plus-square fv-pointer',
             }),
             content: {
+                tag: 'div',
                 class: 'pl-4 flex-grow-1 overflow-auto',
-                children: children$(
-                    projectsState.appState.environment$,
-                    (
+                children: {
+                    policy: 'replace',
+                    source$: projectsState.appState.environment$,
+                    vdomMap: (
                         environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
                     ) => {
                         return environment.configuration.projects.templates.map(
@@ -136,7 +144,7 @@ export class SectionNewProject extends Section {
                                 }),
                         )
                     },
-                ),
+                },
             },
         })
     }
@@ -145,7 +153,12 @@ export class SectionNewProject extends Section {
 /**
  * @category View
  */
-export class ProjectItemView {
+export class ProjectItemView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -163,7 +176,7 @@ export class ProjectItemView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         projectsState: ProjectsState
@@ -172,6 +185,7 @@ export class ProjectItemView {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: leftNavSectionAttr$({
                     selectedScreen$:
                         params.projectsState.appState.selectedScreen$,
@@ -180,9 +194,11 @@ export class ProjectItemView {
                 }),
                 children: [
                     {
-                        innerText: this.project.name,
+                        tag: 'div',
+                        innerText: `${this.project.name}`,
                     },
                     {
+                        tag: 'div',
                         class: 'fas fa-times fv-text-error fv-xx-darker fv-hover-xx-lighter pl-2 mx-2',
                         onclick: (ev) => {
                             ev.stopPropagation()
@@ -201,7 +217,12 @@ export class ProjectItemView {
 /**
  * @category View
  */
-export class ProjectTemplateItemView {
+export class ProjectTemplateItemView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -219,7 +240,8 @@ export class ProjectTemplateItemView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
+
     constructor(params: {
         projectsState: ProjectsState
         projectTemplate: pyYw.Routers.Environment.ProjectTemplate
@@ -228,6 +250,7 @@ export class ProjectTemplateItemView {
 
         this.children = [
             {
+                tag: 'div',
                 class: leftNavSectionAttr$({
                     selectedScreen$:
                         params.projectsState.appState.selectedScreen$,
@@ -236,11 +259,13 @@ export class ProjectTemplateItemView {
                 }),
                 children: [
                     {
+                        tag: 'div',
                         class: 'd-flex align-items-center p-1',
                         children: [
-                            this.projectTemplate.icon,
-                            { class: 'px-2' },
+                            this.projectTemplate.icon as AnyVirtualDOM,
+                            { tag: 'div', class: 'px-2' },
                             {
+                                tag: 'div',
                                 innerText: this.projectTemplate.type,
                             },
                         ],
@@ -275,23 +300,26 @@ export class SectionProjectsOpened extends Section {
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    projectsState.openProjects$,
-                    (projects) => `Opened projects (${projects.length})`,
-                ),
+                title: {
+                    source$: projectsState.openProjects$,
+                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) =>
+                        `Opened projects (${projects.length})`,
+                },
                 icon: 'fas fa-folder-open',
             }),
             content: {
+                tag: 'div',
                 class: 'pl-4 flex-grow-1 overflow-auto',
-                children: children$(
-                    projectsState.openProjects$,
-                    (projects: pyYw.Routers.Projects.Project[]) => {
+                children: {
+                    policy: 'replace',
+                    source$: projectsState.openProjects$,
+                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) => {
                         return projects.map(
                             (project) =>
                                 new ProjectItemView({ project, projectsState }),
                         )
                     },
-                ),
+                },
             },
         })
     }
@@ -300,7 +328,12 @@ export class SectionProjectsOpened extends Section {
 /**
  * @category View
  */
-export class ListProjectsView implements VirtualDOM {
+export class ListProjectsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -314,7 +347,7 @@ export class ListProjectsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -322,10 +355,12 @@ export class ListProjectsView implements VirtualDOM {
     public readonly projectsState: ProjectsState
 
     constructor(params: { projectsState: ProjectsState }) {
-        const searchView = {
+        const searchView: VirtualDOM<'div'> = {
+            tag: 'div',
             class: 'd-flex align-items-center  my-2 w-100 px-2',
             children: [
                 {
+                    tag: 'div',
                     class: 'fas fa-search mr-1',
                 },
                 {
@@ -336,7 +371,7 @@ export class ListProjectsView implements VirtualDOM {
                         fontSize: 'small',
                     },
                     value: this.search$.getValue(),
-                    oninput: (ev) => this.search$.next(ev.target.value),
+                    oninput: (ev) => this.search$.next(ev.target['value']),
                 },
             ],
         }
@@ -357,8 +392,10 @@ export class ListProjectsView implements VirtualDOM {
         this.children = [
             searchView,
             {
-                children: children$(
-                    combineLatest([
+                tag: 'div',
+                children: {
+                    policy: 'replace',
+                    source$: combineLatest([
                         this.projectsState.projects$,
                         this.search$,
                     ]).pipe(
@@ -366,14 +403,17 @@ export class ListProjectsView implements VirtualDOM {
                             return projects.filter((p) => searchTerm(search, p))
                         }),
                     ),
-                    (projects: pyYw.Routers.Projects.Project[]) => {
+                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) => {
                         return projects.map((project) => ({
+                            tag: 'div',
                             class: 'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center',
                             children: [
                                 {
+                                    tag: 'div',
                                     innerText: project.name,
                                 },
                                 {
+                                    tag: 'div',
                                     class: project.version.includes('-wip')
                                         ? 'fas fa-dot-circle fv-text-focus ml-2'
                                         : '',
@@ -384,7 +424,7 @@ export class ListProjectsView implements VirtualDOM {
                             },
                         }))
                     },
-                ),
+                },
             },
         ]
     }
@@ -409,10 +449,11 @@ export class SectionAllProjects extends Section {
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    projectsState.projects$,
-                    (projects) => `All projects (${projects.length})`,
-                ),
+                title: {
+                    source$: projectsState.projects$,
+                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) =>
+                        `All projects (${projects.length})`,
+                },
                 icon: 'fas fa-list-alt',
             }),
             content: new ListProjectsView({ projectsState }),

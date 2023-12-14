@@ -1,9 +1,9 @@
-import { child$, HTMLElement$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import { EnvironmentState } from '../environment.state'
 import { filter, mergeMap, shareReplay } from 'rxjs/operators'
 import { combineLatest, from, Observable } from 'rxjs'
-import { install } from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
 
 function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
     return from(
@@ -21,7 +21,11 @@ function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
 /**
  * @category View
  */
-export class ConfigFileView implements VirtualDOM {
+export class ConfigFileView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Configurations
      */
@@ -52,7 +56,7 @@ export class ConfigFileView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { environmentState: EnvironmentState }) {
         Object.assign(this, params)
@@ -63,13 +67,14 @@ export class ConfigFileView implements VirtualDOM {
             raiseHTTPErrors(),
         )
         this.children = [
-            child$(
-                combineLatest([configFile$, fetchCodeMirror$()]),
-                ([content]) => {
+            {
+                source$: combineLatest([configFile$, fetchCodeMirror$()]),
+                vdomMap: ([content]) => {
                     return {
+                        tag: 'div',
                         class: 'h-100 w-100',
                         connectedCallback: (
-                            htmlElement: HTMLDivElement & HTMLElement$,
+                            htmlElement: RxHTMLElement<'div'>,
                         ) => {
                             const config = {
                                 ...this.codeMirrorConfiguration,
@@ -96,7 +101,7 @@ export class ConfigFileView implements VirtualDOM {
                         },
                     }
                 },
-            ),
+            },
         ]
     }
 }

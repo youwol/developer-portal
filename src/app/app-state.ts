@@ -1,10 +1,10 @@
 import { BehaviorSubject, Observable } from 'rxjs'
 import { map, shareReplay } from 'rxjs/operators'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { ProjectsTab, ProjectsState } from './projects'
 import { CdnTab, CdnState } from './cdn'
 import { EnvironmentTab, EnvironmentState } from './environment'
-import { VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { LeftNavTab } from './common'
 import { SystemState, SystemTab } from './system'
@@ -20,7 +20,7 @@ export type Topic =
 export interface Screen {
     topic: Topic
     viewId: string
-    view: VirtualDOM
+    view: AnyVirtualDOM
 }
 
 /**
@@ -66,7 +66,10 @@ export class AppState {
     /**
      * @group Immutable Constants
      */
-    public readonly leftNavTabs: Record<Topic, LeftNavTab<unknown, unknown>>
+    public readonly leftNavTabs: Record<
+        Topic,
+        LeftNavTab<unknown, VirtualDOM<'div'>>
+    >
 
     /**
      * @group Observables

@@ -1,4 +1,4 @@
-import { VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { ProjectsState } from '../projects.state'
 import { DashboardTemplateView } from '../../common'
@@ -28,7 +28,12 @@ export class DashboardView extends DashboardTemplateView<
 /**
  * @category View
  */
-export class ProjectSnippetView {
+export class ProjectSnippetView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @category Immutable DOM Constants
      */
@@ -38,7 +43,7 @@ export class ProjectSnippetView {
     /**
      * @category Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
     /**
      * @category States
      */
@@ -74,8 +79,10 @@ export class ProjectSnippetView {
                 innerText: this.project.pipeline.target.family,
             },
             {
+                tag: 'div',
                 class: 'w-100 d-flex align-items-center',
                 children: this.project.pipeline.tags.map((t) => ({
+                    tag: 'div',
                     class: 'px-2',
                     innerText: t,
                 })),

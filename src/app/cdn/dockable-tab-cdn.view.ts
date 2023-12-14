@@ -1,4 +1,4 @@
-import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import {
     commonClassesLeftSideNav,
     leftNavSectionAttr$,
@@ -9,9 +9,7 @@ import {
 } from '../common'
 import { CdnState, FuturePackage, ActualPackage } from './cdn.state'
 import { DashboardView } from './dashboard'
-import { BehaviorSubject, combineLatest } from 'rxjs'
-import { map } from 'rxjs/operators'
-
+import { BehaviorSubject, combineLatest, map } from 'rxjs'
 import * as pyYw from '@youwol/local-youwol-client'
 import { UpdatesView } from './updates'
 
@@ -40,11 +38,16 @@ export class CdnTab extends LeftNavTab<CdnState, CdnTabView> {
 /**
  * @category View
  */
-export class CdnTabView implements VirtualDOM {
+export class CdnTabView implements VirtualDOM<'div'> {
     /**
      * @group States
      */
     public readonly cdnState: CdnState
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
 
     /**
      * @group Immutable DOM Constants
@@ -61,7 +64,7 @@ export class CdnTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { cdnState: CdnState }) {
         Object.assign(this, params)
@@ -80,6 +83,11 @@ export class CdnTabView implements VirtualDOM {
  */
 export class SectionDashboard extends Section {
     /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
+    /**
      * @group States
      */
     public readonly cdnState: CdnState
@@ -94,9 +102,11 @@ export class SectionDashboard extends Section {
             view: new DashboardView({ cdnState: this.cdnState }),
         })
     }
+
     constructor(params: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
+                tag: 'div',
                 class: leftNavSectionAttr$({
                     selectedScreen$: params.cdnState.appState.selectedScreen$,
                     targetTopic: 'CDN',
@@ -113,7 +123,12 @@ export class SectionDashboard extends Section {
 /**
  * @category View
  */
-export class PackageItemView {
+export class PackageItemView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -132,13 +147,14 @@ export class PackageItemView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
         const name = window.atob(this.packageId)
         this.children = [
             {
+                tag: 'div',
                 class: leftNavSectionAttr$({
                     selectedScreen$: params.cdnState.appState.selectedScreen$,
                     targetTopic: 'CDN',
@@ -146,9 +162,11 @@ export class PackageItemView {
                 }),
                 children: [
                     {
+                        tag: 'div',
                         innerText: name,
                     },
                     {
+                        tag: 'div',
                         class: 'fas fa-times fv-text-error fv-xx-darker fv-hover-xx-lighter pl-2 mx-2',
                         onclick: (ev) => {
                             ev.stopPropagation()
@@ -171,6 +189,11 @@ class SectionPackagesOpened extends Section {
     /**
      * @group Immutable DOM Constants
      */
+    public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'my-2 d-flex flex-column'
 
     /**
@@ -183,20 +206,26 @@ class SectionPackagesOpened extends Section {
     constructor({ cdnState }: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    cdnState.openPackages$,
-                    (packages) => `Opened packages (${packages.length})`,
-                ),
+                title: {
+                    source$: cdnState.openPackages$,
+                    vdomMap: (packages: string[]) =>
+                        `Opened packages (${packages.length})`,
+                },
                 icon: 'fas fa-folder-open',
             }),
             content: {
+                tag: 'div',
                 class: 'pl-4 flex-grow-1 overflow-auto',
-                children: children$(cdnState.openPackages$, (packages) => {
-                    return packages.map(
-                        (packageId) =>
-                            new PackageItemView({ packageId, cdnState }),
-                    )
-                }),
+                children: {
+                    policy: 'replace',
+                    source$: cdnState.openPackages$,
+                    vdomMap: (packages: string[]) => {
+                        return packages.map(
+                            (packageId) =>
+                                new PackageItemView({ packageId, cdnState }),
+                        )
+                    },
+                },
             },
         })
     }
@@ -205,7 +234,11 @@ class SectionPackagesOpened extends Section {
 /**
  * @category View
  */
-export class ContentView implements VirtualDOM {
+export class ContentView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -219,13 +252,15 @@ export class ContentView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children
+    public readonly children: ChildrenLike
 
     constructor({ cdnState }: { cdnState: CdnState }) {
-        const searchView = {
+        const searchView: VirtualDOM<'div'> = {
+            tag: 'div',
             class: 'd-flex align-items-center  my-2 w-100 px-2',
             children: [
                 {
+                    tag: 'div',
                     class: 'fas fa-search mr-1',
                 },
                 {
@@ -236,7 +271,7 @@ export class ContentView implements VirtualDOM {
                         fontSize: 'small',
                     },
                     value: this.search$.getValue(),
-                    oninput: (ev) => this.search$.next(ev.target.value),
+                    oninput: (ev) => this.search$.next(ev.target['value']),
                 },
             ],
         }
@@ -244,15 +279,20 @@ export class ContentView implements VirtualDOM {
         this.children = [
             searchView,
             {
-                children: children$(
-                    combineLatest([cdnState.packages$, this.search$]).pipe(
+                tag: 'div',
+                children: {
+                    policy: 'replace',
+                    source$: combineLatest([
+                        cdnState.packages$,
+                        this.search$,
+                    ]).pipe(
                         map(([projects, search]) => {
                             return projects.filter((p) =>
                                 p.name.includes(search),
                             )
                         }),
                     ),
-                    (packages: (ActualPackage | FuturePackage)[]) => {
+                    vdomMap: (packages: (ActualPackage | FuturePackage)[]) => {
                         return packages.map(
                             (pack) =>
                                 new CdnPackageItemView({
@@ -261,7 +301,7 @@ export class ContentView implements VirtualDOM {
                                 }),
                         )
                     },
-                ),
+                },
             },
         ]
     }
@@ -270,7 +310,12 @@ export class ContentView implements VirtualDOM {
 /**
  * @category View
  */
-export class CdnPackageItemView implements VirtualDOM {
+export class CdnPackageItemView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag: 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -280,7 +325,7 @@ export class CdnPackageItemView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -319,12 +364,14 @@ export class CdnPackageItemView implements VirtualDOM {
         this.children = [
             this.item instanceof FuturePackage
                 ? {
+                      tag: 'div',
                       class: `fas ${
                           CdnPackageItemView.icons[this.item.event]
                       } mr-2`,
                   }
                 : undefined,
             {
+                tag: 'div',
                 class:
                     this.item instanceof FuturePackage
                         ? 'fv-text-disabled'
@@ -342,6 +389,11 @@ export class SectionAllPackages extends Section {
     /**
      * @group Immutable DOM Constants
      */
+    public readonly tag: 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly style = {
         minHeight: '0px',
     }
@@ -354,14 +406,14 @@ export class SectionAllPackages extends Section {
     constructor({ cdnState }: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    cdnState.packages$,
-                    (packages) =>
+                title: {
+                    source$: cdnState.packages$,
+                    vdomMap: (packages: (ActualPackage | FuturePackage)[]) =>
                         `All packages (${
                             packages.filter((p) => p instanceof ActualPackage)
                                 .length
                         })`,
-                ),
+                },
                 icon: 'fas fa-list-alt',
             }),
             content: new ContentView({ cdnState }),
@@ -388,6 +440,7 @@ export class SectionUpgrades extends Section {
             view: new UpdatesView({ cdnState: this.cdnState }),
         })
     }
+
     constructor(params: { cdnState: CdnState }) {
         super({
             header: new SectionHeader({

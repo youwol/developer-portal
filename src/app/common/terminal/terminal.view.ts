@@ -1,20 +1,18 @@
-import {
-    attr$,
-    child$,
-    childrenAppendOnly$,
-    childrenWithReplace$,
-    HTMLElement$,
-    VirtualDOM,
-} from '@youwol/flux-view'
+import { ChildrenLike, RxHTMLElement, VirtualDOM } from '@youwol/rx-vdom'
+
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs'
-import { delay, filter, map, take, takeUntil } from 'rxjs/operators'
+import { delay, filter, map, take, takeUntil, tap } from 'rxjs/operators'
 import { AttributesView, labelMethodIcons, LogView } from './log.view'
 import { ContextMessage } from '@youwol/local-youwol-client'
 
 /**
  * @category View
  */
-export class NodeHeaderView implements VirtualDOM {
+export class NodeHeaderView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -30,7 +28,7 @@ export class NodeHeaderView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
@@ -45,39 +43,46 @@ export class NodeHeaderView implements VirtualDOM {
     ) {
         this.children = [
             {
-                class: attr$(
-                    visible$,
-                    (visible): string =>
+                tag: 'div',
+                class: {
+                    source$: visible$,
+                    vdomMap: (visible): string =>
                         visible ? 'fa-caret-down' : 'fa-caret-right',
-                    {
-                        wrapper: (d) => `fas mr-2 ${d}`,
+                    wrapper: (d) => `fas mr-2 ${d}`,
+                },
+            },
+            {
+                tag: 'div',
+                class: {
+                    source$: status$,
+                    vdomMap: (status: Status) => {
+                        return (
+                            {
+                                processing: 'fas fa-spinner fa-spin',
+                                error: 'fas fa-times fv-text-error',
+                                success: 'fas fa-check fv-text-success',
+                            }[status] + ' mr-2'
+                        )
                     },
-                ),
+                },
             },
             {
-                class: attr$(status$, (status) => {
-                    return (
-                        {
-                            processing: 'fas fa-spinner fa-spin',
-                            error: 'fas fa-times fv-text-error',
-                            success: 'fas fa-check fv-text-success',
-                        }[status] + ' mr-2'
-                    )
-                }),
-            },
-            {
+                tag: 'div',
                 children: [
                     {
+                        tag: 'div',
                         class: 'd-flex flex-align-center px-2',
                         children: message.labels
                             .filter((label) => labelMethodIcons[label])
                             .map((label) => {
                                 return {
+                                    tag: 'div',
                                     class: labelMethodIcons[label] + ' mx-1',
                                 }
                             }),
                     },
                     {
+                        tag: 'div',
                         class: 'mr-3',
                         innerText: message.text,
                     },
@@ -100,12 +105,15 @@ type Status = 'processing' | 'error' | 'success'
 /**
  * @category View
  */
-export class NodeView implements VirtualDOM {
+export class NodeView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
-
+    public readonly children: ChildrenLike
     /**
      * @group Immutable Constants
      */
@@ -156,18 +164,20 @@ export class NodeView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex flex-column overflow-auto',
                 children: [
-                    child$(
-                        messages$[contextId].pipe(
+                    {
+                        source$: messages$[contextId].pipe(
                             filter(
                                 (m) =>
                                     m.contextId == this.contextId &&
                                     m.labels.includes('Label.STARTED'),
                             ),
                             take(1),
+                            tap((v) => v),
                         ),
-                        (m) => {
+                        vdomMap: (m: ContextMessage) => {
                             this.headerMessage = m
                             return new NodeHeaderView(
                                 m,
@@ -176,59 +186,70 @@ export class NodeView implements VirtualDOM {
                                 this.status$,
                             )
                         },
-                    ),
-                    child$(this.expanded$, (exp) => {
-                        if (!exp) {
-                            return {}
-                        }
-                        return {
-                            class: attr$(this.visible$, (visible) =>
-                                visible ? 'py-2' : 'd-none',
-                            ),
-                            style: {
-                                paddingLeft: `${
-                                    this.nestedIndex > 0 ? 40 : 0
-                                }px`,
-                            },
-                            children: childrenAppendOnly$(
-                                messages$[contextId].pipe(
-                                    filter((m) => {
-                                        return !m.labels.includes(
-                                            'Label.STARTED',
-                                        )
-                                    }),
-                                    map((message) => [message]),
-                                ),
-                                (message: ContextMessage) => {
-                                    if (message.contextId == contextId) {
-                                        return new LogView({
-                                            state: this.state,
-                                            message,
-                                        })
-                                    }
+                    },
 
-                                    if (
-                                        message.parentContextId == contextId &&
-                                        !this.createdChildren.includes(
-                                            message.contextId,
-                                        )
-                                    ) {
-                                        this.createdChildren.push(
-                                            message.contextId,
-                                        )
-                                        return new NodeView(
-                                            this.state,
-                                            message.contextId,
-                                            nestedIndex + 1,
-                                            false,
-                                            messages$,
-                                        )
-                                    }
-                                    return { class: 'd-none' }
+                    {
+                        source$: this.expanded$,
+                        vdomMap: (exp: boolean) => {
+                            if (!exp) {
+                                return { tag: 'div' }
+                            }
+                            return {
+                                tag: 'div',
+                                class: {
+                                    source$: this.visible$,
+                                    vdomMap: (visible) =>
+                                        visible ? 'py-2' : 'd-none',
                                 },
-                            ),
-                        }
-                    }),
+
+                                style: {
+                                    paddingLeft: `${
+                                        this.nestedIndex > 0 ? 40 : 0
+                                    }px`,
+                                },
+                                children: {
+                                    policy: 'append',
+                                    source$: messages$[contextId].pipe(
+                                        filter((m) => {
+                                            return !m.labels.includes(
+                                                'Label.STARTED',
+                                            )
+                                        }),
+                                        map((message) => [message]),
+                                    ),
+
+                                    vdomMap: (message: ContextMessage) => {
+                                        if (message.contextId == contextId) {
+                                            return new LogView({
+                                                state: this.state,
+                                                message,
+                                            })
+                                        }
+
+                                        if (
+                                            message.parentContextId ==
+                                                contextId &&
+                                            !this.createdChildren.includes(
+                                                message.contextId,
+                                            )
+                                        ) {
+                                            this.createdChildren.push(
+                                                message.contextId,
+                                            )
+                                            return new NodeView(
+                                                this.state,
+                                                message.contextId,
+                                                nestedIndex + 1,
+                                                false,
+                                                messages$,
+                                            )
+                                        }
+                                        return { tag: 'div', class: 'd-none' }
+                                    },
+                                },
+                            }
+                        },
+                    },
                 ],
             },
         ]
@@ -258,12 +279,16 @@ const invite = `
 /**
  * @category State
  */
-export class TerminalState {
+export class TerminalState implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Observables
      */
     public readonly customViews$ = new BehaviorSubject<
-        { name: string; view: VirtualDOM }[]
+        { name: string; view: VirtualDOM<'div'> }[]
     >([{ name: 'TERMINAL', view: undefined }])
 
     /**
@@ -278,7 +303,7 @@ export class TerminalState {
      */
     public readonly expanded$ = new BehaviorSubject(true)
 
-    openCustomView(name: string, view: VirtualDOM) {
+    openCustomView(name: string, view: VirtualDOM<'div'>) {
         const actual = this.customViews$.getValue()
         this.customViews$.next([...actual, { name, view }])
     }
@@ -287,7 +312,11 @@ export class TerminalState {
 /**
  * @category View
  */
-export class TerminalView implements VirtualDOM {
+export class TerminalView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group States
      */
@@ -306,28 +335,28 @@ export class TerminalView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = attr$(
-        this.state.expanded$,
-        (expanded): string => (expanded ? 'w-100 h-50' : 'w-100'),
-        {
-            wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
-        },
-    )
+    public readonly class = {
+        source$: this.state.expanded$,
+        vdomMap: (expanded): string => (expanded ? 'w-100 h-50' : 'w-100'),
+        wrapper: (d) => `${d} w-100 d-flex flex-column flex-grow-1 `,
+    }
 
     /**
      * @group Immutable DOM Constants
      */
-    children: VirtualDOM[]
+    children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
      */
-    connectedCallback: (elem: HTMLElement$ & HTMLDivElement) => void
+    connectedCallback: (elem: RxHTMLElement<'div'>) => void
 
     /**
      * @group Observables
      */
-    messages$: { [key: string]: ReplaySubject<ContextMessage> } = {
+    messages$: {
+        [key: string]: ReplaySubject<ContextMessage>
+    } = {
         root: new ReplaySubject(),
     }
 
@@ -350,10 +379,11 @@ export class TerminalView implements VirtualDOM {
         })
 
         this.children = [
-            //new TerminalHeaderView({ state: this.state }),
-            child$(this.state.expanded$, (expanded) =>
-                expanded ? this.contentView() : {},
-            ),
+            {
+                source$: this.state.expanded$,
+                vdomMap: (expanded) =>
+                    expanded ? this.contentView() : { tag: 'div' },
+            },
         ]
 
         this.commands$.pipe(delay(0)).subscribe(() => {
@@ -366,29 +396,36 @@ export class TerminalView implements VirtualDOM {
 
     logsView() {
         return {
+            tag: 'div',
             class: `d-flex flex-column h-100 w-100 overflow-auto p-2`,
             children: [
                 {
-                    children: childrenAppendOnly$(this.commands$, (command) => {
-                        if (command == invite) {
-                            return {
-                                class: 'd-flex justify-content-around',
-                                children: [
-                                    {
-                                        tag: 'pre',
-                                        class: 'fv-text-success mx-auto',
-                                        innerHTML: command,
-                                        style: { fontSize: '8px' },
-                                    },
-                                ],
+                    tag: 'div',
+                    children: {
+                        policy: 'append',
+                        source$: this.commands$,
+                        vdomMap: (command) => {
+                            if (command == invite) {
+                                return {
+                                    tag: 'div',
+                                    class: 'd-flex justify-content-around',
+                                    children: [
+                                        {
+                                            tag: 'pre',
+                                            class: 'fv-text-success mx-auto',
+                                            innerHTML: `${command}`,
+                                            style: { fontSize: '8px' },
+                                        },
+                                    ],
+                                }
                             }
-                        }
-                        return {
-                            tag: 'pre',
-                            class: 'fv-text-success mx-auto w-100',
-                            innerHTML: command,
-                        }
-                    }),
+                            return {
+                                tag: 'pre',
+                                class: 'fv-text-success mx-auto w-100',
+                                innerHTML: `${command}`,
+                            }
+                        },
+                    },
                 },
                 new NodeView(this.state, 'root', 0, true, this.messages$),
             ],
@@ -403,29 +440,32 @@ export class TerminalView implements VirtualDOM {
         }
     }
 
-    contentView() {
+    contentView(): VirtualDOM<'div'> {
         return {
+            tag: 'div',
             class: 'flex-grow-1',
             style: {
                 minHeight: '0px',
             },
-            children: childrenWithReplace$(
-                this.state.customViews$,
-                ({ name, view }) => {
+            children: {
+                policy: 'sync',
+                source$: this.state.customViews$,
+                vdomMap: ({ name, view }) => {
                     return {
-                        class: attr$(
-                            this.state.selectedView$,
-                            (selectedView: string | 'TERMINAL'): string =>
+                        tag: 'div',
+                        class: {
+                            source$: this.state.selectedView$,
+                            vdomMap: (
+                                selectedView: string | 'TERMINAL',
+                            ): string =>
                                 selectedView == name ? 'd-block' : 'd-none',
-                            {
-                                wrapper: (d) => `${d} w-100 h-100`,
-                            },
-                        ),
+
+                            wrapper: (d) => `${d} w-100 h-100`,
+                        },
                         children: [name == 'TERMINAL' ? this.logsView() : view],
                     }
                 },
-                {},
-            ),
+            },
         }
     }
 }

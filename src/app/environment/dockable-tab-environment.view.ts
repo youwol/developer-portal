@@ -1,4 +1,4 @@
-import { attr$, children$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import {
     commonClassesLeftSideNav,
     leftNavSectionAttr$,
@@ -43,7 +43,11 @@ export class EnvironmentTab extends LeftNavTab<
 /**
  * @category View
  */
-export class EnvironmentTabView implements VirtualDOM {
+export class EnvironmentTabView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group States
      */
@@ -64,7 +68,7 @@ export class EnvironmentTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { environmentState: EnvironmentState }) {
         Object.assign(this, params)
@@ -99,6 +103,7 @@ export class SectionDashboard extends Section {
             }),
         })
     }
+
     constructor(params: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({
@@ -137,6 +142,7 @@ export class SectionConfigFile extends Section {
             }),
         })
     }
+
     constructor(params: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({
@@ -157,7 +163,11 @@ export class SectionConfigFile extends Section {
 /**
  * @category View
  */
-export class DispatchListView implements VirtualDOM {
+export class DispatchListView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -166,19 +176,22 @@ export class DispatchListView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children
+    public readonly children: ChildrenLike
 
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
-        this.children = children$(
-            environmentState.customDispatches$,
-            (dispatches: {
+        this.children = {
+            policy: 'replace',
+            source$: environmentState.customDispatches$,
+            vdomMap: (dispatches: {
                 [k: string]: pyYw.Routers.Environment.CustomDispatch[]
             }) => {
                 return Object.entries(dispatches).map(([type, items]) => {
                     return {
+                        tag: 'div',
                         children: [
                             new DispatchGroupHeader({ type }),
                             {
+                                tag: 'div',
                                 children: items.map(
                                     (dispatch) =>
                                         new DispatchItemView({ dispatch }),
@@ -188,14 +201,18 @@ export class DispatchListView implements VirtualDOM {
                     }
                 })
             },
-        )
+        }
     }
 }
 
 /**
  * @category View
  */
-export class DispatchGroupHeader implements VirtualDOM {
+export class DispatchGroupHeader implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -215,7 +232,11 @@ export class DispatchGroupHeader implements VirtualDOM {
 /**
  * @category View
  */
-export class DispatchItemView implements VirtualDOM {
+export class DispatchItemView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -230,16 +251,19 @@ export class DispatchItemView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
+
     constructor(params: { dispatch: pyYw.Routers.Environment.CustomDispatch }) {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: this.dispatch.activated
                     ? 'fas fa-check fv-text-success px-2'
                     : 'fas fa-times fv-text-disabled px-2',
             },
             {
+                tag: 'div',
                 innerHTML: this.dispatch.name,
             },
         ]
@@ -265,13 +289,13 @@ export class SectionDispatches extends Section {
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    environmentState.customDispatches$,
-                    (dispatches) =>
+                title: {
+                    source$: environmentState.customDispatches$,
+                    vdomMap: (dispatches) =>
                         `Dispatches (${
                             Object.values(dispatches).flat().length
                         })`,
-                ),
+                },
                 icon: 'fas fa-external-link-alt',
             }),
             content: new DispatchListView({ environmentState }),
@@ -282,7 +306,11 @@ export class SectionDispatches extends Section {
 /**
  * @category View
  */
-export class CommandsListView implements VirtualDOM {
+export class CommandsListView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -291,22 +319,32 @@ export class CommandsListView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children
+    public readonly children: ChildrenLike
 
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
-        this.children = children$(environmentState.environment$, (env) => {
-            return Object.entries(env.configuration.commands).map(
-                ([_type, command]) =>
-                    new CommandView({ command, environmentState }),
-            )
-        })
+        this.children = {
+            policy: 'replace',
+            source$: environmentState.environment$,
+            vdomMap: (
+                env: pyYw.Routers.Environment.EnvironmentStatusResponse,
+            ) => {
+                return Object.entries(env.configuration.commands).map(
+                    ([_type, command]) =>
+                        new CommandView({ command, environmentState }),
+                )
+            },
+        }
     }
 }
 
 /**
  * @category View
  */
-export class CommandView implements VirtualDOM {
+export class CommandView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -326,6 +364,7 @@ export class CommandView implements VirtualDOM {
     public readonly onclick = () => {
         this.environmentState.openCommand(this.command)
     }
+
     constructor(params: {
         command: pyYw.Routers.Environment.Command
         environmentState: EnvironmentState
@@ -354,13 +393,15 @@ export class SectionCommands extends Section {
     constructor({ environmentState }: { environmentState: EnvironmentState }) {
         super({
             header: new SectionHeader({
-                title: attr$(
-                    environmentState.environment$,
-                    (env) =>
+                title: {
+                    source$: environmentState.environment$,
+                    vdomMap: (
+                        env: pyYw.Routers.Environment.EnvironmentStatusResponse,
+                    ) =>
                         `Commands (${
                             Object.values(env.configuration.commands).length
                         })`,
-                ),
+                },
                 icon: 'fas fa-play',
             }),
             content: new CommandsListView({ environmentState }),

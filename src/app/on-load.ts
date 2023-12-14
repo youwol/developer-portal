@@ -1,4 +1,4 @@
-import { render } from '@youwol/flux-view'
+import { render } from '@youwol/rx-vdom'
 import { AppView } from './app-view'
 import { PyYouwolClient } from '@youwol/local-youwol-client'
 import { take } from 'rxjs/operators'

@@ -1,4 +1,4 @@
-import { attr$, child$, VirtualDOM } from '@youwol/flux-view'
+import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { ProjectsState } from '../projects.state'
 import {
     filterCtxMessage,
@@ -7,12 +7,12 @@ import {
 } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, from, Observable, Subject } from 'rxjs'
-import { install } from '@youwol/cdn-client'
+import { install } from '@youwol/webpm-client'
 import { delay, map, shareReplay, tap } from 'rxjs/operators'
 import { classesButton, LogsTab } from '../../common'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 
-declare type CodeEditorModule = typeof import('@youwol/fv-code-mirror-editors')
+declare type CodeEditorModule = typeof import('@youwol/rx-code-mirror-editors')
 
 /**
  * Lazy loading of the module `@youwol/fv-code-mirror-editors`
@@ -23,26 +23,31 @@ export const loadFvCodeEditorsModule$: () => Observable<CodeEditorModule> =
     () =>
         from(
             install({
-                modules: ['@youwol/fv-code-mirror-editors#^0.2.0'],
+                modules: ['@youwol/rx-code-mirror-editors#^0.4.1'],
                 scripts: ['codemirror#5.52.0~mode/javascript.min.js'],
                 css: [
                     'codemirror#5.52.0~codemirror.min.css',
                     'codemirror#5.52.0~theme/blackboard.min.css',
                 ],
                 aliases: {
-                    codeMirrorEditors: '@youwol/fv-code-mirror-editors',
+                    codeMirrorEditors: '@youwol/rx-code-mirror-editors',
                 },
             }),
         ).pipe(
-            map((window) => window['codeMirrorEditors'] as CodeEditorModule),
+            map((window) => window['codeMirrorEditors']),
             shareReplay({ bufferSize: 1, refCount: true }),
         )
 
 /**
  * @category View
  */
-export class NewProjectFromTemplateView implements VirtualDOM {
+export class NewProjectFromTemplateView implements VirtualDOM<'div'> {
     static loadFvCodeEditors$ = loadFvCodeEditorsModule$()
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
 
     /**
      * @group Immutable DOM Constants
@@ -53,7 +58,7 @@ export class NewProjectFromTemplateView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
 
     /**
@@ -64,7 +69,7 @@ export class NewProjectFromTemplateView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -112,13 +117,15 @@ export class NewProjectFromTemplateView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'w-100 h-100 py-2 overflow-auto',
                 style: { minHeight: '0px' },
                 children: [
                     new ProjectTemplateHeaderView(params),
-                    child$(
-                        NewProjectFromTemplateView.loadFvCodeEditors$,
-                        (CodeEditorModule: CodeEditorModule) => {
+
+                    {
+                        source$: NewProjectFromTemplateView.loadFvCodeEditors$,
+                        vdomMap: (CodeEditorModule: CodeEditorModule) => {
                             return new ProjectTemplateEditor({
                                 projectsState: this.projectsState,
                                 CodeEditorModule: CodeEditorModule,
@@ -126,7 +133,7 @@ export class NewProjectFromTemplateView implements VirtualDOM {
                                 onError: () => viewState$.next('expanded'),
                             })
                         },
-                    ),
+                    },
                 ],
             },
             bottomNav,
@@ -137,7 +144,12 @@ export class NewProjectFromTemplateView implements VirtualDOM {
 /**
  * @category View
  */
-export class ProjectTemplateHeaderView implements VirtualDOM {
+export class ProjectTemplateHeaderView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -153,7 +165,7 @@ export class ProjectTemplateHeaderView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -167,11 +179,13 @@ export class ProjectTemplateHeaderView implements VirtualDOM {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex align-items-center p-1',
                 children: [
-                    this.projectTemplate.icon,
-                    { class: 'px-2' },
+                    this.projectTemplate.icon as AnyVirtualDOM,
+                    { tag: 'div', class: 'px-2' },
                     {
+                        tag: 'div',
                         innerText: this.projectTemplate.type,
                     },
                 ],
@@ -183,7 +197,12 @@ export class ProjectTemplateHeaderView implements VirtualDOM {
 /**
  * @category View
  */
-export class ProjectTemplateEditor implements VirtualDOM {
+export class ProjectTemplateEditor implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -192,7 +211,7 @@ export class ProjectTemplateEditor implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -246,7 +265,11 @@ export class ProjectTemplateEditor implements VirtualDOM {
 /**
  * @category View
  */
-export class GenerateButton {
+export class GenerateButton implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -262,7 +285,7 @@ export class GenerateButton {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
@@ -289,12 +312,16 @@ export class GenerateButton {
         const creating$ = new BehaviorSubject(false)
         this.children = [
             {
+                tag: 'div',
                 innerText: 'Generate',
             },
             {
-                class: attr$(creating$, (creating) =>
-                    creating ? 'fas fa-spinner fa-spin ml-1' : '',
-                ),
+                tag: 'div',
+                class: {
+                    source$: creating$,
+                    vdomMap: (creating) =>
+                        creating ? 'fas fa-spinner fa-spin ml-1' : '',
+                },
             },
         ]
         this.onclick = () => {

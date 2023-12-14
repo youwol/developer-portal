@@ -1,11 +1,19 @@
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { Screen, Topic } from '../app-state'
-import { VirtualDOM } from '@youwol/flux-view'
+import { VirtualDOM } from '@youwol/rx-vdom'
 
 /**
  * @category View
  */
-export class LeftNavTab<TTabState, TTabView> extends DockableTabs.Tab {
+export class LeftNavTab<
+    TTabState,
+    TTabView extends VirtualDOM<'div'>,
+> extends DockableTabs.Tab {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group States
      */
@@ -19,7 +27,7 @@ export class LeftNavTab<TTabState, TTabView> extends DockableTabs.Tab {
     /**
      * @group Immutable Constants
      */
-    public readonly defaultView: () => VirtualDOM
+    public readonly defaultView: () => VirtualDOM<'div'>
 
     /**
      * @group Immutable Constants
@@ -29,7 +37,7 @@ export class LeftNavTab<TTabState, TTabView> extends DockableTabs.Tab {
     protected constructor(params: {
         topic: Topic
         defaultViewId: string
-        defaultView: () => VirtualDOM
+        defaultView: () => VirtualDOM<'div'>
         state: TTabState
         content: () => TTabView
         title: string

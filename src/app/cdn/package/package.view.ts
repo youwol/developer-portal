@@ -1,4 +1,4 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, AnyVirtualDOM, VirtualDOM } from '@youwol/rx-vdom'
 import { CdnState } from '../cdn.state'
 import { webpmPackageInfoWidget } from '@youwol/os-widgets'
 
@@ -11,7 +11,7 @@ import { AssetLightDescription } from '@youwol/os-core'
 /**
  * @category View
  */
-export class PackageView implements VirtualDOM {
+export class PackageView implements VirtualDOM<'div'> {
     /**
      * @group States
      */
@@ -21,6 +21,10 @@ export class PackageView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly class = 'd-flex flex-column h-100'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
 
     /**
      * @group Immutable Constants
@@ -30,11 +34,13 @@ export class PackageView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
+
     constructor(params: { cdnState: CdnState; packageId: string }) {
         Object.assign(this, params)
         this.children = [
             {
+                tag: 'div',
                 class: 'border-bottom mx-auto mb-2',
                 innerText: window.atob(this.packageId),
                 style: {
@@ -42,35 +48,41 @@ export class PackageView implements VirtualDOM {
                     width: 'fit-content',
                 },
             },
-            child$(
-                this.cdnState.packagesEvent[this.packageId].info$,
-                (packageInfo) =>
-                    new VersionsView({
+            {
+                source$: this.cdnState.packagesEvent[this.packageId].info$,
+                vdomMap: (packageInfo: pyYw.Routers.LocalCdn.CdnPackage) => {
+                    return new VersionsView({
                         cdnState: this.cdnState,
                         package: packageInfo,
-                    }),
-            ),
-            child$(
-                new AssetsBackend.AssetsClient()
+                    })
+                },
+            },
+            {
+                source$: new AssetsBackend.AssetsClient()
                     .getAsset$({ assetId: window.btoa(this.packageId) })
                     .pipe(raiseHTTPErrors()),
-                (assetResponse) => {
+                vdomMap: (
+                    assetResponse: AssetLightDescription,
+                ): AnyVirtualDOM => {
                     const asset = {
                         ...assetResponse,
                         rawId: this.packageId,
                     } as AssetLightDescription
                     return {
+                        tag: 'div',
                         class: 'flex-grow-1',
                         style: { minHeight: '0px' },
                         children: [
-                            child$(
-                                from(webpmPackageInfoWidget({ asset })),
-                                (widget) => widget,
-                            ),
+                            {
+                                source$: from(
+                                    webpmPackageInfoWidget({ asset }),
+                                ),
+                                vdomMap: (widget: AnyVirtualDOM) => widget,
+                            },
                         ],
                     }
                 },
-            ),
+            },
         ]
     }
 }
@@ -78,7 +90,7 @@ export class PackageView implements VirtualDOM {
 /**
  * @category View
  */
-export class VersionsView implements VirtualDOM {
+export class VersionsView implements VirtualDOM<'div'> {
     /**
      * @group Immutable DOM Constants
      */
@@ -87,7 +99,7 @@ export class VersionsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: Array<VirtualDOM>
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable DOM Constants
@@ -119,9 +131,11 @@ export class VersionsView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex justify-content-around w-100',
                 children: [
                     {
+                        tag: 'div',
                         class: 'd-flex flex-column h-100 px-2 w-100',
                         children: [
                             this.packageDetails(this.package),
@@ -135,8 +149,9 @@ export class VersionsView implements VirtualDOM {
         ]
     }
 
-    packageDetails(pack: pyYw.Routers.LocalCdn.CdnPackage): VirtualDOM {
+    packageDetails(pack: pyYw.Routers.LocalCdn.CdnPackage): VirtualDOM<'div'> {
         return {
+            tag: 'div' as const,
             class: 'overflow-auto',
             style: {
                 maxHeight: '50%',
@@ -146,7 +161,7 @@ export class VersionsView implements VirtualDOM {
                 {
                     tag: 'table',
                     class: 'fv-color-primary  w-100 text-center',
-                    style: { 'max-height': '100%' },
+                    style: { maxHeight: '100%' },
                     children: [
                         {
                             tag: 'thead',
@@ -196,16 +211,16 @@ export class VersionsView implements VirtualDOM {
                                             },
                                             {
                                                 tag: 'td',
-                                                innerText:
-                                                    packVersion.filesCount,
+                                                innerText: `${packVersion.filesCount}`,
                                                 class: 'px-2',
                                             },
                                             {
                                                 tag: 'td',
-                                                innerText:
+                                                innerText: `${
                                                     Math.floor(
                                                         packVersion.entryPointSize,
-                                                    ) / 1000,
+                                                    ) / 1000
+                                                }`,
                                                 class: 'px-2',
                                             },
                                         ],

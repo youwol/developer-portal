@@ -1,5 +1,5 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
-import { Select } from '@youwol/fv-input'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
+import { Select } from '@youwol/rx-input-views'
 import * as pyYw from '@youwol/local-youwol-client'
 
 import { FilesBrowserView } from '../../common'
@@ -13,7 +13,11 @@ export class ArtifactItem extends Select.ItemData {
 /**
  * @category View
  */
-export class ArtifactsView implements VirtualDOM {
+export class ArtifactsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -22,12 +26,13 @@ export class ArtifactsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(artifacts: pyYw.Routers.Projects.Artifact[]) {
         if (artifacts.length == 0) {
             this.children = [
                 {
+                    tag: 'div',
                     innerText: 'No artifacts available',
                 },
             ]
@@ -40,9 +45,11 @@ export class ArtifactsView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 class: 'd-flex align-items-center',
                 children: [
                     {
+                        tag: 'div',
                         innerText: 'Artifacts:',
                     },
                     new Select.View({
@@ -51,10 +58,11 @@ export class ArtifactsView implements VirtualDOM {
                     } as { state: Select.State }),
                 ],
             },
-            child$(
-                select.selection$,
-                (item: ArtifactItem) => new ArtifactView(item.artifact),
-            ),
+            {
+                source$: select.selection$,
+                vdomMap: (item: ArtifactItem) =>
+                    new ArtifactView(item.artifact),
+            },
         ]
     }
 }
@@ -62,7 +70,11 @@ export class ArtifactsView implements VirtualDOM {
 /**
  * @category View
  */
-class ArtifactView implements VirtualDOM {
+class ArtifactView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -71,7 +83,7 @@ class ArtifactView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(artifact: pyYw.Routers.Projects.Artifact) {
         this.children = [
@@ -83,11 +95,13 @@ class ArtifactView implements VirtualDOM {
         ]
     }
 
-    linksView(links: pyYw.Routers.Projects.Link[]) {
+    linksView(links: pyYw.Routers.Projects.Link[]): VirtualDOM<'div'> {
         return {
+            tag: 'div',
             class: 'd-flex align-items-center',
             children: links.map((link) => {
                 return {
+                    tag: 'div',
                     class: 'my-3 p-2 border rounded',
                     style: {
                         width: 'fit-content',

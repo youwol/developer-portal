@@ -1,12 +1,12 @@
 import { EnvironmentState, Method } from '../environment.state'
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { AttributeView, DashboardTitle } from '../../common'
 import { BehaviorSubject, from, Observable, of, Subject } from 'rxjs'
-import { ObjectJs } from '@youwol/fv-tree'
-import { install } from '@youwol/cdn-client'
+import { ObjectJs } from '@youwol/rx-tree-views'
+import { install } from '@youwol/webpm-client'
 import { catchError, mergeMap, withLatestFrom } from 'rxjs/operators'
-import { DockableTabs } from '@youwol/fv-tabs'
+import { DockableTabs } from '@youwol/rx-tab-views'
 import { TerminalView } from '../../common/terminal'
 
 function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
@@ -25,7 +25,12 @@ function fetchCodeMirror$(): Observable<WindowOrWorkerGlobalScope> {
 /**
  * @category View
  */
-export class CommandView implements VirtualDOM {
+export class CommandView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -34,12 +39,12 @@ export class CommandView implements VirtualDOM {
      * @group Immutable DOM Constants
      */
     public readonly style = {
-        position: 'relative',
+        position: 'relative' as const,
     }
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group States
@@ -106,7 +111,7 @@ export class CommandView implements VirtualDOM {
                       method,
                       url,
                   }),
-            { class: 'flex-grow-1', style: { minHeight: '0px' } },
+            { tag: 'div', class: 'flex-grow-1', style: { minHeight: '0px' } },
             bottomNav,
         ]
     }
@@ -115,7 +120,12 @@ export class CommandView implements VirtualDOM {
 /**
  * @category View
  */
-export class ExecuteView implements VirtualDOM {
+export class ExecuteView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -158,7 +168,7 @@ export class ExecuteNoBodyView extends ExecuteView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params) {
         super(params)
@@ -178,7 +188,10 @@ export class ExecuteNoBodyView extends ExecuteView {
                         )
                         .subscribe((out) => this.output$.next(out)),
             }),
-            child$(this.output$, (output) => new OutputView({ output })),
+            {
+                source$: this.output$,
+                vdomMap: (output) => new OutputView({ output }),
+            },
         ]
     }
 }
@@ -194,7 +207,7 @@ export class ExecuteBodyView extends ExecuteView {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params) {
         super(params)
@@ -236,7 +249,10 @@ export class ExecuteBodyView extends ExecuteView {
             new DashboardTitle({ title: 'Execute command' }),
             bodyView,
             playView,
-            child$(this.output$, (output) => new OutputView({ output })),
+            {
+                source$: this.output$,
+                vdomMap: (output) => new OutputView({ output }),
+            },
         ]
     }
 }
@@ -244,7 +260,12 @@ export class ExecuteBodyView extends ExecuteView {
 /**
  * @category View
  */
-export class PlayButtonView implements VirtualDOM {
+export class PlayButtonView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -259,7 +280,7 @@ export class PlayButtonView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Observables
@@ -272,16 +293,22 @@ export class PlayButtonView implements VirtualDOM {
     public readonly onclick = (ev) => {
         this.click$.next(ev)
     }
+
     constructor(params) {
         Object.assign(this, params)
-        this.children = [{ class: 'fas fa-play px-2' }]
+        this.children = [{ tag: 'div', class: 'fas fa-play px-2' }]
     }
 }
 
 /**
  * @category View
  */
-export class BodyView implements VirtualDOM {
+export class BodyView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -289,7 +316,7 @@ export class BodyView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Configurations
@@ -318,29 +345,37 @@ export class BodyView implements VirtualDOM {
 
         this.children = [
             {
+                tag: 'div',
                 innerText: "Command's body (json format):",
             },
-            child$(fetchCodeMirror$(), () => {
-                return {
-                    class: 'flex-grow-1',
-                    connectedCallback: (htmlElement: HTMLDivElement) => {
-                        const config = {
-                            ...this.codeMirrorConfiguration,
-                            value: '{}',
-                        }
-                        const editor = window['CodeMirror'](htmlElement, config)
-                        editor.on('changes', (_, changeObj) => {
-                            if (
-                                changeObj.length == 1 &&
-                                changeObj[0].origin == 'setValue'
-                            ) {
-                                return
+            {
+                source$: fetchCodeMirror$(),
+                vdomMap: () => {
+                    return {
+                        tag: 'div',
+                        class: 'flex-grow-1',
+                        connectedCallback: (htmlElement: HTMLDivElement) => {
+                            const config = {
+                                ...this.codeMirrorConfiguration,
+                                value: '{}',
                             }
-                            this.body$.next(editor.getValue())
-                        })
-                    },
-                }
-            }),
+                            const editor = window['CodeMirror'](
+                                htmlElement,
+                                config,
+                            )
+                            editor.on('changes', (_, changeObj) => {
+                                if (
+                                    changeObj.length == 1 &&
+                                    changeObj[0].origin == 'setValue'
+                                ) {
+                                    return
+                                }
+                                this.body$.next(editor.getValue())
+                            })
+                        },
+                    }
+                },
+            },
         ]
     }
 }
@@ -348,7 +383,12 @@ export class BodyView implements VirtualDOM {
 /**
  * @category View
  */
-export class OutputView implements VirtualDOM {
+export class OutputView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group Immutable DOM Constants
      */
@@ -356,7 +396,7 @@ export class OutputView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     /**
      * @group Immutable Constants
@@ -404,7 +444,12 @@ export class LogsTab extends DockableTabs.Tab {
 /**
  * @category View
  */
-export class LogsTabView implements VirtualDOM {
+export class LogsTabView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
     /**
      * @group States
      */
@@ -427,7 +472,7 @@ export class LogsTabView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         environmentState: EnvironmentState

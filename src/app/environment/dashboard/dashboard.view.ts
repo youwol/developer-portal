@@ -1,4 +1,4 @@
-import { child$, VirtualDOM } from '@youwol/flux-view'
+import { ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
 import { raiseHTTPErrors } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { EnvironmentState } from '../environment.state'
@@ -8,7 +8,11 @@ import { mergeMap } from 'rxjs/operators'
 /**
  * @category View
  */
-export class DashboardView implements VirtualDOM {
+export class DashboardView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group States
      */
@@ -22,20 +26,20 @@ export class DashboardView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { environmentState: EnvironmentState }) {
         Object.assign(this, params)
         this.children = [
-            child$(
-                this.environmentState.appState.environment$.pipe(
+            {
+                source$: this.environmentState.appState.environment$.pipe(
                     mergeMap(() =>
                         this.environmentState.client
                             .queryCowSay$()
                             .pipe(raiseHTTPErrors()),
                     ),
                 ),
-                (cowSay) => {
+                vdomMap: (cowSay) => {
                     return {
                         style: {
                             width: 'fit-content',
@@ -43,16 +47,18 @@ export class DashboardView implements VirtualDOM {
                         },
                         class: 'fv-text-secondary mx-auto',
                         tag: 'pre',
-                        innerText: cowSay,
+                        innerText: `${cowSay}`,
                     }
                 },
-            ),
-            child$(
-                this.environmentState.appState.environment$,
-                (environment) => {
+            },
+            {
+                source$: this.environmentState.appState.environment$,
+                vdomMap: (
+                    environment: pyYw.Routers.Environment.EnvironmentStatusResponse,
+                ) => {
                     return new EnvSummaryView({ environment })
                 },
-            ),
+            },
         ]
     }
 }
@@ -60,7 +66,11 @@ export class DashboardView implements VirtualDOM {
 /**
  * @category View
  */
-export class EnvSummaryView implements VirtualDOM {
+export class EnvSummaryView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -81,7 +91,7 @@ export class EnvSummaryView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: {
         environment: pyYw.Routers.Environment.EnvironmentStatusResponse
@@ -98,7 +108,11 @@ export class EnvSummaryView implements VirtualDOM {
 /**
  * @category View
  */
-export class PathsView implements VirtualDOM {
+export class PathsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
     /**
      * @group Immutable DOM Constants
      */
@@ -112,7 +126,7 @@ export class PathsView implements VirtualDOM {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly children: VirtualDOM[]
+    public readonly children: ChildrenLike
 
     constructor(params: { pathsBook: pyYw.Routers.Environment.PathsBook }) {
         Object.assign(this, params)
