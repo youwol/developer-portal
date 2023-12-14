@@ -23,7 +23,7 @@ webpm_dependencies = {
     '@youwol/rx-tree-views': '^0.3.0',
     '@youwol/rx-tab-views': '^0.3.0',
     '@youwol/os-top-banner': '^0.2.0',
-    '@youwol/os-widgets': '^0.1.1',
+    '@youwol/os-widgets': '^0.2.2',
     'd3': '^7.7.0',
     'codemirror': '^5.52.0',
     '@youwol/rx-code-mirror-editors': '^0.4.1',
