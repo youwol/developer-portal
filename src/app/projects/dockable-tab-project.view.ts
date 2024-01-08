@@ -12,6 +12,8 @@ import {
 } from '../common'
 import { ProjectsState } from './projects.state'
 import { DashboardView } from './dashboard'
+import { popupModal } from './project'
+import { Modal } from '@youwol/rx-group-views'
 
 /**
  * @category View
@@ -74,6 +76,7 @@ export class ProjectsTabView implements VirtualDOM<'div'> {
             new SectionDashboard({ projectsState: this.projectsState }),
             new SectionNewProject({ projectsState: this.projectsState }),
             new SectionProjectsOpened({ projectsState: this.projectsState }),
+            new SectionUnloadedProjects({ projectsState: this.projectsState }),
             new SectionAllProjects({ projectsState: this.projectsState }),
         ]
     }
@@ -433,6 +436,210 @@ export class ListProjectsView implements VirtualDOM<'div'> {
 /**
  * @category View
  */
+export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+
+    /**
+     * @group Observables
+     */
+    public readonly search$ = new BehaviorSubject('')
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
+
+    /**
+     * @group States
+     */
+    public readonly projectsState: ProjectsState
+
+    constructor(params: { projectsState: ProjectsState }) {
+        const searchView: VirtualDOM<'div'> = {
+            tag: 'div',
+            class: 'd-flex align-items-center  my-2 w-100 px-2',
+            children: [
+                {
+                    tag: 'div',
+                    class: 'fas fa-search mr-1',
+                },
+                {
+                    class: 'flex-grow-1',
+                    tag: 'input',
+                    type: 'text',
+                    style: {
+                        fontSize: 'small',
+                    },
+                    value: this.search$.getValue(),
+                    oninput: (ev) => this.search$.next(ev.target['value']),
+                },
+            ],
+        }
+        Object.assign(this, params)
+        const searchTerm = (
+            term: string,
+            failure: pyYw.Routers.Projects.Failure,
+        ) => {
+            return (
+                failure.failure.includes(term) ||
+                failure.path.includes(term) ||
+                failure.message.includes(term)
+            )
+        }
+        this.children = [
+            searchView,
+            {
+                tag: 'div',
+                children: {
+                    policy: 'replace',
+                    source$: combineLatest([
+                        this.projectsState.projectsFailures$,
+                        this.search$,
+                    ]).pipe(
+                        map(([failures, search]) => {
+                            return failures.filter((p) => searchTerm(search, p))
+                        }),
+                    ),
+                    vdomMap: (failures: pyYw.Routers.Projects.Failure[]) => {
+                        return failures.map(
+                            (failure: pyYw.Routers.Projects.Failure) => {
+                                return {
+                                    tag: 'div',
+                                    class: 'fv-pointer fv-hover-bg-background-alt rounded px-1 d-flex align-items-center',
+                                    children: [
+                                        {
+                                            tag: 'div',
+                                            innerText: failure.path
+                                                .split('/')
+                                                .pop(),
+                                        },
+                                        {
+                                            tag: 'div',
+                                            class: 'fas fa-exclamation-circle fv-text-error ml-2',
+                                        },
+                                    ],
+                                    onclick: () => {
+                                        popupModal(
+                                            (modalState: Modal.State) =>
+                                                new FailureProjectView({
+                                                    modalState,
+                                                    failure,
+                                                }),
+                                        )
+                                    },
+                                }
+                            },
+                        )
+                    },
+                },
+            },
+        ]
+    }
+}
+
+export class FailureProjectView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class =
+        'd-flex flex-column p-4 fv-bg-background-alt border-rounded '
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly style = {
+        position: 'relative' as const,
+        width: '75vh',
+        maxHeight: '75vh',
+        overflowWrap: 'anywhere' as const,
+    }
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
+
+    /**
+     *
+     * @group States
+     */
+    public readonly modalState: Modal.State
+
+    constructor(params: {
+        modalState: Modal.State
+        failure: pyYw.Routers.Projects.Failure
+    }) {
+        Object.assign(this, params)
+        this.children = [
+            {
+                tag: 'div',
+                class: 'pt-2 px-2 text-start  fv-text-primary',
+                innerText: `Path: `,
+            },
+            {
+                tag: 'div',
+                class: 'px-2 text-start  fv-text-focus',
+                innerText: ` ${params.failure.path}`,
+            },
+            {
+                tag: 'div',
+                class: ' pt-2 px-2 text-start  fv-text-primary',
+                innerText: `Exception type: `,
+            },
+            {
+                tag: 'div',
+                class: 'px-2 text-start  fv-text-focus',
+                innerText: ` ${params.failure['exceptionType']}`,
+            },
+            {
+                tag: 'div',
+                class: 'pt-2 px-2 text-start  fv-text-primary',
+                innerText: `Message:`,
+            },
+            {
+                tag: 'div',
+                class: 'px-2 text-start  fv-text-focus',
+                innerText: ` ${params.failure['message']}`,
+            },
+            {
+                tag: 'div',
+                class: 'pt-2 px-2 text-start overflow-auto fv-bg-background fv-text-error ',
+                style: {
+                    whiteSpace: 'pre-wrap',
+                },
+                innerText: ` ${params.failure['traceback']} `,
+            },
+            {
+                tag: 'div',
+                class: 'fas fa-times  fv-pointer  fv-text-focus',
+                style: {
+                    position: 'absolute',
+                    content: '',
+                    top: '10px',
+                    right: '10px',
+                },
+                onclick: () => {
+                    this.modalState.ok$.next(undefined)
+                },
+            },
+        ]
+    }
+}
+
+/**
+ * @category View
+ */
 export class SectionAllProjects extends Section {
     /**
      * @group Immutable DOM Constants
@@ -450,13 +657,49 @@ export class SectionAllProjects extends Section {
         super({
             header: new SectionHeader({
                 title: {
-                    source$: projectsState.projects$,
-                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) =>
-                        `All projects (${projects.length})`,
+                    source$: combineLatest([
+                        projectsState.projects$,
+                        projectsState.projectsFailures$,
+                    ]),
+                    vdomMap: ([projects, failures]) =>
+                        `All projects (${projects.length} / ${
+                            projects.length + failures.length
+                        })`,
                 },
                 icon: 'fas fa-list-alt',
             }),
             content: new ListProjectsView({ projectsState }),
+        })
+    }
+}
+
+/**
+ * @category View
+ */
+export class SectionUnloadedProjects extends Section {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly style = {
+        minHeight: '0px',
+    }
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+
+    constructor({ projectsState }: { projectsState: ProjectsState }) {
+        super({
+            header: new SectionHeader({
+                title: {
+                    source$: projectsState.projectsFailures$,
+                    vdomMap: (failures: pyYw.Routers.Projects.Failure[]) =>
+                        `Projects fails (${failures.length})`,
+                },
+                icon: 'fas fa-exclamation-triangle',
+            }),
+            content: new ListUnloadedProjectsView({ projectsState }),
         })
     }
 }

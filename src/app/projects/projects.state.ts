@@ -11,8 +11,14 @@ type ContextMessage = pyYw.ContextMessage
 
 function projectLoadingIsSuccess(
     result: unknown,
-): result is pyYw.Routers.Projects.Project {
+): result is pyYw.Routers.Projects.ProjectsLoadingResults {
     return result['failure'] === undefined
+}
+
+function projectLoadingIsFails(
+    failures: unknown,
+): failures is pyYw.Routers.Projects.ProjectsLoadingResults {
+    return failures !== undefined
 }
 
 export type FlowId = string
@@ -208,14 +214,19 @@ export class ProjectsState {
     /**
      * @group Observables
      */
-    public readonly projectsLoading$: Observable<
-        (pyYw.Routers.Projects.Project | pyYw.Routers.Projects.Failure)[]
-    >
+    public readonly projectsLoading$: Observable<pyYw.Routers.Projects.ProjectsLoadingResults>
 
     /**
      * @group Observables
      */
     public readonly projects$: Observable<pyYw.Routers.Projects.Project[]>
+
+    /**
+     * @group Observables
+     */
+    public readonly projectsFailures$: Observable<
+        pyYw.Routers.Projects.Failure[]
+    >
 
     /**
      * @group Observables
@@ -233,15 +244,29 @@ export class ProjectsState {
         Object.assign(this, params)
 
         this.projectsLoading$ = this.projectsClient.webSocket.status$().pipe(
-            map(({ data }) => data.results),
+            map(({ data }) => data),
             shareReplay(1),
         )
 
         this.projects$ = this.projectsLoading$.pipe(
-            map((results) =>
-                results.filter((result) => projectLoadingIsSuccess(result)),
+            map((data) =>
+                data.results.filter((result) =>
+                    projectLoadingIsSuccess(result),
+                ),
             ),
             map((results) => results as pyYw.Routers.Projects.Project[]),
+            shareReplay(1),
+        )
+
+        this.projectsFailures$ = this.projectsLoading$.pipe(
+            map((data) =>
+                data['failures']['importExceptions'].filter(
+                    (failure: string[]) => {
+                        return projectLoadingIsFails(failure)
+                    },
+                ),
+            ),
+            map((failures) => failures as pyYw.Routers.Projects.Failure[]),
             shareReplay(1),
         )
     }
