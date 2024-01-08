@@ -450,9 +450,14 @@ export class SectionAllProjects extends Section {
         super({
             header: new SectionHeader({
                 title: {
-                    source$: projectsState.projects$,
-                    vdomMap: (projects: pyYw.Routers.Projects.Project[]) =>
-                        `All projects (${projects.length})`,
+                    source$: combineLatest([
+                        projectsState.projects$,
+                        projectsState.projectsFailures$,
+                    ]),
+                    vdomMap: ([projects, failures]) =>
+                        `All projects (${projects.length} / ${
+                            projects.length + failures.length
+                        })`,
                 },
                 icon: 'fas fa-list-alt',
             }),
