@@ -236,6 +236,11 @@ export class ProjectsState {
     >([])
 
     /**
+     * @group Observables
+     */
+    public readonly dropdownHandler$ = new BehaviorSubject<boolean>(false)
+
+    /**
      * @group Mutable Variables
      */
     public readonly screensId = {}
