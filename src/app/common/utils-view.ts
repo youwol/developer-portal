@@ -6,6 +6,7 @@ import {
 } from '@youwol/rx-vdom'
 import { Observable } from 'rxjs'
 import { Screen, Topic } from '../app-state'
+import { ProjectsState } from '../projects'
 
 export const classesButton =
     'd-flex border p-2 rounded  fv-bg-secondary fv-hover-xx-lighter fv-pointer mx-2 align-items-center'
@@ -71,6 +72,12 @@ export class SectionHeader implements VirtualDOM<'header'> {
      * @group Immutable Constants
      */
     public readonly icon: string
+    /**
+     * @group Immutable Constants
+     */
+    public readonly onclick: () => void
+
+    public readonly projectsState: ProjectsState
 
     /**
      * @group Immutable DOM Constants
@@ -90,12 +97,23 @@ export class SectionHeader implements VirtualDOM<'header'> {
                 children: [
                     {
                         tag: 'div',
-                        class: `${this.icon} mr-2`,
+                        class: `${params.icon} mr-2`,
                     },
                     {
                         tag: 'div',
-                        innerText: this.title,
+                        innerText: params.title,
                     },
+                    params.handler
+                        ? {
+                              tag: 'i',
+                              class: {
+                                  source$: this.projectsState.dropdownHandler$,
+                                  vdomMap: (isArrowUp) =>
+                                      isArrowUp ? 'down' : 'up',
+                                  wrapper: (d) => `fas fa-chevron-${d} mx-3`,
+                              },
+                          }
+                        : null,
                 ],
             },
         ]
