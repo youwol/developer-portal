@@ -655,7 +655,7 @@ export class SectionAllProjects extends Section {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+    public readonly class = 'vh-100 my-2 flex-grow-1 d-flex flex-column'
 
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
@@ -691,7 +691,7 @@ export class SectionUnloadedProjects extends Section {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+    public readonly class = 'vh-100 my-2 flex-grow-1 d-flex flex-column'
 
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
