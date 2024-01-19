@@ -498,6 +498,10 @@ export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
             searchView,
             {
                 tag: 'div',
+                class: {
+                    source$: params.projectsState.dropdownHandler$,
+                    vdomMap: (isShow) => (isShow ? '' : 'd-none'),
+                },
                 children: {
                     policy: 'replace',
                     source$: combineLatest([
