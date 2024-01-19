@@ -702,6 +702,13 @@ export class SectionUnloadedProjects extends Section {
                         `Projects fails (${failures.length})`,
                 },
                 icon: 'fas fa-exclamation-triangle',
+                handler: true,
+                projectsState: projectsState,
+                onclick: () => {
+                    const currentValue =
+                        projectsState.dropdownHandler$.getValue()
+                    projectsState.dropdownHandler$.next(!currentValue)
+                },
             }),
             content: new ListUnloadedProjectsView({ projectsState }),
         })
