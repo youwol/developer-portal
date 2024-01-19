@@ -76,8 +76,8 @@ export class ProjectsTabView implements VirtualDOM<'div'> {
             new SectionDashboard({ projectsState: this.projectsState }),
             new SectionNewProject({ projectsState: this.projectsState }),
             new SectionProjectsOpened({ projectsState: this.projectsState }),
-            new SectionUnloadedProjects({ projectsState: this.projectsState }),
             new SectionAllProjects({ projectsState: this.projectsState }),
+            new SectionUnloadedProjects({ projectsState: this.projectsState }),
         ]
     }
 }
