@@ -695,7 +695,8 @@ export class SectionUnloadedProjects extends Section {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'vh-100 my-2 flex-grow-1 d-flex flex-column'
+    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
+    public readonly onclick: () => void
 
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         const dropdownHandler$ = new BehaviorSubject<boolean>(false)
@@ -721,5 +722,9 @@ export class SectionUnloadedProjects extends Section {
             }),
             content: new ListUnloadedProjectsView({ projectsState }),
         })
+        this.onclick = () => {
+            const currentValue = dropdownHandler$.getValue()
+            dropdownHandler$.next(!currentValue)
+        }
     }
 }
