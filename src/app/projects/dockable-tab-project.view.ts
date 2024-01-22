@@ -456,6 +456,10 @@ export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
      * @group Immutable DOM Constants
      */
     public readonly children: ChildrenLike
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly onclick = (ev: MouseEvent) => ev.stopPropagation()
 
     /**
      * @group States
