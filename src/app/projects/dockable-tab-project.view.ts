@@ -694,6 +694,17 @@ export class SectionUnloadedProjects extends Section {
     public readonly class = 'vh-100 my-2 flex-grow-1 d-flex flex-column'
 
     constructor({ projectsState }: { projectsState: ProjectsState }) {
+        const dropdownHandler$ = new BehaviorSubject<boolean>(false)
+        const expanderView = [
+            {
+                tag: 'i',
+                class: {
+                    source$: dropdownHandler$,
+                    vdomMap: (isArrowUp) => (isArrowUp ? 'down' : 'up'),
+                    wrapper: (d) => `fas fa-chevron-${d} mx-3`,
+                },
+            } as VirtualDOM<'i'>,
+        ]
         super({
             header: new SectionHeader({
                 title: {
@@ -702,13 +713,7 @@ export class SectionUnloadedProjects extends Section {
                         `Projects fails (${failures.length})`,
                 },
                 icon: 'fas fa-exclamation-triangle',
-                handler: true,
-                projectsState: projectsState,
-                onclick: () => {
-                    const currentValue =
-                        projectsState.dropdownHandler$.getValue()
-                    projectsState.dropdownHandler$.next(!currentValue)
-                },
+                withChildren: expanderView,
             }),
             content: new ListUnloadedProjectsView({ projectsState }),
         })
