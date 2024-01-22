@@ -1,4 +1,9 @@
-import { AnyVirtualDOM, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
+import {
+    AnyVirtualDOM,
+    AttributeLike,
+    ChildrenLike,
+    VirtualDOM,
+} from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { BehaviorSubject, combineLatest } from 'rxjs'
 import { map } from 'rxjs/operators'
@@ -445,12 +450,16 @@ export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'pl-4 flex-grow-1 overflow-auto'
+    public readonly class: AttributeLike<string>
 
     /**
      * @group Observables
      */
     public readonly search$ = new BehaviorSubject('')
+    /**
+     * @group Observables
+     */
+    public readonly dropdownHandler$ = new BehaviorSubject<boolean>(false)
 
     /**
      * @group Immutable DOM Constants
@@ -466,7 +475,11 @@ export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
      */
     public readonly projectsState: ProjectsState
 
-    constructor(params: { projectsState: ProjectsState }) {
+    constructor(params: {
+        isShow: BehaviorSubject<boolean>
+        projectsState: ProjectsState
+    }) {
+        this.dropdownHandler$ = params.isShow
         const searchView: VirtualDOM<'div'> = {
             tag: 'div',
             class: 'd-flex align-items-center  my-2 w-100 px-2',
@@ -498,14 +511,15 @@ export class ListUnloadedProjectsView implements VirtualDOM<'div'> {
                 failure.message.includes(term)
             )
         }
+        this.class = {
+            source$: this.dropdownHandler$,
+            vdomMap: (isShow) =>
+                isShow ? 'pl-4 flex-grow-1 overflow-auto' : 'd-none',
+        }
         this.children = [
             searchView,
             {
                 tag: 'div',
-                class: {
-                    source$: params.projectsState.dropdownHandler$,
-                    vdomMap: (isShow) => (isShow ? '' : 'd-none'),
-                },
                 children: {
                     policy: 'replace',
                     source$: combineLatest([
@@ -659,7 +673,7 @@ export class SectionAllProjects extends Section {
     /**
      * @group Immutable DOM Constants
      */
-    public readonly class = 'vh-100 my-2 flex-grow-1 d-flex flex-column'
+    public readonly class = 'my-2 flex-grow-1 d-flex flex-column'
 
     constructor({ projectsState }: { projectsState: ProjectsState }) {
         super({
@@ -720,7 +734,10 @@ export class SectionUnloadedProjects extends Section {
                 icon: 'fas fa-exclamation-triangle',
                 withChildren: expanderView,
             }),
-            content: new ListUnloadedProjectsView({ projectsState }),
+            content: new ListUnloadedProjectsView({
+                projectsState,
+                isShow: dropdownHandler$,
+            }),
         })
         this.onclick = () => {
             const currentValue = dropdownHandler$.getValue()
