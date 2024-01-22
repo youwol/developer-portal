@@ -81,6 +81,7 @@ export class SectionHeader implements VirtualDOM<'header'> {
         title: AttributeLike<string>
         icon: string
         [k: string]: unknown
+        withChildren?: AnyVirtualDOM[]
     }) {
         Object.assign(this, params)
         this.children = [
@@ -90,12 +91,13 @@ export class SectionHeader implements VirtualDOM<'header'> {
                 children: [
                     {
                         tag: 'div',
-                        class: `${this.icon} mr-2`,
+                        class: `${params.icon} mr-2`,
                     },
                     {
                         tag: 'div',
-                        innerText: this.title,
+                        innerText: params.title,
                     },
+                    ...(params.withChildren ?? []),
                 ],
             },
         ]
