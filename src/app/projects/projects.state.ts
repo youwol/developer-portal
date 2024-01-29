@@ -260,11 +260,9 @@ export class ProjectsState {
 
         this.projectsFailures$ = this.projectsLoading$.pipe(
             map((data) =>
-                data['failures']['importExceptions'].filter(
-                    (failure: string[]) => {
-                        return projectLoadingIsFails(failure)
-                    },
-                ),
+                data.failures.importExceptions.filter((failure) => {
+                    return projectLoadingIsFails(failure)
+                }),
             ),
             map((failures) => failures as pyYw.Routers.Projects.Failure[]),
             shareReplay(1),
