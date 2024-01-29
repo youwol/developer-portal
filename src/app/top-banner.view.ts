@@ -191,10 +191,14 @@ class ConnectionView implements VirtualDOM<'div'> {
                             {
                                 tag: 'div',
                                 class:
-                                    'fas fa-wifi px-2 ' +
+                                    'fas fa-cloud px-2 ' +
                                     (remoteInfo.connected
                                         ? 'fv-text-success'
                                         : 'fv-text-error'),
+                                customAttributes: {
+                                    dataToggle: 'tooltip',
+                                    title: 'Remote environment',
+                                },
                             },
                             {
                                 tag: 'div',
