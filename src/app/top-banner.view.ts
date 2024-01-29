@@ -1,7 +1,7 @@
-import { AttributeLike, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
-import { TopBannerView } from '@youwol/os-top-banner'
-import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
-import { AppState } from './app-state'
+import {AttributeLike, ChildrenLike, VirtualDOM} from '@youwol/rx-vdom'
+import {TopBannerView} from '@youwol/os-top-banner'
+import {BehaviorSubject, Observable, Subject, timer} from 'rxjs'
+import {AppState} from './app-state'
 import * as pyYw from '@youwol/local-youwol-client'
 
 class ReloadButton implements VirtualDOM<'div'> {
@@ -49,7 +49,15 @@ class ConfigurationPickerView implements VirtualDOM<'div'> {
      * @group Immutable DOM Constants
      */
     public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly class = 'mx-5 d-flex align-items-center'
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: ChildrenLike
 
     constructor(
@@ -76,11 +84,78 @@ class ConfigurationPickerView implements VirtualDOM<'div'> {
     }
 }
 
+class LocalConnectionView implements VirtualDOM<'div'> {
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly tag = 'div'
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: AttributeLike<string>
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly style = {
+        position: 'relative' as const,
+    }
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly customAttributes = {
+        dataToggle: 'tooltip',
+        title: 'Local py-youwol',
+    }
+
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly children: ChildrenLike
+
+    constructor(params: { state: AppState }) {
+        this.class = {
+            source$: params.state.connectedLocal$,
+            vdomMap: (isConnected: boolean) =>
+                isConnected ? 'fv-text-success' : 'fv-text-error',
+            wrapper: (d) => `fas  fa-network-wired  px-2 ${d}`,
+        }
+        this.children = [
+            {
+                tag: 'div',
+                class: {
+                    source$: params.state.connectedLocal$,
+                    vdomMap: (isConnected: boolean) =>
+                        isConnected
+                            ? ''
+                            : 'spinner-grow spinner-grow-sm text-secondary',
+                },
+                role: 'status',
+                style: {
+                    position: 'absolute',
+                    top: '-5px',
+                    left: '0px',
+                },
+            },
+        ]
+    }
+}
+
 class ConnectionView implements VirtualDOM<'div'> {
     /**
      * @group Immutable DOM Constants
      */
     public readonly tag = 'div'
+    /**
+     * @group Immutable DOM Constants
+     */
+    public readonly class: AttributeLike<string>
+
+    /**
+     * @group Immutable DOM Constants
+     */
     public readonly children: ChildrenLike
 
     constructor(params: { state: AppState }) {
@@ -112,6 +187,7 @@ class ConnectionView implements VirtualDOM<'div'> {
                         },
                         class: 'd-flex align-items-center justify-content-center',
                         children: [
+                            new LocalConnectionView({ state: params.state }),
                             {
                                 tag: 'div',
                                 class:
