@@ -80,6 +80,10 @@ export class AppState {
      * @group Observables
      */
     public readonly selectedScreen$: BehaviorSubject<Screen>
+    /**
+     * @group Observables
+     */
+    public readonly connectedLocal$: BehaviorSubject<boolean>
 
     /**
      * @group Observables
@@ -93,7 +97,8 @@ export class AppState {
             map(({ data }) => data),
             shareReplay(1),
         )
-
+        this.connectedLocal$ =
+            (this.environmentClient.webSocket.ws['_log'] as unknown as { connected$: BehaviorSubject<boolean> }).connected$
         this.projectsState = new ProjectsState({ appState: this })
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })
