@@ -3,7 +3,7 @@ const runTimeDependencies = {
     "externals": {
         "rxjs": "^7.5.6",
         "@youwol/http-clients": "^3.0.0",
-        "@youwol/http-primitives": "^0.2.0",
+        "@youwol/http-primitives": "^0.2.1",
         "@youwol/local-youwol-client": "^0.2.0",
         "@youwol/webpm-client": "^3.0.0",
         "@youwol/rx-vdom": "^1.0.1",
@@ -16,7 +16,7 @@ const runTimeDependencies = {
         "@youwol/os-widgets": "^0.2.2",
         "d3": "^7.7.0",
         "codemirror": "^5.52.0",
-        "@youwol/rx-code-mirror-editors": "^0.4.1",
+        "@youwol/rx-code-mirror-editors": "^0.5.0",
         "@youwol/grapes-coding-playgrounds": "^0.2.0"
     },
     "includedInBundle": {
@@ -39,7 +39,7 @@ const externals = {
     "@youwol/os-widgets": "window['@youwol/os-widgets_APIv02']",
     "d3": "window['d3_APIv7']",
     "codemirror": "window['CodeMirror_APIv5']",
-    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv04']",
+    "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv05']",
     "@youwol/grapes-coding-playgrounds": "window['@youwol/grapes-coding-playgrounds_APIv02']",
     "rxjs/operators": "window['rxjs_APIv7']['operators']"
 }
@@ -105,7 +105,7 @@ const exportedSymbols = {
         "exportedSymbol": "CodeMirror"
     },
     "@youwol/rx-code-mirror-editors": {
-        "apiKey": "04",
+        "apiKey": "05",
         "exportedSymbol": "@youwol/rx-code-mirror-editors"
     },
     "@youwol/grapes-coding-playgrounds": {

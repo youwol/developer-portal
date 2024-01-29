@@ -26,7 +26,7 @@ webpm_dependencies = {
     '@youwol/os-widgets': '^0.2.2',
     'd3': '^7.7.0',
     'codemirror': '^5.52.0',
-    '@youwol/rx-code-mirror-editors': '^0.4.1',
+    '@youwol/rx-code-mirror-editors': '^0.5.0',
     '@youwol/grapes-coding-playgrounds': '^0.2.0'
 }
 
