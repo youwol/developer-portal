@@ -12,7 +12,7 @@ pkg_json = parse_json(folder_path / 'package.json')
 webpm_dependencies = {
     'rxjs': '^7.5.6',
     '@youwol/http-clients': '^3.0.0',
-    '@youwol/http-primitives': '^0.2.0',
+    '@youwol/http-primitives': '^0.2.1',
     '@youwol/local-youwol-client': '^0.2.0',
     #
     '@youwol/webpm-client': '^3.0.0',
