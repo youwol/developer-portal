@@ -15,12 +15,6 @@ function projectLoadingIsSuccess(
     return result['failure'] === undefined
 }
 
-function projectLoadingIsFails(
-    failures: unknown,
-): failures is pyYw.Routers.Projects.ProjectsLoadingResults {
-    return failures !== undefined
-}
-
 export type FlowId = string
 
 export function instanceOfStepStatus(
@@ -259,12 +253,7 @@ export class ProjectsState {
         )
 
         this.projectsFailures$ = this.projectsLoading$.pipe(
-            map((data) =>
-                data.failures.importExceptions.filter((failure) => {
-                    return projectLoadingIsFails(failure)
-                }),
-            ),
-            map((failures) => failures as pyYw.Routers.Projects.Failure[]),
+            map((data) => data.failures.importExceptions),
             shareReplay(1),
         )
     }
