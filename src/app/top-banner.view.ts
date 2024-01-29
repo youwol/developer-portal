@@ -73,10 +73,10 @@ class ConfigurationPickerView implements VirtualDOM<'div'> {
                     source$: environment$,
                     vdomMap: (
                         env: pyYw.Routers.Environment.EnvironmentStatusResponse,
-                    ) =>
-                        `${env.configuration.pathsBook.config
-                            .split('/')
-                            .slice(-1)}`,
+                    ) =>{
+                        const fileName = env.configuration.pathsBook.config
+                        return fileName.match(/[^\\/]+$/)[0]
+                    }
                 },
                 style: { fontSize: 'large' },
             },
