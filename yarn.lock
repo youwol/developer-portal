@@ -1442,10 +1442,10 @@
     eslint-plugin-tsdoc "^0.2.17"
     eslint-plugin-unused-imports "^3.0.0"
 
-"@youwol/grapes-coding-playgrounds@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@youwol/grapes-coding-playgrounds/-/grapes-coding-playgrounds-0.2.0.tgz#7a4ba94a614391558d70402a2b9b79577a580ff7"
-  integrity sha512-3IYct5ps71c0K1fk4uEN+lzE3yGYBWbd42yU/LOqhDmFvX2OA6XQ3iUghVvajL/XWixfqu1GSOZy8g/QrQ5mYg==
+"@youwol/grapes-coding-playgrounds@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@youwol/grapes-coding-playgrounds/-/grapes-coding-playgrounds-0.3.0.tgz#bc2bb0c21c0d96611ce10e00c1deb43fc0a6155f"
+  integrity sha512-wUygZImBW6MF8fYtJ5zqPcatZf31UYgJ9Gsaw0EsE3MpZ2eXOycXWBBL6YPyVHKIhczpjZRopCGdnOFZIzi6Qg==
   dependencies:
     "@typescript/vfs" "^1.4.0"
     "@youwol/rx-tree-views" "^0.3.1"
@@ -1454,7 +1454,7 @@
     "@youwol/webpm-pyodide-loader" "^0.2.0"
     codemirror "^5.52.0"
     rxjs "^7.5.6"
-    typescript "5.2.2"
+    typescript "5.3.3"
 
 "@youwol/http-clients@^3.0.0":
   version "3.0.0"
@@ -1468,6 +1468,13 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@youwol/http-primitives/-/http-primitives-0.2.0.tgz#ef4f8946e330942be8a1ba8fb170ac20b2960c93"
   integrity sha512-DYoO424yJHEgBdVEOFJhzlDl9rd5MN2tcXU5Mj7jFZvMNIKKYquIN875gYw5vgv4XMNDc+zjIfbYmt6Y77m0pQ==
+  dependencies:
+    rxjs "^7.5.6"
+
+"@youwol/http-primitives@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@youwol/http-primitives/-/http-primitives-0.2.1.tgz#9050c8c1170a834ce9c7d2b0c33a663fc4f26042"
+  integrity sha512-YCg2cNELwtIBxrn2j6ls7JC8YoSe8o6a9teQ+0xVNV/6BBTICQ/p9Es5NrEfEch+w9tr62PKJLFxJsn7zIrxSw==
   dependencies:
     rxjs "^7.5.6"
 
@@ -1551,10 +1558,10 @@
     "@youwol/rx-vdom" "^1.0.1"
     rxjs "^7.5.6"
 
-"@youwol/rx-code-mirror-editors@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@youwol/rx-code-mirror-editors/-/rx-code-mirror-editors-0.4.1.tgz#7520c75f796bbee10a53c04776b07318516227ab"
-  integrity sha512-NBG5A/5EzawEki6ldPtbZzme/x8MHWf7t3sUl+kOc6RrmbRcqNPCbJhDhYhBh/6/OG+NH717FNafr6Kt4VQuBw==
+"@youwol/rx-code-mirror-editors@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@youwol/rx-code-mirror-editors/-/rx-code-mirror-editors-0.5.0.tgz#9435177a2caa4d4746131db579aef6bb46b8c6cd"
+  integrity sha512-64JpkgJy7JhSVwFCtX79FTgKSjuvntf/QDVadDdSh/mHJXFipBHEbquTxFfFKxbYiAph2Zz6my0z1oXBKCinIw==
   dependencies:
     "@typescript/vfs" "^1.4.0"
     "@youwol/logging" "^0.2.0"
@@ -1562,7 +1569,7 @@
     "@youwol/webpm-client" "^3.0.0"
     codemirror "^5.52.0"
     rxjs "^7.5.6"
-    typescript "5.2.2"
+    typescript "5.3.3"
 
 "@youwol/rx-group-views@^0.3.0":
   version "0.3.0"
@@ -6671,11 +6678,6 @@ typedoc@^0.25.7:
     marked "^4.3.0"
     minimatch "^9.0.3"
     shiki "^0.14.7"
-
-typescript@5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
-  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
 typescript@5.3.3:
   version "5.3.3"
