@@ -17,7 +17,7 @@ const runTimeDependencies = {
         "d3": "^7.7.0",
         "codemirror": "^5.52.0",
         "@youwol/rx-code-mirror-editors": "^0.5.0",
-        "@youwol/grapes-coding-playgrounds": "^0.2.0"
+        "@youwol/grapes-coding-playgrounds": "^0.3.0"
     },
     "includedInBundle": {
         "d3-dag": "0.8.2"
@@ -40,7 +40,7 @@ const externals = {
     "d3": "window['d3_APIv7']",
     "codemirror": "window['CodeMirror_APIv5']",
     "@youwol/rx-code-mirror-editors": "window['@youwol/rx-code-mirror-editors_APIv05']",
-    "@youwol/grapes-coding-playgrounds": "window['@youwol/grapes-coding-playgrounds_APIv02']",
+    "@youwol/grapes-coding-playgrounds": "window['@youwol/grapes-coding-playgrounds_APIv03']",
     "rxjs/operators": "window['rxjs_APIv7']['operators']"
 }
 const exportedSymbols = {
@@ -109,7 +109,7 @@ const exportedSymbols = {
         "exportedSymbol": "@youwol/rx-code-mirror-editors"
     },
     "@youwol/grapes-coding-playgrounds": {
-        "apiKey": "02",
+        "apiKey": "03",
         "exportedSymbol": "@youwol/grapes-coding-playgrounds"
     }
 }
