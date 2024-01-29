@@ -84,6 +84,11 @@ class ConnectionView implements VirtualDOM<'div'> {
     public readonly children: ChildrenLike
 
     constructor(params: { state: AppState }) {
+        this.class = {
+            source$: params.state.connectedLocal$,
+            vdomMap: (isConnected: boolean) =>
+                isConnected ? '' : 'connectionView-bg-blur',
+        }
         this.children = [
             {
                 source$: params.state.environment$,
@@ -95,6 +100,16 @@ class ConnectionView implements VirtualDOM<'div'> {
                     const remoteInfo = environment['remoteGatewayInfo']
                     return {
                         tag: 'div',
+                        style: {
+                            source$: params.state.connectedLocal$,
+                            vdomMap: (isConnected: boolean) =>
+                                isConnected
+                                    ? {}
+                                    : {
+                                          position: 'relative',
+                                          zIndex: 5,
+                                      },
+                        },
                         class: 'd-flex align-items-center justify-content-center',
                         children: [
                             {
