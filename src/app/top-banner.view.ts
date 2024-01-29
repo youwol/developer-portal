@@ -1,7 +1,7 @@
-import {AttributeLike, ChildrenLike, VirtualDOM} from '@youwol/rx-vdom'
-import {TopBannerView} from '@youwol/os-top-banner'
-import {BehaviorSubject, Observable, Subject, timer} from 'rxjs'
-import {AppState} from './app-state'
+import { AttributeLike, ChildrenLike, VirtualDOM } from '@youwol/rx-vdom'
+import { TopBannerView } from '@youwol/os-top-banner'
+import { BehaviorSubject, Observable, Subject, timer } from 'rxjs'
+import { AppState } from './app-state'
 import * as pyYw from '@youwol/local-youwol-client'
 
 class ReloadButton implements VirtualDOM<'div'> {
@@ -73,10 +73,10 @@ class ConfigurationPickerView implements VirtualDOM<'div'> {
                     source$: environment$,
                     vdomMap: (
                         env: pyYw.Routers.Environment.EnvironmentStatusResponse,
-                    ) =>{
+                    ) => {
                         const fileName = env.configuration.pathsBook.config
                         return fileName.match(/[^\\/]+$/)[0]
-                    }
+                    },
                 },
                 style: { fontSize: 'large' },
             },

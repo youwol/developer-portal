@@ -1,12 +1,10 @@
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
-
 import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
 import { filterCtxMessage, WebSocketResponse$ } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { NewProjectFromTemplateView } from './new-project'
-
 type ContextMessage = pyYw.ContextMessage
 
 function projectLoadingIsSuccess(
@@ -248,7 +246,7 @@ export class ProjectsState {
                     projectLoadingIsSuccess(result),
                 ),
             ),
-            map((results) => results as pyYw.Routers.Projects.Project[]),
+            map((results) => results),
             shareReplay(1),
         )
 
