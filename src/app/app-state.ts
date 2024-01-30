@@ -8,6 +8,7 @@ import { AnyVirtualDOM, VirtualDOM } from '@youwol/rx-vdom'
 import * as pyYw from '@youwol/local-youwol-client'
 import { LeftNavTab } from './common'
 import { SystemState, SystemTab } from './system'
+import { WsRouter } from '@youwol/local-youwol-client'
 
 export type Topic =
     | 'Projects'
@@ -23,6 +24,10 @@ export interface Screen {
     view: AnyVirtualDOM
 }
 
+pyYw.PyYouwolClient.ws = new WsRouter({
+    autoReconnect: true,
+    autoReconnectDelay: 1000,
+})
 /**
  * @category State
  */
@@ -80,6 +85,10 @@ export class AppState {
      * @group Observables
      */
     public readonly selectedScreen$: BehaviorSubject<Screen>
+    /**
+     * @group Observables
+     */
+    public readonly connectedLocal$: Observable<boolean>
 
     /**
      * @group Observables
@@ -93,7 +102,7 @@ export class AppState {
             map(({ data }) => data),
             shareReplay(1),
         )
-
+        this.connectedLocal$ = pyYw.PyYouwolClient.ws.connected$
         this.projectsState = new ProjectsState({ appState: this })
         this.cdnState = new CdnState({ appState: this })
         this.environmentState = new EnvironmentState({ appState: this })

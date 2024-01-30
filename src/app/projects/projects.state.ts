@@ -1,24 +1,16 @@
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs'
-
 import { filter, map, mergeMap, shareReplay } from 'rxjs/operators'
 import { AppState } from '../app-state'
 import { ProjectView } from './project'
 import { filterCtxMessage, WebSocketResponse$ } from '@youwol/http-primitives'
 import * as pyYw from '@youwol/local-youwol-client'
 import { NewProjectFromTemplateView } from './new-project'
-
 type ContextMessage = pyYw.ContextMessage
 
 function projectLoadingIsSuccess(
     result: unknown,
 ): result is pyYw.Routers.Projects.ProjectsLoadingResults {
     return result['failure'] === undefined
-}
-
-function projectLoadingIsFails(
-    failures: unknown,
-): failures is pyYw.Routers.Projects.ProjectsLoadingResults {
-    return failures !== undefined
 }
 
 export type FlowId = string
@@ -254,19 +246,12 @@ export class ProjectsState {
                     projectLoadingIsSuccess(result),
                 ),
             ),
-            map((results) => results as pyYw.Routers.Projects.Project[]),
+            map((results) => results),
             shareReplay(1),
         )
 
         this.projectsFailures$ = this.projectsLoading$.pipe(
-            map((data) =>
-                data['failures']['importExceptions'].filter(
-                    (failure: string[]) => {
-                        return projectLoadingIsFails(failure)
-                    },
-                ),
-            ),
-            map((failures) => failures as pyYw.Routers.Projects.Failure[]),
+            map((data) => data.failures.importExceptions),
             shareReplay(1),
         )
     }

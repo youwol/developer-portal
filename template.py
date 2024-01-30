@@ -12,9 +12,8 @@ pkg_json = parse_json(folder_path / 'package.json')
 webpm_dependencies = {
     'rxjs': '^7.5.6',
     '@youwol/http-clients': '^3.0.0',
-    '@youwol/http-primitives': '^0.2.0',
-    '@youwol/local-youwol-client': '^0.2.0',
-    #
+    '@youwol/http-primitives': '^0.2.2',
+    '@youwol/local-youwol-client': '^0.2.2',
     '@youwol/webpm-client': '^3.0.0',
     '@youwol/rx-vdom': '^1.0.1',
     '@youwol/rx-group-views': '^0.3.0',
@@ -26,8 +25,8 @@ webpm_dependencies = {
     '@youwol/os-widgets': '^0.2.2',
     'd3': '^7.7.0',
     'codemirror': '^5.52.0',
-    '@youwol/rx-code-mirror-editors': '^0.4.1',
-    '@youwol/grapes-coding-playgrounds': '^0.2.0'
+    '@youwol/rx-code-mirror-editors': '^0.5.0',
+    '@youwol/grapes-coding-playgrounds': '^0.3.0'
 }
 
 template = Template(

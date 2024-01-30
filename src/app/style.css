@@ -2,6 +2,23 @@
     height: 100% !important;
 }
 
+.connectionView-bg-blur {
+    position: relative;
+}
+
+.connectionView-bg-blur::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    backdrop-filter: blur(2px);
+    background-color: rgba(220, 159, 53, 0.05);
+    cursor: default;
+    z-index: 3;
+}
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
@@ -35,12 +52,14 @@
     transform: translateY(5px);
     pointer-events: auto;
 }
+
 .dag-flow-node-run {
     font-size: 10px;
     text-anchor: middle;
     user-select: none;
     pointer-events: auto;
 }
+
 .dag-flow-node-settings {
     font-size: 10px;
     text-anchor: middle;
@@ -57,6 +76,7 @@
 g.pending {
     animation: rotate 2s linear infinite;
 }
+
 circle.pending {
     stroke-linecap: round;
     stroke: aliceblue;
