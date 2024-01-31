@@ -59,6 +59,16 @@ export class DagFlowView implements VirtualDOM<'div'> {
     }
 
     /**
+     * @group Immutable Constants
+     */
+    static fasColorsFactory = {
+        none: 'gray',
+        KO: 'white',
+        OK: 'white',
+        outdated: '#cb5418',
+    }
+
+    /**
      * @group Immutable DOM Constants
      */
     connectedCallback: (elem: RxHTMLElement<'div'>) => void
@@ -139,7 +149,7 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         status: {
             attributes: {
-                class: 'fv-pointer  dag-flow-node-status',
+                class: 'fv-pointer fas  dag-flow-node-status',
             },
         },
         menuActions: {
@@ -153,10 +163,12 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         run: {
             attributes: {
-                class: 'fv-pointer dag-flow-node-run fv-hover-xx-lighter',
+                class: 'fas fv-pointer dag-flow-node-run fv-hover-xx-lighter',
                 transform: `translate(0, 0)`,
             },
-            style: {},
+            style: {
+                fill: 'green',
+            },
             on: {
                 click: (n, { data }) => {
                     n.stopPropagation()
@@ -170,10 +182,12 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         settings: {
             attributes: {
-                class: 'fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
+                class: 'fas fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
                 transform: `translate(15, 0)`,
             },
-            style: {},
+            style: {
+                fill: '#d7e5ee',
+            },
             on: {
                 click: (n, { data }) => {
                     n.stopPropagation()
@@ -328,14 +342,14 @@ export class DagFlowView implements VirtualDOM<'div'> {
             this.defaultStyle.menuActions,
         )
         withDefaultStyleAttributes(
-            nodesMenuActions.append('text').text('▶'),
+            nodesMenuActions.append('text').text('\uf04b'),
             this.defaultStyle.run,
         )
         withDefaultStyleAttributes(
             nodesMenuActions
                 .filter((d) => d.data.hasView)
                 .append('text')
-                .text('🔧'),
+                .text('\uf0ad'),
             this.defaultStyle.settings,
         )
     }
@@ -398,16 +412,19 @@ export class DagFlowView implements VirtualDOM<'div'> {
             statusCheckStarted: '',
         }
         const factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
-            OK: '✔',
-            KO: '❌',
-            outdated: '⚠',
+            OK: '\uf00c',
+            KO: '\uf00d',
+            outdated: '\uf071',
             none: '',
         }
-        event.text.text(
-            instanceOfStepStatus(event.status)
-                ? factoryDone[event.status.status]
-                : factoryPending[event.status],
-        )
+
+        event.text
+            .text(
+                instanceOfStepStatus(event.status)
+                    ? factoryDone[event.status.status]
+                    : factoryPending[event.status],
+            )
+            .style('fill', DagFlowView.fasColorsFactory[event.status.status])
     }
 }
 
