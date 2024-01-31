@@ -328,14 +328,14 @@ export class DagFlowView implements VirtualDOM<'div'> {
             this.defaultStyle.menuActions,
         )
         withDefaultStyleAttributes(
-            nodesMenuActions.append('text').text('▶'),
+            nodesMenuActions.append('text').text('\uf04b'),
             this.defaultStyle.run,
         )
         withDefaultStyleAttributes(
             nodesMenuActions
                 .filter((d) => d.data.hasView)
                 .append('text')
-                .text('🔧'),
+                .text('\uf0ad'),
             this.defaultStyle.settings,
         )
     }
@@ -398,9 +398,9 @@ export class DagFlowView implements VirtualDOM<'div'> {
             statusCheckStarted: '',
         }
         const factoryDone: Record<'OK' | 'KO' | 'outdated' | 'none', string> = {
-            OK: '✔',
-            KO: '❌',
-            outdated: '⚠',
+            OK: '\uf00c',
+            KO: '\uf00d',
+            outdated: '\uf071',
             none: '',
         }
         event.text.text(
