@@ -149,7 +149,7 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         status: {
             attributes: {
-                class: 'fv-pointer  dag-flow-node-status',
+                class: 'fv-pointer fas  dag-flow-node-status',
             },
         },
         menuActions: {
@@ -163,7 +163,7 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         run: {
             attributes: {
-                class: 'fv-pointer dag-flow-node-run fv-hover-xx-lighter',
+                class: 'fas fv-pointer dag-flow-node-run fv-hover-xx-lighter',
                 transform: `translate(0, 0)`,
             },
             style: {
@@ -182,7 +182,7 @@ export class DagFlowView implements VirtualDOM<'div'> {
         },
         settings: {
             attributes: {
-                class: 'fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
+                class: 'fas fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
                 transform: `translate(15, 0)`,
             },
             style: {
