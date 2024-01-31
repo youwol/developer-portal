@@ -417,11 +417,14 @@ export class DagFlowView implements VirtualDOM<'div'> {
             outdated: '\uf071',
             none: '',
         }
-        event.text.text(
-            instanceOfStepStatus(event.status)
-                ? factoryDone[event.status.status]
-                : factoryPending[event.status],
-        )
+
+        event.text
+            .text(
+                instanceOfStepStatus(event.status)
+                    ? factoryDone[event.status.status]
+                    : factoryPending[event.status],
+            )
+            .style('fill', DagFlowView.fasColorsFactory[event.status.status])
     }
 }
 
