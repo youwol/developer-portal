@@ -59,6 +59,16 @@ export class DagFlowView implements VirtualDOM<'div'> {
     }
 
     /**
+     * @group Immutable Constants
+     */
+    static fasColorsFactory = {
+        none: 'gray',
+        KO: 'white',
+        OK: 'white',
+        outdated: '#cb5418',
+    }
+
+    /**
      * @group Immutable DOM Constants
      */
     connectedCallback: (elem: RxHTMLElement<'div'>) => void
@@ -156,7 +166,9 @@ export class DagFlowView implements VirtualDOM<'div'> {
                 class: 'fv-pointer dag-flow-node-run fv-hover-xx-lighter',
                 transform: `translate(0, 0)`,
             },
-            style: {},
+            style: {
+                fill: 'green',
+            },
             on: {
                 click: (n, { data }) => {
                     n.stopPropagation()
@@ -173,7 +185,9 @@ export class DagFlowView implements VirtualDOM<'div'> {
                 class: 'fv-pointer dag-flow-node-settings fv-hover-xx-lighter',
                 transform: `translate(15, 0)`,
             },
-            style: {},
+            style: {
+                fill: '#d7e5ee',
+            },
             on: {
                 click: (n, { data }) => {
                     n.stopPropagation()
